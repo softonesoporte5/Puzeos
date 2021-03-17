@@ -1,0 +1,86 @@
+@import "~@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "~@ionic/angular/css/normalize.css";
+@import "~@ionic/angular/css/structure.css";
+@import "~@ionic/angular/css/typography.css";
+@import '~@ionic/angular/css/display.css';
+
+/* Optional CSS utils that can be commented out */
+@import "~@ionic/angular/css/padding.css";
+@import "~@ionic/angular/css/float-elements.css";
+@import "~@ionic/angular/css/text-alignment.css";
+@import "~@ionic/angular/css/text-transformation.css";
+@import "~@ionic/angular/css/flex-utils.css";
+
+@import './colors.scss';
+
+*{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.h-100{
+  height: 100vh;
+}
+
+a{
+  text-decoration: none;
+  color:var(--ion-color-secondary);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.fondo{
+  position: absolute;
+  z-index: -1;
+  height: 100%;
+  width: 100vw;
+  background-repeat: repeat-y;
+  background-size: contain;
+  background-image: url('./assets/fondo.jpg');
+  opacity: .07;
+  top:0;
+  left: 0;
+}
+
+.s{
+  padding-left:24px;
+  padding-right: 24px;
+}
+
+.sombra{
+  box-shadow: 0 0 6px #6B6363;
+}
+
+.label{
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.header{
+  background-color: var(--ion-color-primary);
+  color:white;
+  height: 70px;
+  .icon{
+    font-size: 35px;
+    font-weight: bold;
+  }
+
+  .title{
+    font-size: 27px;
+    font-weight: 500;
+  }
+
+  &>*{
+    height: 100%;
+  }
+}
+
+.d-flex{
+  display: flex;
+}
+
+.menu_main {
+  --width: 85vw;
+}

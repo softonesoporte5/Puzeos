@@ -1,0 +1,24 @@
+@keyframes loading {
+  50%{
+      margin-bottom: 6rem;
+  }
+  100%{
+      margin-bottom: 0rem;
+  }
+}
+
+div{
+  background-color: #6400be;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  margin:0.2rem;
+  animation:loading 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+#div2{
+  animation-delay: 0.1s;
+}
+#div3{
+  animation-delay: 0.2s;
+}

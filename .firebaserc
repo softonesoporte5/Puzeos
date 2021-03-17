@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "usuarios-6b56a": {
+      "hosting": {
+        "app": [
+          "usuarios-6b56a"
+        ]
+      }
+    }
+  }
+}
