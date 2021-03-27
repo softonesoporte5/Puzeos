@@ -1,3 +1,4 @@
+import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { Component, Input, OnInit } from '@angular/core';
 
@@ -9,14 +10,20 @@ import { Component, Input, OnInit } from '@angular/core';
 export class MenuComponent implements OnInit {
 
   constructor(
-    private router:Router
+    private router:Router,
+    private auth:AngularFireAuth
   ) { }
 
   ngOnInit(
   ) {}
 
   logout(){
-    this.router.navigate(['auth/login']);
+    this.auth.signOut()
+      .then(resp=>{
+        this.router.navigate(['auth/login']);
+      }).catch(error=>{
+        console.log(error);
+      });
   }
 
 }

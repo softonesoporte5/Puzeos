@@ -2,7 +2,7 @@ import { AppService } from './../../../app.service';
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ToastController } from '@ionic/angular';
+import { LoadingController, ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
 
 @Component({
@@ -13,7 +13,6 @@ import { Router } from '@angular/router';
 export class RegisterPage implements OnInit {
 
   private _emailPattern: any = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  loading:boolean=false;
 
   miFormulario:FormGroup=this.fb.group({
     name:['',[Validators.required,Validators.minLength(10)]],
@@ -39,16 +38,11 @@ export class RegisterPage implements OnInit {
     private fb:FormBuilder,
     private toastController: ToastController,
     private auth:AngularFireAuth,
-    private appService:AppService,
-    private router:Router
+    private router:Router,
+    private loadingController:LoadingController
   ) { }
 
-  ngOnInit() {
-    this.appService.getLoading()
-      .subscribe(state=>{
-        this.loading=state;
-      });
-  }
+  ngOnInit() {}
 
   async presentToastWithOptions(mensaje:string){
     const toast = await this.toastController.create({
@@ -66,8 +60,11 @@ export class RegisterPage implements OnInit {
     toast.present();
   }
 
+  async presentLoading() {//Spiner de carga de Ionic
+    return await this.loadingController.create({spinner:"lines"});
+  }
+
   enviar(){
-    this.router.navigate(['chat']);
 
     if(this.miFormulario.invalid){
       let mensaje:string='';
@@ -88,22 +85,38 @@ export class RegisterPage implements OnInit {
       return ;
     }
 
-    this.appService.setLoading(true);//Iniciar la carga
+    //Mostrar sniper de carga
+    this.presentLoading()
+    .then(resp=>{
+      resp.present();
+    });
+
 
     //Crear usuario en Firebase
      this.auth.createUserWithEmailAndPassword(this.email.value,this.password.value)
        .then(userInfo=>{
          userInfo.user.sendEmailVerification()
            .then(()=>{
-             this.appService.setLoading(false);
-           })
-           .catch(()=>{
+            this.presentLoading()
+            .then(resp=>{
+              resp.onDidDismiss();
+            });
 
+             this.router.navigate(['chat']);
            })
+           .catch(error=>{
+            console.log(error);
+           });
 
        }).catch(error=>{
-         this.appService.setLoading(false);
-         console.log(error)
+        this.presentLoading()
+        .then(resp=>{
+          resp.onDidDismiss();
+        });
+
+         if(error.code==="auth/email-already-in-use"){
+          this.presentToastWithOptions("El correo electrónico ya está en uso");
+        }
        });
   }
 

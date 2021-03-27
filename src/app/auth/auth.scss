@@ -40,16 +40,3 @@ h4{
 .auth__enlace{
   display:block;
 }
-
-.auth__cont-loading{
-  background-color: #00000070;
-  width: 100vw;
-  height: 100vh;
-  position: fixed;
-  z-index: 999999999999999999999;
-  top:0;
-  left:0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}

@@ -2,10 +2,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 
 const routes:Routes=[
-  {
-    path:'**',
-    redirectTo:'register'
-  },
+
   {
     path: 'verificar',
     loadChildren: () => import('./pages/verificar/verificar.module').then( m => m.VerificarPageModule)

@@ -18,9 +18,8 @@ export class NoLoginGuard implements CanActivate {
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
       return this.auth.authState.pipe(map(auth=>{
-        console.log(auth)
         if(auth){
-          this.router.navigate(['/']);
+          this.router.navigate(['chat']);
           return false;
         }
         return true;

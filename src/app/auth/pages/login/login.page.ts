@@ -1,3 +1,4 @@
+import { LoadingService } from './../../../services/loading.service';
 import { LoadingController, ToastController } from '@ionic/angular';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AppService } from './../../../app.service';
@@ -13,7 +14,6 @@ import { Router } from '@angular/router';
 export class LoginPage implements OnInit {
 
   private _emailPattern: any = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  loading:boolean=false;
 
   miFormulario:FormGroup=this.fb.group({
     email:['',[Validators.pattern(this._emailPattern),Validators.required,Validators.minLength(6)]],
@@ -27,17 +27,11 @@ export class LoginPage implements OnInit {
     private fb:FormBuilder,
     private toastController: ToastController,
     private auth:AngularFireAuth,
-    private appService:AppService,
     private router:Router,
-    private loadingController: LoadingController
+    private loadingService:LoadingService
   ) { }
 
-  ngOnInit() {
-    this.appService.getLoading()
-      .subscribe(state=>{
-        this.loading=state;
-      });
-  }
+  ngOnInit() {}
 
   async presentToastWithOptions(mensaje:string){//Mostrar notificaciones internas sobre errores del formulario
     const toast = await this.toastController.create({
@@ -55,14 +49,6 @@ export class LoginPage implements OnInit {
     toast.present();
   }
 
-  async presentLoading() {//Mostrar gif de carga
-    const loading = await this.loadingController.create();
-    await loading.present();
-
-    const { role, data } = await loading.onDidDismiss();
-    console.log('Loading dismissed!');
-  }
-
   enviar(){
     if(this.miFormulario.invalid){
       let mensaje:string='';
@@ -78,8 +64,23 @@ export class LoginPage implements OnInit {
       return ;
     }
 
-    this.presentLoading();//Mostrar componente de carga UI
+    //Mostrar spiner de carga
+    this.loadingService.present();
 
+    this.auth.signInWithEmailAndPassword(this.email.value,this.password.value)
+      .then(resp=>{
+        this.loadingService.dismiss();
+        this.router.navigate(['chat']);
+
+      }).catch(error=>{
+        this.loadingService.dismiss();
+
+        if(error.code==="auth/user-not-found"){
+          this.presentToastWithOptions("Ningún usuario asociado a este correo");
+        }if(error.code==="auth/wrong-password"){
+          this.presentToastWithOptions("Contraseña incorrecta");
+        }
+      });
 
   }
 
