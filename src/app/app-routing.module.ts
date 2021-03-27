@@ -7,12 +7,16 @@ const routes: Routes = [
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then( m => m.AuthModule),
-    canActivate:[NoLoginGuard]
+    //canActivate:[NoLoginGuard]
   },
   {
-    path:'',
+    path: 'chat',
     loadChildren:()=>import('./chat/chat.module').then(m=>m.ChatModule),
-    canActivate:[AuthGuard]
+    //canActivate:[AuthGuard]
+  },
+  {
+    path:'**',
+    redirectTo:'chat'
   }
 
 ];

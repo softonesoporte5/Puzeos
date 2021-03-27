@@ -1,84 +1,48 @@
-<ion-header class="header s">
+<ion-header color="primary">
 
-    <ion-row>
-      <ion-col size="2" class="ion-align-self-center d-flex icon">
-          <ion-icon name="menu-sharp" (click)="openMenu()"></ion-icon>
-      </ion-col>
-      <ion-col size="8" class="ion-align-self-center">
-          <ion-title class="ion-no-padding title ion-text-start">Puzeos</ion-title>
-      </ion-col>
-      <ion-col size="2" class="ion-align-self-center d-flex ion-justify-content-end icon">
-        <ion-icon name="search-sharp"></ion-icon>
-      </ion-col>
-    </ion-row>
+  <ion-toolbar  color="primary">
+
+    <ion-button
+      (click)="openMenu()"
+      slot="start"
+      mode="ios"
+    >
+      <ion-icon
+        name="menu-sharp"
+        slot="icon-only"
+      ></ion-icon>
+    </ion-button>
+
+    <ion-title class="ion-no-padding title">Puzeos</ion-title>
+
+    <ion-button
+      slot="end"
+      mode="ios"
+    >
+      <ion-icon
+        name="search-sharp"
+        slot="icon-only"
+      ></ion-icon>
+    </ion-button>
+  </ion-toolbar>
 
 </ion-header>
 
-<ion-menu
-  class="menu_main"
-  side="start"
-  content-id="content"
->
-  <ion-header>
-      <ion-toolbar
-        color="primary"
-        class="s home__perfil ion-justify-content-center"
-      >
-        <ion-row class="ion-justify-content-center">
-          <img
-            class="home__img-perfil"
-            src="../../../../assets/person.jpg"
-            alt=""
-          >
-        </ion-row>
-        <ion-text>
-          <h3>Andrison Sánchez De La Cruz</h3>
-          <h3></h3>
-        </ion-text>
-
-      </ion-toolbar>
-
-  </ion-header>
-  <ion-content
-    color="light"
-    padding
-  >
-    <ion-row class="home__list s">
-      <div class="home__cont-icon">
-        <ion-icon name="people-sharp"></ion-icon>
-      </div>
-      Crear grupo
-    </ion-row>
-    <ion-row class="home__list s">
-      <div class="home__cont-icon">
-        <ion-icon name="bookmark-sharp"></ion-icon>
-      </div>
-      Mensajes guardados
-    </ion-row>
-    <ion-row class="home__list s">
-      <div class="home__cont-icon">
-        <ion-icon name="heart-dislike-sharp"></ion-icon>
-      </div>
-      Usuarios bloqueados
-    </ion-row>
-    <ion-row class="home__list s">
-      <div class="home__cont-icon">
-        <ion-icon name="settings-sharp"></ion-icon>
-      </div>
-      Configuración
-    </ion-row>
-    <ion-row class="home__list s" (click)="logout()">
-      <div class="home__cont-icon">
-        <ion-icon
-          name="log-out-outline"
-        ></ion-icon>
-      </div>
-      Cerrar Sesión
-    </ion-row>
-
-  </ion-content>
-</ion-menu>
+<app-menu></app-menu>
 
 <ion-content color="light" id="content">
   <app-item-chat></app-item-chat>
+
+  <ion-fab
+    vertical="bottom"
+    horizontal="end"
+    slot="fixed"
+    color="secondary"
+  >
+    <ion-fab-button routerLink="/chat/agregar">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
 </ion-content>
+

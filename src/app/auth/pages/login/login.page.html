@@ -4,7 +4,7 @@
   <app-loading style="display: contents;"></app-loading>
 </div>
 
-<div class="s h-100">
+<ion-content class="ion-padding">
   <ion-row class="mb-20 ion-justify-content-center ion-padding-top">
     <img
       src="../../../../assets/logo.png"
@@ -14,7 +14,6 @@
   </ion-row>
 
   <h1 class="ion-text-center mb-20">Iniciar Sesión</h1>
-
   <form
     [formGroup]="miFormulario"
     action=""
@@ -59,11 +58,11 @@
     >Olvidé mi contraseña</a><br>
 
     <ion-button
-      expand="full"
-      class="auth__btn-submit ion-text-capitalize"
-      color="secundario"
-      size="large"
-      type="submit"
+      expand="block"
+      class="ion-text-capitalize"
+      color="secondary"
+      type="button"
+      routerLink="/"
     >Iniciar Sesión</ion-button>
 
     <ion-text color="tertiary">
@@ -75,5 +74,5 @@
     >Registrate</a>
 
   </form>
-</div>
+</ion-content>
 

@@ -7,10 +7,10 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
-  templateUrl: './register.component.html',
+  templateUrl: './register.page.html',
   styleUrls: ['../../auth.scss'],
 })
-export class RegisterComponent implements OnInit {
+export class RegisterPage implements OnInit {
 
   private _emailPattern: any = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   loading:boolean=false;
@@ -67,6 +67,8 @@ export class RegisterComponent implements OnInit {
   }
 
   enviar(){
+    this.router.navigate(['chat']);
+
     if(this.miFormulario.invalid){
       let mensaje:string='';
 
@@ -77,7 +79,7 @@ export class RegisterComponent implements OnInit {
       if(this.email?.errors?.pattern){mensaje='Introduzca una dirección de correo válida';}
       if(this.email?.errors?.minlength){mensaje='El correo debe tener al menos 6 caracteres';}
       if(this.password?.errors?.required){mensaje='La contraseña es requerida';}
-      if(this.password?.errors?.minlength){mensaje='La contraseña debe tener al menos 6 caracteres';}
+      if(this.password?.errors?.minlength){mensaje='La contraseña debe tener al menos 9 caracteres';}
       if(this.password2?.errors?.required){mensaje='El campo "Confirmar contraseña" es requerido';}
       if(this.miFormulario.get('passwords')?.errors?.mismatch){mensaje='Las constraseñas no coinciden';}
 
@@ -89,22 +91,20 @@ export class RegisterComponent implements OnInit {
     this.appService.setLoading(true);//Iniciar la carga
 
     //Crear usuario en Firebase
-    this.auth.createUserWithEmailAndPassword(this.email.value,this.password.value)
-      .then(userInfo=>{
+     this.auth.createUserWithEmailAndPassword(this.email.value,this.password.value)
+       .then(userInfo=>{
+         userInfo.user.sendEmailVerification()
+           .then(()=>{
+             this.appService.setLoading(false);
+           })
+           .catch(()=>{
 
-        userInfo.user.sendEmailVerification()
-          .then(()=>{
-            this.appService.setLoading(false);
-            this.router.navigate(['auth/verificaremail']);
-          })
-          .catch(()=>{
+           })
 
-          })
-
-      }).catch(error=>{
-        this.appService.setLoading(false);
-        console.log(error)
-      });
+       }).catch(error=>{
+         this.appService.setLoading(false);
+         console.log(error)
+       });
   }
 
 }

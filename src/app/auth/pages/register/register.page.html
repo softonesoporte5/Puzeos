@@ -13,8 +13,8 @@
   [accent]="'#cf3c4f'">
 </ngx-snackbar>
 
-<div class="s h-100">
-  <ion-row class="mb-20 ion-justify-content-center ion-padding-top">
+<ion-content class="ion-padding">
+  <ion-row class="mb-10 ion-justify-content-center ion-padding-top">
     <img
       src="../../../../assets/logo.png"
       alt="Logo"
@@ -22,7 +22,7 @@
     >
   </ion-row>
 
-  <h1 class="ion-text-center mb-20">Registrarse</h1>
+  <h1 class="ion-text-center mb-10">Registrarse</h1>
   <form
     [formGroup]="miFormulario"
     action=""
@@ -31,7 +31,7 @@
   >
     <div
       color="primary"
-      class="ion-padding-vertical sombra ion-padding auth__cont mb-20"
+      class="ion-padding-vertical sombra ion-padding auth__cont mb-10"
     >
       <ion-row>
         <ion-label for="name" class="label">Nombre Completo:</ion-label>
@@ -90,10 +90,9 @@
     </div>
 
     <ion-button
-      expand="full"
-      class="auth__btn-submit  ion-text-capitalize"
-      color="secundario"
-      size="large"
+      expand="block"
+      class="ion-text-capitalize"
+      color="secondary"
       type="submit"
     >Registrarse</ion-button>
 
@@ -106,5 +105,5 @@
     >Inicia sesión</a>
 
   </form>
-</div>
+</ion-content>
 

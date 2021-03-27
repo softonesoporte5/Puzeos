@@ -1,30 +1,22 @@
-import { VerificarEmailComponent } from './pages/verificar-email/verificar-email.component';
-import { RegisterComponent } from './pages/register/register.component';
-import { LoginComponent } from './pages/login/login.component';
 import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 
 const routes:Routes=[
   {
-    path:'auth',
-    children:[
-      {
-        path:'login',
-        component:LoginComponent
-      },
-      {
-        path:'register',
-        component:RegisterComponent
-      },
-      {
-        path:'verificaremail',
-        component:VerificarEmailComponent
-      },
-      {
-        path:'**',
-        redirectTo:'register'
-      }
-    ]
+    path:'**',
+    redirectTo:'register'
+  },
+  {
+    path: 'verificar',
+    loadChildren: () => import('./pages/verificar/verificar.module').then( m => m.VerificarPageModule)
+  },
+  {
+    path: 'login',
+    loadChildren: () => import('./pages/login/login.module').then( m => m.LoginPageModule)
+  },
+  {
+    path: 'register',
+    loadChildren: () => import('./pages/register/register.module').then( m => m.RegisterPageModule)
   }
 ];
 

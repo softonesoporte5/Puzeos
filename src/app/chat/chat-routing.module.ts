@@ -1,15 +1,19 @@
 import { HomeComponent } from './pages/home/home.component';
 import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
-import { ChatComponent } from './pages/chat/chat.component';
 
 const routes:Routes=[
   {
     path:'',
-    children:[
-      {path:'',component:HomeComponent},
-      {path:'chat/:id',component:ChatComponent}
-    ]
+    component:HomeComponent
+  },
+  {
+    path:'id/:id',
+    loadChildren:()=>import("./pages/chat/chat.module").then(m=>m.ChatPageModule)
+  },
+  {
+    path: 'agregar',
+    loadChildren: () => import('./pages/agregar/agregar.module').then( m => m.AgregarPageModule)
   }
 ]
 

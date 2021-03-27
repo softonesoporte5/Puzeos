@@ -1,0 +1,61 @@
+<div class="fondo"></div>
+
+<ion-header>
+  <ion-toolbar style=" padding:0;" color="primary">
+    <ion-back-button
+      slot="start"
+      defaultHref="/chat"
+      text=""
+      mode="md"
+    ></ion-back-button>
+
+    <span class="loc_contac-info">
+      <img
+        src="assets/person.jpg"
+        class="chat__img "
+      >
+      <h6>Andrison Sánchez de</h6>
+    </span>
+
+    <ion-button slot="end" mode="ios">
+      <ion-icon slot="icon-only" name="search-sharp"></ion-icon>
+    </ion-button>
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+
+</ion-content>
+
+<ion-footer class="chat__footer">
+  <ion-toolbar class="loc_toolbar d-flex">
+
+    <ion-icon
+      name="happy-sharp"
+      slot="start"
+      color="secondary"
+      class="loc_icon-footer"
+    ></ion-icon>
+
+    <ion-input
+      type="text"
+      placeholder="Mensaje"
+      class="chat__input"
+    ></ion-input>
+
+    <ion-buttons slot="end">
+      <ion-icon
+        name="attach-sharp"
+        color="secondary"
+        class="loc_icon-footer"></ion-icon>
+      <ion-icon
+        name="mic-sharp"
+        color="secondary"
+        class="loc_icon-footer"
+      ></ion-icon>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
+
