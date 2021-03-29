@@ -1,0 +1,51 @@
+{
+  "users": {
+    "andrison1425": {
+      "UID": "0GUIXjrNrihLSklLyxVdJRzHCOb2",
+      "contacts": { "ghopper": true }
+    },
+    "adrian1": {
+      "UID": "0GUIXjrNrihLSklLyxVdJRzHCOb2",
+      "contacts": { "ghopper": true }
+    }
+  },
+
+  "chats":{
+    "ONE":{
+      "group":false,
+      "title":"Un Grupo Random",
+      "lastMessage": "ghopper: Relay malfunction found. Cause: moth.",
+      "timestamp": 1459361875666
+    }
+  },
+
+  "members": {
+    "ONE": {
+      "andrison1425": true,
+      "adrian1": true
+    }
+  },
+
+  "messages": {
+    "ONE": {
+      "mensaje1": {
+        "andrison1425":true,
+        "message": "The relay seems to be malfunctioning.",
+        "timestamp": 1459361875337
+      }
+    }
+  },
+
+  "tags":{
+    "tagId":{
+      "title":"Desarrollador FrontEnd"
+    }
+  },
+
+  "searchs":{
+    "tagId":{
+      "andrison1425":true,
+      "adrian1":true
+    }
+  }
+}

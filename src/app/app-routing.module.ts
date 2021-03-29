@@ -1,14 +1,14 @@
 import { Page404Page } from './page404/page404.page';
-import { NoLoginGuard } from './guards/no-login.guard';
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from './guards/auth.guard';
+
+import {canActivate, redirectLoggedInTo, redirectUnauthorizedTo} from '@angular/fire/auth-guard';
 
 const routes: Routes = [
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then( m => m.AuthModule),
-    canActivate:[NoLoginGuard]
+    ...canActivate(()=>redirectLoggedInTo(['/chat']))
   },
   {
     path:'',
@@ -18,7 +18,7 @@ const routes: Routes = [
   {
     path: 'chat',
     loadChildren:()=>import('./chat/chat.module').then(m=>m.ChatModule),
-    canActivate:[AuthGuard]
+    ...canActivate(()=>redirectUnauthorizedTo(['/auth/login']))
   },
   {
     path:'**',

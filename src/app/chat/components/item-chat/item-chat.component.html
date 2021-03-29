@@ -1,10 +1,10 @@
-<ion-item>
+<ion-item [routerLink]="'/chat/id/'+chatUser">
   <ion-avatar slot="start">
     <img src="../../../../assets/person.jpg">
   </ion-avatar>
   <ion-label>
     <span class="agrupar">
-      Andrison Sánchez
+      {{chatUser}}
       <ion-text color="tertiary">2:34</ion-text>
     </span>
     <ion-text color="tertiary" class="agrupar">

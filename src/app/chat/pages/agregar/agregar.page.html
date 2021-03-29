@@ -13,30 +13,9 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-chip>
-    <ion-label>Desarrollador Frontend</ion-label>
+
+  <ion-chip *ngFor="let item of items" (click)="buscarCompa(item.id)">
+    <ion-label>{{item.data.title}}</ion-label>
   </ion-chip>
-
-  <ion-chip>
-    <ion-label>Desarrollador Backend</ion-label>
-  </ion-chip>
-
-  <ion-chip>
-    <ion-label>Diseñador UI/UX</ion-label>
-  </ion-chip>
-
-  <ion-chip>
-    <ion-label>Ciberseguridad</ion-label>
-  </ion-chip>
-
-  <ion-chip>
-    <ion-label>Mecatrónica</ion-label>
-  </ion-chip>
-
-  <ion-chip>
-    <ion-label>Desarrollador de base de datos</ion-label>
-  </ion-chip>
-
-
 
 </ion-content>

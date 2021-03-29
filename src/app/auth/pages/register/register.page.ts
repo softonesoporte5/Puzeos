@@ -1,3 +1,5 @@
+import { AngularFirestore } from '@angular/fire/firestore';
+import { LoadingService } from './../../../services/loading.service';
 import { AppService } from './../../../app.service';
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -39,7 +41,8 @@ export class RegisterPage implements OnInit {
     private toastController: ToastController,
     private auth:AngularFireAuth,
     private router:Router,
-    private loadingController:LoadingController
+    private loadingService:LoadingService,
+    private fireStore:AngularFirestore
   ) { }
 
   ngOnInit() {}
@@ -58,10 +61,6 @@ export class RegisterPage implements OnInit {
       ]
     });
     toast.present();
-  }
-
-  async presentLoading() {//Spiner de carga de Ionic
-    return await this.loadingController.create({spinner:"lines"});
   }
 
   enviar(){
@@ -86,33 +85,29 @@ export class RegisterPage implements OnInit {
     }
 
     //Mostrar sniper de carga
-    this.presentLoading()
-    .then(resp=>{
-      resp.present();
-    });
+    this.loadingService.present();
 
 
     //Crear usuario en Firebase
      this.auth.createUserWithEmailAndPassword(this.email.value,this.password.value)
        .then(userInfo=>{
-         userInfo.user.sendEmailVerification()
+         userInfo.user.sendEmailVerification()//Enviamos email de verificación
            .then(()=>{
-            this.presentLoading()
-            .then(resp=>{
-              resp.onDidDismiss();
+            this.loadingService.dismiss();
+
+            this.fireStore.collection("users").doc(this.name.value).set({//Agregamos el usuario a FireStorage
+              uid:userInfo.user.uid,
+              contacts:[]
             });
 
-             this.router.navigate(['chat']);
+            this.router.navigate(['chat']);
            })
            .catch(error=>{
             console.log(error);
            });
 
        }).catch(error=>{
-        this.presentLoading()
-        .then(resp=>{
-          resp.onDidDismiss();
-        });
+        this.loadingService.dismiss();
 
          if(error.code==="auth/email-already-in-use"){
           this.presentToastWithOptions("El correo electrónico ya está en uso");

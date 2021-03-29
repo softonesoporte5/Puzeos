@@ -1,3 +1,4 @@
+import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
@@ -23,7 +24,8 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
     AppRoutingModule,
     SnackbarModule.forRoot(),
     AngularFireModule.initializeApp(environment.firebaseConfig),
-    AngularFireAuthModule
+    AngularFireAuthModule,
+    AngularFirestoreModule
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],

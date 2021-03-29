@@ -1,3 +1,5 @@
+import { IUser } from './../../interfaces/user.interface';
+import { Observable } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { Component, Input, OnInit } from '@angular/core';
@@ -9,13 +11,16 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class MenuComponent implements OnInit {
 
+  @Input() user:IUser;
+
   constructor(
     private router:Router,
-    private auth:AngularFireAuth
+    private auth:AngularFireAuth,
   ) { }
 
-  ngOnInit(
-  ) {}
+  ngOnInit() {
+
+  }
 
   logout(){
     this.auth.signOut()
