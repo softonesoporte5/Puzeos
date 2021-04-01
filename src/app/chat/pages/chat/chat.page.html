@@ -26,36 +26,58 @@
 </ion-header>
 
 <ion-content>
+  <ion-card
+    *ngFor="let mensaje of mensajes"
+    [class]="userName===mensaje.user?'enviado':''"
+  >
+    <ion-card-content>
+      {{mensaje.message}}
+      <ion-text color="tertiary">10:34pm</ion-text>
+    </ion-card-content>
+  </ion-card>
 
 </ion-content>
 
 <ion-footer class="chat__footer">
-  <ion-toolbar class="loc_toolbar d-flex">
-
-    <ion-icon
-      name="happy-sharp"
-      slot="start"
-      color="secondary"
-      class="loc_icon-footer"
-    ></ion-icon>
-
-    <ion-input
-      type="text"
-      placeholder="Mensaje"
-      class="chat__input"
-    ></ion-input>
-
-    <ion-buttons slot="end">
+  <form [formGroup]="miFormulario" style="display: contents;">
+    <ion-toolbar class="loc_toolbar d-flex">
       <ion-icon
-        name="attach-sharp"
-        color="secondary"
-        class="loc_icon-footer"></ion-icon>
-      <ion-icon
-        name="mic-sharp"
+        name="happy-sharp"
+        slot="start"
         color="secondary"
         class="loc_icon-footer"
       ></ion-icon>
-    </ion-buttons>
-  </ion-toolbar>
+
+      <ion-input
+        type="text"
+        placeholder="Mensaje"
+        class="chat__input"
+        formControlName="mensaje"
+      ></ion-input>
+
+      <ion-buttons slot="end">
+        <span *ngIf="miFormulario.invalid;else btnEnviar">
+          <ion-icon
+            name="attach-sharp"
+            color="secondary"
+            class="loc_icon-footer"></ion-icon>
+          <ion-icon
+            name="mic-sharp"
+            color="secondary"
+            class="loc_icon-footer"
+          ></ion-icon>
+        </span>
+
+        <ng-template #btnEnviar>
+          <ion-icon
+            name="send"
+            color="secondary"
+            class="loc_icon-footer"
+            (click)="agregarMensaje()"
+          ></ion-icon>
+        </ng-template>
+      </ion-buttons>
+    </ion-toolbar>
+  </form>
 </ion-footer>
 

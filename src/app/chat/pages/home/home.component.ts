@@ -1,5 +1,5 @@
 import { IUser } from './../../interfaces/user.interface';
-import { AngularFirestore, DocumentSnapshot } from '@angular/fire/firestore';
+import { Action, AngularFirestore} from '@angular/fire/firestore';
 import { Subscription } from 'rxjs';
 import { AppService } from './../../../app.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
@@ -15,7 +15,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   user:IUser;
   userSubscription:Subscription;
-  chats:IChatData[]=[];
+  chats:IChat[]=[];
   cargar:boolean=true;
 
   constructor(
@@ -30,16 +30,20 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.user=user;
       if(this.cargar===true){//Asegurarse de que los chats se cargan una sola vez
         for(const key in user.data.chats) {
-          this.firestore.collection("chats").doc(key).get()
-          .subscribe((resp:DocumentSnapshot<IChatData>)=>{
+          this.firestore.collection("chats").doc(key)
+          .snapshotChanges()
+          .subscribe((resp:Action<any>)=>{
             this.cargar=false;
-            const data=resp.data();
+            const data=resp.payload.data();
             this.chats=[
               ...this.chats,
               {
-                group:data.group,
-                lastMessage:data.lastMessage,
-                members:data.members,
+                id:resp.payload.id,
+                data:{
+                  group:data.group,
+                  lastMessage:data.lastMessage,
+                  members:data.members,
+                }
               }
             ];
           })
@@ -61,3 +65,4 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
 }
+

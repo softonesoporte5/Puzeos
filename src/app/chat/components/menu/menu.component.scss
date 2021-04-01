@@ -1,6 +1,8 @@
+$width-img:150px;
+
 .loc_img-perfil{
-  width: 150px;
-  height: 150px;
+  width: $width-img;
+  height: $width-img;
   border-radius: 50%;
   margin-bottom: 5px;
 }
@@ -16,4 +18,14 @@ ion-toolbar{
 
 ion-item{
   cursor: pointer;
+}
+
+.loc__btn-img{
+  position: absolute;
+  right: $width-img/7.5;
+  bottom: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  width: 50px;
+  height: 50px;
 }

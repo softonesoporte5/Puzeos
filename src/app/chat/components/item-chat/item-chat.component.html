@@ -1,4 +1,4 @@
-<ion-item [routerLink]="'/chat/id/'+chatUser">
+<ion-item [routerLink]="'/chat/id/'+chat.id" detail="false">
   <ion-avatar slot="start">
     <img src="../../../../assets/person.jpg">
   </ion-avatar>
@@ -8,8 +8,8 @@
       <ion-text color="tertiary">2:34</ion-text>
     </span>
     <ion-text color="tertiary" class="agrupar">
-      <p>Hola, yo soy desarrollador y algo más</p>
-      <h5 class="notifi">7</h5>
+      <p>{{chat.data.lastMessage}}</p>
+      <ion-badge color="secondary">22</ion-badge>
     </ion-text>
   </ion-label>
 

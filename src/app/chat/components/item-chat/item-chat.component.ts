@@ -1,5 +1,5 @@
 import { AppService } from './../../../app.service';
-import { IChatData } from './../../interfaces/chat.interface';
+import { IChat } from './../../interfaces/chat.interface';
 import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
@@ -9,7 +9,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class ItemChatComponent implements OnInit {
 
-  @Input() chat:IChatData;
+  @Input() chat:IChat;
   chatUser:string='';
 
 
@@ -18,10 +18,9 @@ export class ItemChatComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log(this.chat);
     this.appService.obtenerUsuario()
     .subscribe(user=>{
-      for (const key in this.chat.members) {
+      for (const key in this.chat.data.members) {
         if(key!==user.id)this.chatUser=key;
 
       }

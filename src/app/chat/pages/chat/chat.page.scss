@@ -14,6 +14,7 @@
 
 ion-buttons .loc_icon-footer{
   margin-left: 15px;
+  cursor: pointer;
 }
 
 .chat__input{
@@ -32,6 +33,10 @@ ion-back-button {
 
 ion-content{
   --background: rgba(255, 255, 255, 0.904);
+
+  .scroll-y{
+    display: flex;
+  }
 }
 
 .loc_contac-info{
@@ -53,4 +58,32 @@ ion-content{
     white-space:nowrap;
     text-overflow: ellipsis;
   }
+}
+
+ion-card{
+  --color:black;
+  width: 85%;
+  padding: 9px;
+  box-shadow: 0px 0 3px gray;
+  margin: 5px;
+  float: left;
+
+  ion-card-content{
+    font-size: 12px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    font-weight: 600;
+
+    ion-text{
+      flex: 1;
+      align-self: flex-end;
+    }
+  }
+
+}
+
+.enviado{
+  --background:#c4a3e2;
+  float: right;
 }

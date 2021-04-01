@@ -11,14 +11,14 @@ const routes: Routes = [
     ...canActivate(()=>redirectLoggedInTo(['/chat']))
   },
   {
-    path:'',
-    pathMatch:'full',
-    redirectTo:'chat'
-  },
-  {
     path: 'chat',
     loadChildren:()=>import('./chat/chat.module').then(m=>m.ChatModule),
     ...canActivate(()=>redirectUnauthorizedTo(['/auth/login']))
+  },
+  {
+    path:'',
+    pathMatch:'full',
+    redirectTo:'chat'
   },
   {
     path:'**',
