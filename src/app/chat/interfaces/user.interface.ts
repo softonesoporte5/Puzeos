@@ -4,8 +4,8 @@ export interface IUser{
 }
 
 export class IUserData{
-  uid:string;
-  chats:object;
+  userName:string;
+  chats:[];
   buscando:{
     state:boolean;
     tagId?:string;

@@ -95,8 +95,8 @@ export class RegisterPage implements OnInit {
            .then(()=>{
             this.loadingService.dismiss();
 
-            this.fireStore.collection("users").doc(this.name.value).set({//Agregamos el usuario a FireStorage
-              uid:userInfo.user.uid,
+            this.fireStore.collection("users").doc(userInfo.user.uid).set({//Agregamos el usuario a FireStorage
+              userName:this.name.value,
               chats:[],
               buscando:{
                 state:false,

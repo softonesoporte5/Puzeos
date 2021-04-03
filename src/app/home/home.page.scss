@@ -1,0 +1,33 @@
+.home__perfil{
+  padding-top:40px;
+  h3{
+    margin:3px 0 16px 0;
+    text-align: center;
+    font-size: 18px;
+  }
+}
+
+.home__img-perfil{
+  width: 197px;
+  height: 197px;
+  border-radius: 50%;
+  border: 1px gray solid;
+}
+
+.home__list{
+  list-style: none;
+  height: 70px;
+  margin-bottom: 2px;
+  background-color: white;
+  font-size: 20px;
+  font-weight: 500;
+  align-items: center;
+  >*{
+    display: flex;
+    justify-content: flex-start;
+  }
+}
+
+.home__cont-icon{
+  width: 35px;
+}

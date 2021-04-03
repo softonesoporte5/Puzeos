@@ -39,7 +39,11 @@ export class AgregarPage implements OnInit, OnDestroy {
       });
     }
 
-    this.buscando=JSON.parse(sessionStorage.getItem("buscando")).state;
+    //Comprobamos si existe el sessionStorage de buscando
+    if(JSON.parse(sessionStorage.getItem("buscando"))){
+      console.log("Entró")
+      this.buscando=JSON.parse(sessionStorage.getItem("buscando")).state;
+    }
 
     this.userSubscription=this.appService.obtenerUsuario()
     .subscribe((user:IUser)=>{
@@ -112,11 +116,11 @@ export class AgregarPage implements OnInit, OnDestroy {
       .then(chat=>{//Agregamos el chat a los usuarios
         this.fireStore.collection("users").doc(this.user.id)
         .update({
-          [`chats.${chat.id}`]:true
+          chats:firebase.default.firestore.FieldValue.arrayUnion(chat.id)
         }).then(()=>{
           this.fireStore.collection("users").doc(contact)
           .update({
-            [`chats.${chat.id}`]:true
+            chats:firebase.default.firestore.FieldValue.arrayUnion(chat.id)
           }).then(()=>{//Redireccionamos al home
             this.router.navigate(['chat']);
           }).catch(error=>{

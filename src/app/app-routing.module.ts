@@ -24,6 +24,10 @@ const routes: Routes = [
     path:'**',
     pathMatch:'full',
     component:Page404Page
+  },
+  {
+    path: 'home',
+    loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
   }
 
 ];
