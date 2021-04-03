@@ -2,3 +2,17 @@ ion-chip{
   --background:var(--ion-color-secondary);
   --color:var(--ion-color-light);
 }
+
+.flex{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  ion-button{
+    align-self: flex-end;
+  }
+
+  >*{
+    margin-bottom: 50px;
+  }
+}

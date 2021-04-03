@@ -6,4 +6,8 @@ export interface IUser{
 export class IUserData{
   uid:string;
   chats:object;
+  buscando:{
+    state:boolean;
+    tagId?:string;
+  };
 }

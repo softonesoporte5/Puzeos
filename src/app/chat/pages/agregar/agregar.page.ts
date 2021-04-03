@@ -1,18 +1,23 @@
+import { Subscription } from 'rxjs';
+import { IUser } from './../../interfaces/user.interface';
 import { Router } from '@angular/router';
 import { searchsUser } from './../../interfaces/searchsUser.interface';
 import { AppService } from './../../../app.service';
-import { AngularFirestore, DocumentSnapshot } from '@angular/fire/firestore';
-import { Component, OnInit } from '@angular/core';
+import { AngularFirestore, DocumentSnapshot, QuerySnapshot } from '@angular/fire/firestore';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-agregar',
   templateUrl: './agregar.page.html',
   styleUrls: ['./agregar.page.scss'],
 })
-export class AgregarPage implements OnInit {
+export class AgregarPage implements OnInit, OnDestroy {
 
-  items:any[]=[];
-  user:any;
+  items:any=[];
+  user:IUser;
+  buscando:boolean=false;
+  userSubscription:Subscription;
 
   constructor(
     private fireStore:AngularFirestore,
@@ -21,31 +26,62 @@ export class AgregarPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.fireStore.collection("tags").ref.get()
-    .then(items=>{
-      items.forEach(item=>this.items=[...this.items,{id:item.id,data:item.data()}]);
-    }).catch(error=>{
-      console.log(error);
-    });
+    //Almacenar los tags en el sessionStorage para que no cargen cada vez
+    if(sessionStorage.getItem("tags")){
+      this.items=JSON.parse(sessionStorage.getItem("tags"));
+    }else{
+      this.fireStore.collection("tags").ref.get()
+      .then(items=>{
+        items.forEach(item=>this.items=[...this.items,{id:item.id,data:item.data()}]);
+        sessionStorage.setItem("tags",JSON.stringify(this.items));
+      }).catch(error=>{
+        console.log(error);
+      });
+    }
 
-    this.appService.obtenerUsuario()
-    .subscribe(user=>{
+    this.buscando=JSON.parse(sessionStorage.getItem("buscando")).state;
+
+    this.userSubscription=this.appService.obtenerUsuario()
+    .subscribe((user:IUser)=>{
       this.user=user;
+      console.log(user.data)
+      this.buscando=user.data.buscando.state;
+      sessionStorage.setItem("buscando",JSON.stringify(user.data.buscando));
     });
   }
 
-  buscarCompa(tagId:string){//Añade al usuario en laa coleccion de busquedas
+  ngOnDestroy(){
+    this.userSubscription.unsubscribe();
+  }
+
+  actualizarEstadoBusquedaUser(estado:boolean, tagId:string=''){
+    this.buscando=estado;
+    sessionStorage.setItem("buscando",JSON.stringify({state:estado,tagId:tagId}));
+
+    this.fireStore.collection("users").doc(this.user.id).update({
+      buscando:{
+        state:estado,
+        tagId:tagId
+      }
+    })
+    .catch(error=>{
+      console.log("Hubo un error",error);
+    });
+  }
+
+  buscarCompa(tagId:string){//Añade al usuario en la coleccion de busquedas
+    this.actualizarEstadoBusquedaUser(true,tagId);
+
     this.fireStore.collection("searchs").doc(tagId).get()
     .subscribe((resp:DocumentSnapshot<searchsUser>)=>{
-
       let values:string[]=[];
       const data=resp.data();
 
-      for (const key in data.users) {
+      for(const key in data.users) {
         values=[...values,key];
       }
 
-      if(values.length<1){//COmprobamos si no hay nadie buscando, en ese caso se inserta el usuario a la coleccion de busqueda
+      if(values.length<1){//Comprobamos si no hay nadie buscando, en ese caso se inserta el usuario a la coleccion de busqueda
         this.fireStore.collection("searchs").doc(tagId).update({
           [`users.${this.user.id}`]:true
         }).then(()=>{
@@ -55,7 +91,7 @@ export class AgregarPage implements OnInit {
         });
 
       }else{
-
+        this.actualizarEstadoBusquedaUser(false);
         this.generarChat({//Creamos el chat
           [this.user.id]:true,
           [values[0]]:true
@@ -93,6 +129,17 @@ export class AgregarPage implements OnInit {
         console.log(error);
       });
     });
+  }
+
+  cancelarBusqueda(){
+    // Elimina al usuario del documento de busqueda
+    const buscandoState=JSON.parse(sessionStorage.getItem("buscando"));
+
+    this.fireStore.collection("searchs").doc(buscandoState.tagId).update({
+      [`users.${this.user.id}`]:firebase.default.firestore.FieldValue.delete()
+    }).then(()=>{
+      this.actualizarEstadoBusquedaUser(false);
+    })
   }
 
 }

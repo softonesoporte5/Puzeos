@@ -1,3 +1,4 @@
+import { FechaPipe } from './../../../pipes/fecha.pipe';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -16,6 +17,6 @@ import { ChatPage } from './chat.page';
     ChatPageRoutingModule,
     ReactiveFormsModule
   ],
-  declarations: [ChatPage]
+  declarations: [ChatPage, FechaPipe]
 })
 export class ChatPageModule {}

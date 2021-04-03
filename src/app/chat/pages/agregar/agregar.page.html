@@ -9,13 +9,32 @@
 
     <ion-title class="ion-no-padding">Agrega un compañero</ion-title>
   </ion-toolbar>
-
 </ion-header>
 
-<ion-content class="ion-padding">
-
+<ion-content *ngIf="!buscando; else contBuscando" class="ion-padding">
   <ion-chip *ngFor="let item of items" (click)="buscarCompa(item.id)">
     <ion-label>{{item.data.title}}</ion-label>
   </ion-chip>
-
 </ion-content>
+
+<ng-template #contBuscando>
+  <ion-content>
+    <div class="ion-padding flex">
+      <span style="display: flex;">
+        Buscando
+        <ion-spinner
+          color="primary"
+          name="dots"
+        ></ion-spinner>
+      </span>
+
+      <ion-text class="ion-text-center" color="tertiary">
+        Esto puede tardar, le notificaremos cuando encontremos un compañero
+      </ion-text>
+
+      <ion-button color="secondary" (click)="cancelarBusqueda()">
+        Cancelar
+      </ion-button>
+    </div>
+  </ion-content>
+</ng-template>

@@ -28,25 +28,30 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.userSubscription=this.appService.obtenerUsuario()
    .subscribe((user:IUser)=>{
       this.user=user;
-      if(this.cargar===true){//Asegurarse de que los chats se cargan una sola vez
+
+      if(this.chats.length<Object.values(user.data.chats).length){
+        this.chats=[];
+        let cont=0;
         for(const key in user.data.chats) {
+          const i=cont;
+
           this.firestore.collection("chats").doc(key)
           .snapshotChanges()
           .subscribe((resp:Action<any>)=>{
             this.cargar=false;
             const data=resp.payload.data();
-            this.chats=[
-              ...this.chats,
-              {
-                id:resp.payload.id,
-                data:{
-                  group:data.group,
-                  lastMessage:data.lastMessage,
-                  members:data.members,
-                }
+
+            this.chats[i]={
+              id:resp.payload.id,
+              data:{
+                group:data.group,
+                lastMessage:data.lastMessage,
+                members:data.members,
               }
-            ];
-          })
+            }
+
+          });
+          cont++;
         }
       }
    });

@@ -17,8 +17,8 @@
       <h6>Andrison Sánchez de</h6>
     </span>
 
-    <ion-button slot="end" mode="ios">
-      <ion-icon slot="icon-only" name="search-sharp"></ion-icon>
+    <ion-button slot="end" mode="ios" (click)="presentPopover($event)">
+      <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
     </ion-button>
 
   </ion-toolbar>
@@ -32,7 +32,7 @@
   >
     <ion-card-content>
       {{mensaje.message}}
-      <ion-text color="tertiary">10:34pm</ion-text>
+      <ion-text color="tertiary">{{mensaje.timestamp.toDate() | date: 'shortTime'}}</ion-text>
     </ion-card-content>
   </ion-card>
 

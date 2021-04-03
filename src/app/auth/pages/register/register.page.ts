@@ -97,7 +97,11 @@ export class RegisterPage implements OnInit {
 
             this.fireStore.collection("users").doc(this.name.value).set({//Agregamos el usuario a FireStorage
               uid:userInfo.user.uid,
-              contacts:[]
+              chats:[],
+              buscando:{
+                state:false,
+                tagId:''
+              }
             });
 
             this.router.navigate(['chat']);
