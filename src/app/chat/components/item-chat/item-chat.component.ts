@@ -1,3 +1,5 @@
+import { AngularFirestore, DocumentSnapshot } from '@angular/fire/firestore';
+import { IUserData, IUser } from './../../interfaces/user.interface';
 import { AppService } from './../../../app.service';
 import { IChat } from './../../interfaces/chat.interface';
 import { Component, Input, OnInit } from '@angular/core';
@@ -9,22 +11,31 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class ItemChatComponent implements OnInit {
 
-  @Input() chat:IChat;
-  chatUser:string='';
-
+  @Input("chat") chat:IChat;
+  chatUser:IUser;
 
   constructor(
-    private appService:AppService
-  ) { }
+    private appService:AppService,
+    private fireStore:AngularFirestore
+  ) {}
 
   ngOnInit() {
+    console.log(this.chat);
     this.appService.obtenerUsuario()
-    .subscribe(user=>{
-      for (const key in this.chat.data.members) {
-        if(key!==user.id)this.chatUser=key;
-
+    .subscribe((user:IUserData)=>{
+      for (const key in this.chat.data.members){
+        if(key!==user.userName){
+          this.fireStore.collection("users").doc(key).get()
+          .subscribe((userChat:DocumentSnapshot<IUserData>)=>{
+            this.chatUser={
+              id:userChat.id,
+              data:{
+                ...userChat.data()
+              }
+            }
+          });
+        };
       }
     });
   }
-
 }

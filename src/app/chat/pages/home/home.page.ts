@@ -1,18 +1,19 @@
 import { IChatData } from './../../interfaces/chat.interface';
-import { IUser } from './../../interfaces/user.interface';
+import { IUser, IUserData } from './../../interfaces/user.interface';
 import { Action, AngularFirestore} from '@angular/fire/firestore';
 import { Subscription } from 'rxjs';
 import { AppService } from './../../../app.service';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MenuController } from '@ionic/angular';
+import { Component, OnInit } from '@angular/core';
+import { MenuController, ViewDidEnter, ViewDidLeave } from '@ionic/angular';
 import { IChat} from '../../interfaces/chat.interface';
+import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss'],
+  templateUrl: './home.page.html',
+  styleUrls: ['./home.page.scss'],
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomePage implements OnInit{
 
   user:IUser;
   userSubscription:Subscription;
@@ -27,39 +28,44 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.userSubscription=this.appService.obtenerUsuario()
-   .subscribe((user:IUser)=>{console.log("a");
-      this.user=user;
-      if(this.chats.length<user.data.chats.length){
+    .subscribe((user:IUserData)=>{
+
+      this.user={
+        id:firebase.default.auth().currentUser.uid,
+        data:{...user}
+      };
+
+      if(this.chats.length<user.chats.length){
         if(this.chats.length===0){
           this.chats=[];
           let cont=0;
-          user.data.chats.forEach(chat=>{
+
+          user.chats.forEach(chat=>{
+
             const i=cont;
-
             this.firestore.collection("chats").doc(chat)
-            .snapshotChanges()
-            .subscribe((resp:Action<any>)=>{
+            .valueChanges()
+            .subscribe((resp:IChatData)=>{
               this.cargar=false;
-              const data=resp.payload.data();
-
               this.chats[i]={
-                id:resp.payload.id,
+                id:chat,
                 data:{
-                  group:data.group,
-                  lastMessage:data.lastMessage,
-                  members:data.members,
+                  group:resp.group,
+                  lastMessage:resp.lastMessage,
+                  members:resp.members,
                 }
               }
             });
             cont++;
           });
         }else{
-          for(let index=this.chats.length; index<user.data.chats.length; index++){
-            this.firestore.collection("chats").doc(user.data.chats[index])
+          for(let index=this.chats.length; index<user.chats.length; index++){
+            this.firestore.collection("chats").doc(user.chats[index])
             .valueChanges()
             .subscribe((chat:IChatData)=>{
+              console.log(chat);
               this.chats[index]={
-                id:user.data.chats[index],
+                id:user.chats[index],
                 data:{
                   group:chat.group,
                   lastMessage:chat.lastMessage,
@@ -71,11 +77,6 @@ export class HomeComponent implements OnInit, OnDestroy {
         }
       }
    });
-
-  }
-
-  ngOnDestroy(){
-    this.userSubscription.unsubscribe();
   }
 
   openMenu(){

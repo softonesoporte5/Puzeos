@@ -18,24 +18,7 @@ export class AppService {
     private auth:AngularFireAuth
   ) { }
 
-  cargarUsuario(uid:string){
-    this.firestore.collection("users").doc(uid).valueChanges()
-    .subscribe((user:IUserData)=>{
-      this.user$.next({
-        id:uid,
-        data:{
-          userName:user.userName,
-          chats:[...user.chats],
-          buscando:user.buscando
-        }
-      });
-    })
-  }
-
   obtenerUsuario(){
-    this.cargarUsuario(firebase.default.auth().currentUser.uid);
-    return this.user$.asObservable().pipe(share());
+    return this.firestore.collection("users").doc(firebase.default.auth().currentUser.uid).valueChanges();
   }
-
-
 }

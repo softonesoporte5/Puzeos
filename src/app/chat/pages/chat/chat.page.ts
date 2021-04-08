@@ -1,3 +1,4 @@
+import { IUserData } from './../../interfaces/user.interface';
 import { AppService } from './../../../app.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -36,14 +37,20 @@ export class ChatPage implements OnInit {
     this.firestore.collection("messages").doc(this.idChat)
     .valueChanges()
     .subscribe((resp:any)=>{
-      console.log(resp.message)
-      // const data=resp.payload.data();
-      // this.mensajes=[data[property],...this.mensajes];
+      if(resp){
+        console.log(resp)
+        // const data=resp.payload.data();
+        if(resp.messages.length>this.mensajes.length){
+          for (let i = this.mensajes.length; i < resp.messages.length; i++) {
+            this.mensajes.push(resp.messages[i]);
+          }
+        }
+      }
     })
 
     this.appService.obtenerUsuario()
-    .subscribe(user=>{
-      this.userName=user.id;
+    .subscribe((user:IUserData)=>{
+      this.userName=user.userName;
     })
 
   }
@@ -51,29 +58,28 @@ export class ChatPage implements OnInit {
   agregarMensaje(){
     const date=new Date().valueOf();
     const randomId=Math.round(Math.random()*1000)+date;
-    const timestamp=firebase.default.firestore.FieldValue.serverTimestamp();
 
+    const mensaje=this.miFormulario.get("mensaje").value;
 
     this.firestore.collection("messages").doc(this.idChat).update({
       messages:firebase.default.firestore.FieldValue.arrayUnion({
-        message:this.miFormulario.get("mensaje").value,
+        message:mensaje,
         user:this.userName,
         type:"text",
-        timestamp:timestamp
       })
     }).catch(error=>{
       this.firestore.collection("messages").doc(this.idChat).set({
         messages:firebase.default.firestore.FieldValue.arrayUnion({
-          message:this.miFormulario.get("mensaje").value,
+          message:mensaje,
           user:this.userName,
           type:"text",
-          timestamp:timestamp
         })
       })
+      //timestamp:firebase.default.firestore.FieldValue.serverTimestamp()
     });
 
     this.firestore.collection("chats").doc(this.idChat).update({//Agregar ultimo mensaje al chat
-      lastMessage:`${this.miFormulario.get("mensaje").value}`
+      lastMessage:`${mensaje}`
     })
 
     this.miFormulario.get("mensaje").setValue('');

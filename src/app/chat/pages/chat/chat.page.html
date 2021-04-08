@@ -20,7 +20,6 @@
     <ion-button slot="end" mode="ios" (click)="presentPopover($event)">
       <ion-icon name="ellipsis-vertical-sharp"></ion-icon>
     </ion-button>
-
   </ion-toolbar>
 
 </ion-header>
@@ -32,7 +31,7 @@
   >
     <ion-card-content>
       {{mensaje.message}}
-      <ion-text color="tertiary">{{mensaje.timestamp.toDate() | date: 'shortTime'}}</ion-text>
+      <ion-text color="tertiary"><!--{{mensaje.timestamp.toDate() | date: 'shortTime'}}--></ion-text>
     </ion-card-content>
   </ion-card>
 

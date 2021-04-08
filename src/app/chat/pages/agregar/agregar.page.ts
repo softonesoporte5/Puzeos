@@ -1,5 +1,5 @@
 import { Subscription } from 'rxjs';
-import { IUser } from './../../interfaces/user.interface';
+import { IUser, IUserData } from './../../interfaces/user.interface';
 import { Router } from '@angular/router';
 import { searchsUser } from './../../interfaces/searchsUser.interface';
 import { AppService } from './../../../app.service';
@@ -41,16 +41,20 @@ export class AgregarPage implements OnInit, OnDestroy {
 
     //Comprobamos si existe el sessionStorage de buscando
     if(JSON.parse(sessionStorage.getItem("buscando"))){
-      console.log("Entró")
       this.buscando=JSON.parse(sessionStorage.getItem("buscando")).state;
     }
 
     this.userSubscription=this.appService.obtenerUsuario()
-    .subscribe((user:IUser)=>{
-      this.user=user;
-      console.log(user.data)
-      this.buscando=user.data.buscando.state;
-      sessionStorage.setItem("buscando",JSON.stringify(user.data.buscando));
+    .subscribe((user:IUserData)=>{
+
+      this.user={
+        id:firebase.default.auth().currentUser.uid,
+        data:{...user}
+      };
+      console.log(user)
+
+      this.buscando=this.user.data.buscando.state;
+      sessionStorage.setItem("buscando",JSON.stringify(this.user.data.buscando));
     });
   }
 
@@ -74,7 +78,7 @@ export class AgregarPage implements OnInit, OnDestroy {
   }
 
   buscarCompa(tagId:string){//Añade al usuario en la coleccion de busquedas
-    this.actualizarEstadoBusquedaUser(true,tagId);
+    this.buscando=true;
 
     this.fireStore.collection("searchs").doc(tagId).get()
     .subscribe((resp:DocumentSnapshot<searchsUser>)=>{
@@ -86,6 +90,7 @@ export class AgregarPage implements OnInit, OnDestroy {
       }
 
       if(values.length<1){//Comprobamos si no hay nadie buscando, en ese caso se inserta el usuario a la coleccion de busqueda
+        this.actualizarEstadoBusquedaUser(true,tagId);
         this.fireStore.collection("searchs").doc(tagId).update({
           [`users.${this.user.id}`]:true
         }).then(()=>{
@@ -97,7 +102,7 @@ export class AgregarPage implements OnInit, OnDestroy {
       }else{
         this.actualizarEstadoBusquedaUser(false);
         this.generarChat({//Creamos el chat
-          [this.user.id]:true,
+          [this.user.data.userName]:true,
           [values[0]]:true
         },values[0]);
       }
