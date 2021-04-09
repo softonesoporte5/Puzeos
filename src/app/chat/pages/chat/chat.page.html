@@ -37,34 +37,43 @@
 
 </ion-content>
 
-<ion-footer class="chat__footer">
+<ion-footer>
   <form [formGroup]="miFormulario" style="display: contents;">
     <ion-toolbar class="loc_toolbar d-flex">
       <ion-icon
-        name="happy-sharp"
+        [name]="showEmojiPicker?'keypad':'happy-sharp'"
         slot="start"
         color="secondary"
         class="loc_icon-footer"
+        (click)="showEmojiPicker = !showEmojiPicker"
       ></ion-icon>
 
-      <ion-input
-        type="text"
+      <ion-textarea
         placeholder="Mensaje"
         class="chat__input"
         formControlName="mensaje"
-      ></ion-input>
+        auto-grow="true"
+        spellcheck="true"
+        rows="1"
+      ></ion-textarea>
 
       <ion-buttons slot="end">
         <span *ngIf="miFormulario.invalid;else btnEnviar">
-          <ion-icon
-            name="attach-sharp"
-            color="secondary"
-            class="loc_icon-footer"></ion-icon>
-          <ion-icon
-            name="mic-sharp"
-            color="secondary"
-            class="loc_icon-footer"
-          ></ion-icon>
+          <ion-button slot="icon-only">
+            <ion-icon
+              name="attach-sharp"
+              color="secondary"
+              class="loc_icon-footer"
+            ></ion-icon>
+          </ion-button>
+
+          <ion-button slot="icon-only">
+            <ion-icon
+              name="mic-sharp"
+              color="secondary"
+              class="loc_icon-footer"
+            ></ion-icon>
+          </ion-button>
         </span>
 
         <ng-template #btnEnviar>
@@ -80,3 +89,6 @@
   </form>
 </ion-footer>
 
+<ion-footer class="emojiContainer" [style.height]="showEmojiPicker?'300px':'0px'"> <!--Show/Hide emoji picker. Don't use *ngIf because the component will be created again and again and cause performance issue-->
+  <emoji-picker (onEmojiSelect)="addEmoji($event)"></emoji-picker>
+</ion-footer>

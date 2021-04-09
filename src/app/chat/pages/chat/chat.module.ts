@@ -8,6 +8,7 @@ import { IonicModule } from '@ionic/angular';
 import { ChatPageRoutingModule } from './chat-routing.module';
 
 import { ChatPage } from './chat.page';
+import { Ionic4EmojiPickerModule } from 'ionic4-emoji-picker';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { ChatPage } from './chat.page';
     FormsModule,
     IonicModule,
     ChatPageRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    Ionic4EmojiPickerModule
   ],
   declarations: [ChatPage, FechaPipe]
 })

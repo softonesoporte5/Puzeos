@@ -12,16 +12,12 @@
   font-size: 25px;
 }
 
-ion-buttons .loc_icon-footer{
-  margin-left: 15px;
-  cursor: pointer;
-}
-
 .chat__input{
   flex:1;
   border-bottom: 1px solid var(--ion-color-tertiary);
   margin:0 9px;
   font-size: 16px;
+  max-height: 150px;
 }
 
 ion-back-button {
@@ -83,3 +79,34 @@ ion-card{
   --background:#c4a3e2;
   float: right;
 }
+
+:host ::ng-deep .categoryContainer{
+  position: fixed;
+  background-color: #f2f2f2;
+  z-index: 99;
+  width: 100%;
+
+}
+
+:host ::ng-deep emoji-picker>ion-content>ion-row{
+  >ion-col:nth-child(1){
+    &::after{
+      height: 75px;
+      content: " as";
+      width: 100%;
+      display: block;
+    }
+
+    .categoryContainer>div{
+      padding:0 10px;
+    }
+  }
+  >ion-col{
+    padding:0;
+  }
+
+  *{
+    height: min-content;
+  }
+}
+

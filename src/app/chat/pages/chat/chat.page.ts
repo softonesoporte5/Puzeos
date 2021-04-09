@@ -1,7 +1,7 @@
 import { IUserData } from './../../interfaces/user.interface';
 import { AppService } from './../../../app.service';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as firebase from 'firebase';
@@ -18,10 +18,13 @@ export class ChatPage implements OnInit {
   idChat:string;
   mensajes:any[]=[];
   userName:string='';
+  showEmojiPicker:boolean=false;
 
   miFormulario:FormGroup=this.fb.group({
     mensaje:['',[Validators.required,Validators.minLength(1)]]
   });
+
+  mensaje:AbstractControl=this.miFormulario.get("mensaje");
 
   constructor(
     private fb:FormBuilder,
@@ -59,7 +62,7 @@ export class ChatPage implements OnInit {
     const date=new Date().valueOf();
     const randomId=Math.round(Math.random()*1000)+date;
 
-    const mensaje=this.miFormulario.get("mensaje").value;
+    const mensaje=this.mensaje.value;
 
     this.firestore.collection("messages").doc(this.idChat).update({
       messages:firebase.default.firestore.FieldValue.arrayUnion({
@@ -82,7 +85,7 @@ export class ChatPage implements OnInit {
       lastMessage:`${mensaje}`
     })
 
-    this.miFormulario.get("mensaje").setValue('');
+    this.mensaje.setValue('');
   }
 
   async presentPopover(ev: any) {
@@ -91,5 +94,9 @@ export class ChatPage implements OnInit {
       event: ev
     });
     return await popover.present();
+  }
+
+  addEmoji(event) {
+    this.mensaje.setValue(this.mensaje.value+event.data);
   }
 }
