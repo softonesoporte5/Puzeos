@@ -24,18 +24,18 @@
 
 </ion-header>
 
-<ion-content>
+<div class="loc__content" #content>
   <ion-card
     *ngFor="let mensaje of mensajes"
     [class]="userName===mensaje.user?'enviado':''"
   >
     <ion-card-content>
       {{mensaje.message}}
-      <ion-text color="tertiary"><!--{{mensaje.timestamp.toDate() | date: 'shortTime'}}--></ion-text>
+      <ion-text color="tertiary">{{mensaje?.timestamp?.toDate() | date: 'shortTime'}}</ion-text>
     </ion-card-content>
   </ion-card>
 
-</ion-content>
+</div>
 
 <ion-footer>
   <form [formGroup]="miFormulario" style="display: contents;">

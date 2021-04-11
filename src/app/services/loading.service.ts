@@ -15,7 +15,6 @@ export class LoadingService {
     return await this.loadingController.create()
     .then(resp => {
       resp.present().then(() => {
-        console.log('presented');
         if (!this.isLoading) {
           resp.dismiss();
         }
