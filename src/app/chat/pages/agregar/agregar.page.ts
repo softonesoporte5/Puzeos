@@ -103,6 +103,11 @@ export class AgregarPage implements OnInit, OnDestroy {
           [this.user.id]:true,
           [values[0]]:true
         },values[0]);
+
+
+        this.fireStore.collection("searchs").doc(tagId).update({//Eliminamos al usuario de la tabla de busquedas
+          [`users.${values[0]}`]:firebase.default.firestore.FieldValue.delete()
+        })
       }
     });
   }
