@@ -115,7 +115,7 @@ export class AgregarPage implements OnInit, OnDestroy {
   generarChat(members:object,contact:string){
     this.fireStore.collection("chats").add({
       group:false,
-      lastMessage: "ghopper: Relay malfunction found. Cause: moth.",
+      lastMessage: "Se ha creado el chat",
       members:{
         ...members
       }
