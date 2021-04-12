@@ -1,6 +1,6 @@
 import { IChatData } from './../../interfaces/chat.interface';
 import { IUser, IUserData } from './../../interfaces/user.interface';
-import { Action, AngularFirestore} from '@angular/fire/firestore';
+import { AngularFirestore} from '@angular/fire/firestore';
 import { Subscription } from 'rxjs';
 import { AppService } from './../../../app.service';
 import { Component, OnInit } from '@angular/core';

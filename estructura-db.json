@@ -1,37 +1,36 @@
 {
   "users": {
-    "andrison1425": {
-      "UID": "0GUIXjrNrihLSklLyxVdJRzHCOb2",
-      "contacts": { "ghopper": true }
+    "UID": {
+      "userName": "Alguien",
+      "chats": ["elIdDeUnChat","elIdDeOtroChat"]
     },
-    "adrian1": {
-      "UID": "0GUIXjrNrihLSklLyxVdJRzHCOb2",
-      "contacts": { "ghopper": true }
+    "buscando":{
+      "state":false,
+      "tagId":""
     }
   },
 
   "chats":{
-    "ONE":{
+    "IDcHAT":{
       "group":false,
-      "title":"Un Grupo Random",
       "lastMessage": "ghopper: Relay malfunction found. Cause: moth.",
-      "timestamp": 1459361875666
-    }
-  },
-
-  "members": {
-    "ONE": {
-      "andrison1425": true,
-      "adrian1": true
+      "timestamp": 1459361875666,
+      "members":{
+        "id_usuario":true,
+        "id_usuario1":true
+      }
     }
   },
 
   "messages": {
-    "ONE": {
-      "mensaje1": {
-        "andrison1425":true,
-        "message": "The relay seems to be malfunctioning.",
-        "timestamp": 1459361875337
+    "idDelChat":{
+      "messages":{
+        "idDelMensaje":{
+          "message":"Hola",
+          "timestamp":"La hora",
+          "type":"text",
+          "user":"username"
+        }
       }
     }
   },
@@ -44,8 +43,10 @@
 
   "searchs":{
     "tagId":{
-      "andrison1425":true,
-      "adrian1":true
+      "users":{
+        "andrison1425":true,
+        "adrian1":true
+      }
     }
   }
 }
