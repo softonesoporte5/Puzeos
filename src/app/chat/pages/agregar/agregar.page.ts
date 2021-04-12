@@ -46,7 +46,7 @@ export class AgregarPage implements OnInit, OnDestroy {
 
     this.userSubscription=this.appService.obtenerUsuario()
     .subscribe((user:IUserData)=>{
-
+      console.log("estado busqueda:",user.buscando)
       this.user={
         id:firebase.default.auth().currentUser.uid,
         data:{...user}
@@ -99,9 +99,8 @@ export class AgregarPage implements OnInit, OnDestroy {
         });
 
       }else{
-        this.actualizarEstadoBusquedaUser(false);
         this.generarChat({//Creamos el chat
-          [this.user.data.userName]:true,
+          [this.user.id]:true,
           [values[0]]:true
         },values[0]);
       }
@@ -120,10 +119,18 @@ export class AgregarPage implements OnInit, OnDestroy {
       .then(chat=>{//Agregamos el chat a los usuarios
         this.fireStore.collection("users").doc(this.user.id)
         .update({
+          buscando:{
+            tagId:"",
+            state:false
+          },
           chats:firebase.default.firestore.FieldValue.arrayUnion(chat.id)
         }).then(()=>{
           this.fireStore.collection("users").doc(contact)
           .update({
+            buscando:{
+              tagId:"",
+              state:false
+            },
             chats:firebase.default.firestore.FieldValue.arrayUnion(chat.id)
           }).then(()=>{//Redireccionamos al home
             this.router.navigate(['chat']);
