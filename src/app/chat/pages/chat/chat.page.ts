@@ -1,12 +1,17 @@
+import { Subscription } from 'rxjs';
+import { SafePipe } from './../../../pipes/safe.pipe';
+import { FirebaseStorageService } from './../../../services/firebase-storage.service';
+import { MediaRecorderService } from './../../../services/media-recorder.service';
 import { IUserData } from './../../interfaces/user.interface';
 import { AppService } from './../../../app.service';
-import { AngularFirestore, DocumentData } from '@angular/fire/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import {Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as firebase from 'firebase';
 import { PopoverController } from '@ionic/angular';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
+import { IMessage } from '../../interfaces/message.interface';
 
 @Component({
   selector: 'app-chat',
@@ -16,10 +21,11 @@ import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-ch
 export class ChatPage implements OnInit{
 
   idChat:string;
-  mensajes:any[]=[];
+  mensajes:IMessage[]=[];
   userName:string='';
   showEmojiPicker:boolean=false;
   @ViewChild("content") content:ElementRef;
+  tooglePress:boolean=false;
 
   miFormulario:FormGroup=this.fb.group({
     mensaje:['',[Validators.required,Validators.minLength(1)]]
@@ -32,7 +38,9 @@ export class ChatPage implements OnInit{
     private route:ActivatedRoute,
     private firestore:AngularFirestore,
     private appService:AppService,
-    private popoverController: PopoverController
+    private popoverController: PopoverController,
+    private mediaRecorderService:MediaRecorderService,
+    private firebaseStorageService:FirebaseStorageService
   ) { }
 
   ngOnInit() {
@@ -42,17 +50,28 @@ export class ChatPage implements OnInit{
       .ref
       .orderBy('timestamp')
       .onSnapshot(resp=>{
-        resp.docChanges().forEach(mensaje=>{console.log(mensaje)
+        resp.docChanges().forEach(mensaje=>{
           if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
-            this.mensajes.push(mensaje.doc.data());
+            if(mensaje.doc.data().type==='voice'){
+              const getAudio:Subscription=this.firebaseStorageService.getAudio(mensaje.doc.data().ref)
+              .subscribe(resp=>{
+                this.mensajes.push({...mensaje.doc.data(),ref:resp} as IMessage);
+                getAudio.unsubscribe();
+              })
+            }
           }
         })
       })
 
-
     this.appService.obtenerUsuario()
     .subscribe((user:IUserData)=>{
       this.userName=user.userName;
+
+      this.mediaRecorderService.audio$
+      .subscribe(audio=>{
+        console.log(audio)
+        this.firebaseStorageService.uploadAudio(audio,this.userName,this.idChat);
+      })
     })
   }
 
@@ -88,6 +107,16 @@ export class ChatPage implements OnInit{
 
   addEmoji(event:any) {
     this.mensaje.setValue(this.mensaje.value+event.data);
+  }
+
+  recorder(){
+    this.tooglePress=true;
+    this.mediaRecorderService.recorder();
+  }
+
+  stop(){
+    this.tooglePress=false;
+     this.mediaRecorderService.stop();
   }
 
 }

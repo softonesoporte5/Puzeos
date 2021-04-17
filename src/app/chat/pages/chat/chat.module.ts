@@ -1,4 +1,4 @@
-import { FechaPipe } from './../../../pipes/fecha.pipe';
+import { SafePipe } from './../../../pipes/safe.pipe';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -19,6 +19,9 @@ import { Ionic4EmojiPickerModule } from 'ionic4-emoji-picker';
     ReactiveFormsModule,
     Ionic4EmojiPickerModule
   ],
-  declarations: [ChatPage, FechaPipe]
+  declarations: [
+    ChatPage,
+    SafePipe
+  ]
 })
 export class ChatPageModule {}

@@ -1,3 +1,4 @@
+
 <div class="fondo"></div>
 
 <ion-header>
@@ -26,13 +27,19 @@
 
 <div class="loc__content" #content>
   <ion-card
-    *ngFor="let mensaje of mensajes"
-    [class]="userName===mensaje.user?'enviado':''"
+  *ngFor="let mensaje of mensajes"
+  [class]="userName===mensaje.user?'enviado':''"
   >
-    <ion-card-content>
+    <ion-card-content *ngIf="mensaje.type==='text'">
       {{mensaje.message}}
       <ion-text color="tertiary">{{mensaje?.timestamp?.toDate() | date: 'shortTime'}}</ion-text>
     </ion-card-content>
+
+    <ion-card-content *ngIf="mensaje.type==='voice'">
+      <audio [src]="mensaje.ref" controls></audio>
+      <ion-text color="tertiary">{{mensaje?.timestamp?.toDate() | date: 'shortTime'}}</ion-text>
+    </ion-card-content>
+
   </ion-card>
 
 </div>
@@ -67,7 +74,12 @@
             ></ion-icon>
           </ion-button>
 
-          <ion-button slot="icon-only">
+          <ion-button
+            slot="icon-only"
+            (mousedown)="recorder()"
+            (mouseup)="stop()"
+            [class]="tooglePress?'loc__press':''"
+          >
             <ion-icon
               name="mic-sharp"
               color="secondary"

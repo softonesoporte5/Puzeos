@@ -1,4 +1,7 @@
 export interface IMessage{
-  message:string,
-  user:string
+  type:string,
+  message?:string,
+  user:string,
+  timestamp:any,
+  ref?:string
 }

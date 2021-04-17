@@ -120,3 +120,11 @@ ion-card{
 .loc__scroll{
   position: absolute;
 }
+
+.loc__press{
+  height: 3.5rem;
+  width: 3.5rem;
+  border-radius: 50%;
+  margin: 0 -.5rem -0.5rem 0;
+  background: var(--ion-color-primary);
+}
