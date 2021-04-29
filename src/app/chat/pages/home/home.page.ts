@@ -63,7 +63,6 @@ export class HomePage implements OnInit{
             this.firestore.collection("chats").doc(user.chats[index])
             .valueChanges()
             .subscribe((chat:IChatData)=>{
-              console.log(chat);
               this.chats[index]={
                 id:user.chats[index],
                 data:{

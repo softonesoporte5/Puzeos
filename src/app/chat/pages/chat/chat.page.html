@@ -36,7 +36,8 @@
     </ion-card-content>
 
     <ion-card-content *ngIf="mensaje.type==='voice'">
-      <audio [src]="mensaje.ref" controls></audio>
+      <app-audio [audio]="mensaje"></app-audio>
+      <!-- <audio [src]="mensaje.ref" controls></audio> -->
       <ion-text color="tertiary">{{mensaje?.timestamp?.toDate() | date: 'shortTime'}}</ion-text>
     </ion-card-content>
 

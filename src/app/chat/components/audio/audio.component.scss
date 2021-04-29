@@ -1,0 +1,15 @@
+.loc__controls{
+  display: flex;
+  align-items: center;
+  ion-range{
+    flex: 1;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  ion-button{
+    --background: transparent;
+    --box-shadow:none;
+    --color:var(--ion-color-secondary);
+  }
+}

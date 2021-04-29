@@ -11,6 +11,17 @@ export const environment = {
     storageBucket: "usuarios-6b56a.appspot.com",
     messagingSenderId: "400280439340",
     appId: "1:400280439340:web:86c2b44eb810c4c8515f89"
+  },
+  dbConfig:{
+    name: 'puzeosDb',
+    version: 1,
+    objectStoresMeta: [{
+      store: 'messages',
+      storeConfig: { keyPath: 'id', autoIncrement: true },
+      storeSchema: [
+
+      ]
+    }]
   }
 };
 

@@ -1,3 +1,4 @@
+import { AudioComponent } from './../../components/audio/audio.component';
 import { SafePipe } from './../../../pipes/safe.pipe';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -21,7 +22,8 @@ import { Ionic4EmojiPickerModule } from 'ionic4-emoji-picker';
   ],
   declarations: [
     ChatPage,
-    SafePipe
+    SafePipe,
+    AudioComponent
   ]
 })
 export class ChatPageModule {}
