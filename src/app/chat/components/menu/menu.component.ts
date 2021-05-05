@@ -1,6 +1,5 @@
-import { PhotoService } from './../../../services/photo.service';
+import { CameraService } from './../../../services/camera.service';
 import { IUser } from './../../interfaces/user.interface';
-import { Observable } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { Component, Input, OnInit } from '@angular/core';
@@ -19,7 +18,7 @@ export class MenuComponent implements OnInit {
     private router:Router,
     private auth:AngularFireAuth,
     private actionSheetController: ActionSheetController,
-    private photoService:PhotoService
+    private camara:CameraService
   ) { }
 
   ngOnInit() {}
@@ -33,6 +32,10 @@ export class MenuComponent implements OnInit {
       });
   }
 
+  tomarFoto(){
+
+  }
+
   async presentActionSheet() {
     const actionSheet = await this.actionSheetController.create({
       cssClass: 'my-custom-class',
@@ -41,7 +44,7 @@ export class MenuComponent implements OnInit {
           text: 'Cambiar foto de perfil',
           icon: 'image-sharp',
           handler: () => {
-            this.photoService.takePhoto();
+            this.camara.takePicture();
           }
         },
         {

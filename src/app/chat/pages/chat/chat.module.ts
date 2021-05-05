@@ -10,6 +10,7 @@ import { ChatPageRoutingModule } from './chat-routing.module';
 
 import { ChatPage } from './chat.page';
 import { Ionic4EmojiPickerModule } from 'ionic4-emoji-picker';
+import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
 
 @NgModule({
   imports: [
@@ -23,7 +24,8 @@ import { Ionic4EmojiPickerModule } from 'ionic4-emoji-picker';
   declarations: [
     ChatPage,
     SafePipe,
-    AudioComponent
+    AudioComponent,
+    PopoverChatComponent
   ]
 })
 export class ChatPageModule {}

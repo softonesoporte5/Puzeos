@@ -9,12 +9,13 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AuthModule } from './auth/auth.module';
 import { SnackbarModule } from 'ngx-snackbar';
-import { environment } from 'src/environments/environment';
+import { environment } from 'src/environments/environment.prod';
 
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { NgxIndexedDBModule } from 'ngx-indexed-db';
+import { SQLite} from '@ionic-native/sqlite/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -29,9 +30,12 @@ import { NgxIndexedDBModule } from 'ngx-indexed-db';
     AngularFireAuthModule,
     AngularFirestoreModule,
     AngularFireStorageModule,
-    NgxIndexedDBModule.forRoot(environment.dbConfig)
+    NgxIndexedDBModule.forRoot(environment.dbConfig),
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    SQLite
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

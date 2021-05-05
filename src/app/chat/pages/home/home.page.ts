@@ -4,9 +4,10 @@ import { AngularFirestore} from '@angular/fire/firestore';
 import { Subscription } from 'rxjs';
 import { AppService } from './../../../app.service';
 import { Component, OnInit } from '@angular/core';
-import { MenuController, ViewDidEnter, ViewDidLeave } from '@ionic/angular';
+import { MenuController } from '@ionic/angular';
 import { IChat} from '../../interfaces/chat.interface';
 import * as firebase from 'firebase';
+import { SqliteService } from 'src/app/services/sqlite.service';
 
 @Component({
   selector: 'app-home',
@@ -23,10 +24,14 @@ export class HomePage implements OnInit{
   constructor(
     private menu: MenuController,
     private appService:AppService,
-    private firestore:AngularFirestore
+    private firestore:AngularFirestore,
+    private sql:SqliteService
   ) { }
 
   ngOnInit() {
+
+    this.sql.CreateUser(1,"Andrison","Sanchez");
+
     this.userSubscription=this.appService.obtenerUsuario()
     .subscribe((user:IUserData)=>{
 

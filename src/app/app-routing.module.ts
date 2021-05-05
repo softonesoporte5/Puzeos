@@ -1,4 +1,3 @@
-import { Page404Page } from './page404/page404.page';
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
@@ -19,11 +18,6 @@ const routes: Routes = [
     path:'',
     pathMatch:'full',
     redirectTo:'chat'
-  },
-  {
-    path:'**',
-    pathMatch:'full',
-    component:Page404Page
   }
 
 ];

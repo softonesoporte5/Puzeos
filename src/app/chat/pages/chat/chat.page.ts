@@ -1,3 +1,4 @@
+import { SQLite } from '@ionic-native/sqlite/ngx';
 import { Subscription, Observable } from 'rxjs';
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
 import { MediaRecorderService } from './../../../services/media-recorder.service';
@@ -11,7 +12,8 @@ import * as firebase from 'firebase';
 import { PopoverController } from '@ionic/angular';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
 import { IMessage } from '../../interfaces/message.interface';
-import { NgxIndexedDBService, ObjectStoreMeta } from 'ngx-indexed-db';
+import { SqliteService } from 'src/app/services/sqlite.service';
+
 
 @Component({
   selector: 'app-chat',
@@ -42,81 +44,45 @@ export class ChatPage implements OnInit{
     private popoverController: PopoverController,
     private mediaRecorderService:MediaRecorderService,
     private firebaseStorageService:FirebaseStorageService,
-    private dbService: NgxIndexedDBService
+    private sql:SqliteService
   ) { }
 
   ngOnInit() {
     this.idChat=this.route.snapshot.paramMap.get("id");
 
-    const storeSchema: ObjectStoreMeta={
-      store: this.idChat,
-      storeConfig: { keyPath: 'id', autoIncrement: true },
-      storeSchema: [
-        { name: 'id', keypath: 'id', options: { unique: true } },
-        { name: 'type', keypath: 'type', options: { unique: false } },
-        { name: 'message', keypath: 'message', options: { unique: false } },
-        { name: 'user', keypath: 'user', options: { unique: false } },
-        { name: 'timestamp', keypath: 'timestamp', options: { unique: false } },
-        { name: 'ref', keypath: 'ref', options: { unique: false } }
-      ],
-    };
-
-    this.dbService.createObjectStore(storeSchema);
-
     this.appService.obtenerUsuario()
     .subscribe((user:IUserData)=>{
       this.userName=user.userName;
-
-      this.firestore.collection("messages").doc(this.idChat).collection("messages")
-      .ref
-      .orderBy('timestamp')
-      .onSnapshot(resp=>{
-        resp.docChanges().forEach(mensaje=>{
-          if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
-            const data=mensaje.doc.data() as IMessage;
-            console.log(mensaje.type);
-            if(data.type==='voice'){//Comprobar si es una nota de voz
-              const getAudio:Subscription=this.firebaseStorageService.getAudio(data.ref)
-              .subscribe(resp=>{
-                this.mensajes.push({...data,ref:resp});
-                getAudio.unsubscribe();
-              });
-            }
-            else if(data.type==='text'){//Comprobar si es un mensaje de texto
-              if(data.user!==this.userName){
-                this.mensajes.push(data);
-                this.dbService
-                .add(this.idChat, {
-                  id:mensaje.doc.id,
-                  user: data.user,
-                  timestamp: data.timestamp,
-                  message:data.message,
-                  type:data.type
-                })
-                .toPromise()
-                .then(key=>{
-                  this.firestore.collection("messages").doc(this.idChat).collection("messages").doc(mensaje.doc.id)
-                  .delete()
-                  .then(() => {
-                  }).catch((error) => {
-                      console.error("Error removing document: ", error);
-                  });
-                })
-                .catch((error:DOMException)=>{
-                  console.log(error);
-                });
-              }
-            }
-          }
-        })
-      })
 
       this.mediaRecorderService.audio$
       .subscribe(audio=>{
         console.log(audio)
         this.firebaseStorageService.uploadAudio(audio,this.userName,this.idChat);
       });
+    })
 
+    this.firestore.collection("messages").doc(this.idChat).collection("messages")
+    .ref
+    .orderBy('timestamp')
+    .onSnapshot(resp=>{
+      resp.docChanges().forEach(mensaje=>{
+        if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
+          const data=mensaje.doc.data() as IMessage;
+          console.log(mensaje.type);
+          if(data.type==='voice'){//Comprobar si es una nota de voz
+            const getAudio:Subscription=this.firebaseStorageService.getAudio(data.ref)
+            .subscribe(resp=>{
+              this.mensajes.push({...data,ref:resp});
+              getAudio.unsubscribe();
+            });
+          }
+          else if(data.type==='text'){//Comprobar si es un mensaje de texto
+            this.mensajes.push(data);
+            if(data.user!==this.userName){
+            }
+          }
+        }
+      })
     })
   }
 
