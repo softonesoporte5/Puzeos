@@ -15,7 +15,7 @@
         src="assets/person.jpg"
         class="chat__img "
       >
-      <h6>Andrison Sánchez de</h6>
+      <h6>{{this.contactName}}</h6>
     </span>
 
     <ion-button slot="end" mode="ios" (click)="presentPopover($event)">
@@ -32,13 +32,13 @@
   >
     <ion-card-content *ngIf="mensaje.type==='text'">
       {{mensaje.message}}
-      <ion-text color="tertiary">{{mensaje?.timestamp?.toDate() | date: 'shortTime'}}</ion-text>
+      <ion-text color="tertiary">{{mensaje.timestamp | date: 'shortTime'}}</ion-text>
     </ion-card-content>
 
     <ion-card-content *ngIf="mensaje.type==='voice'">
       <app-audio [audio]="mensaje"></app-audio>
       <!-- <audio [src]="mensaje.ref" controls></audio> -->
-      <ion-text color="tertiary">{{mensaje?.timestamp?.toDate() | date: 'shortTime'}}</ion-text>
+      <ion-text color="tertiary">{{mensaje.timestamp | date: 'shortTime'}}</ion-text>
     </ion-card-content>
 
   </ion-card>

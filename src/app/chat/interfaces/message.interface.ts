@@ -3,5 +3,7 @@ export interface IMessage{
   message?:string,
   user:string,
   timestamp:any,
-  ref?:string
+  ref?:string,
+  _id?:string,
+  _rev?:string
 }

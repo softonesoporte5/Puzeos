@@ -1,4 +1,4 @@
-import { SQLite } from '@ionic-native/sqlite/ngx';
+import { DbService } from 'src/app/services/db.service';
 import { Subscription, Observable } from 'rxjs';
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
 import { MediaRecorderService } from './../../../services/media-recorder.service';
@@ -12,7 +12,6 @@ import * as firebase from 'firebase';
 import { PopoverController } from '@ionic/angular';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
 import { IMessage } from '../../interfaces/message.interface';
-import { SqliteService } from 'src/app/services/sqlite.service';
 
 
 @Component({
@@ -25,10 +24,13 @@ export class ChatPage implements OnInit{
   idChat:string;
   mensajes:IMessage[]=[];
   userName:string='';
+  contactName:string='';
   showEmojiPicker:boolean=false;
   @ViewChild("content") content:ElementRef;
   tooglePress:boolean=false;
   progress=0;
+  dbChat:any;
+  dbMessages:any;
 
   miFormulario:FormGroup=this.fb.group({
     mensaje:['',[Validators.required,Validators.minLength(1)]]
@@ -44,11 +46,33 @@ export class ChatPage implements OnInit{
     private popoverController: PopoverController,
     private mediaRecorderService:MediaRecorderService,
     private firebaseStorageService:FirebaseStorageService,
-    private sql:SqliteService
+    private db:DbService
   ) { }
 
   ngOnInit() {
     this.idChat=this.route.snapshot.paramMap.get("id");
+    this.dbChat=this.db.cargarDB("chats");
+    this.dbMessages=this.db.cargarDB("messages");
+
+    this.dbMessages.find({
+      selector: {[this.idChat]: true},
+      limit: 30
+    }).then(result=>{
+      result.docs.forEach(message => {
+        this.mensajes.push(message);
+      });
+    }).catch(err=>{
+      console.log(err);
+    });
+
+    this.dbChat.get(this.idChat)
+    .then(chat=>{
+      chat.data.userNames.forEach(userName=>{
+        if(userName!==this.userName){
+          this.contactName=userName;
+        };
+      });
+    });
 
     this.appService.obtenerUsuario()
     .subscribe((user:IUserData)=>{
@@ -66,19 +90,62 @@ export class ChatPage implements OnInit{
     .orderBy('timestamp')
     .onSnapshot(resp=>{
       resp.docChanges().forEach(mensaje=>{
-        if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
-          const data=mensaje.doc.data() as IMessage;
-          console.log(mensaje.type);
-          if(data.type==='voice'){//Comprobar si es una nota de voz
-            const getAudio:Subscription=this.firebaseStorageService.getAudio(data.ref)
-            .subscribe(resp=>{
-              this.mensajes.push({...data,ref:resp});
-              getAudio.unsubscribe();
-            });
-          }
-          else if(data.type==='text'){//Comprobar si es un mensaje de texto
-            this.mensajes.push(data);
-            if(data.user!==this.userName){
+        if(mensaje.type!=='removed'){
+          if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
+            const data=mensaje.doc.data() as IMessage;
+            if(data.type==='voice'){//Comprobar si es una nota de voz
+              /* const getAudio:Subscription=this.firebaseStorageService.getAudio(data.ref)
+              .subscribe(resp=>{
+                this.mensajes.push({
+                  ...data,
+                  timestamp:data.timestamp.toDate(),
+                  ref:resp
+                });
+                 getAudio.unsubscribe();
+              });*/
+              this.mensajes.push({
+                ...data,
+                timestamp:data.timestamp.toDate()
+              });
+
+              this.dbMessages.put({
+                _id:mensaje.doc.id,
+                ...data,
+                timestamp:data.timestamp.toDate(),
+                [this.idChat]:true
+              }).then(()=>{
+                if(data.user!==this.userName){
+                  this.firestore.collection("messages").doc(this.idChat)
+                  .collection("messages").doc(mensaje.doc.id)
+                  .delete()
+                  .catch(error=>{
+                    console.log(error);
+                  });
+                }
+              }).catch(error=>{
+              });
+            }
+            else if(data.type==='text'){//Comprobar si es un mensaje de texto
+              this.mensajes.push({
+                ...data,
+                timestamp:data.timestamp.toDate()
+              });
+              this.dbMessages.put({
+                _id:mensaje.doc.id,
+                ...data,
+                timestamp:data.timestamp.toDate(),
+                [this.idChat]:true
+              }).then(resp=>{
+                if(data.user!==this.userName){
+                  this.firestore.collection("messages").doc(this.idChat)
+                  .collection("messages").doc(mensaje.doc.id)
+                  .delete()
+                  .catch(error=>{
+                    console.log(error);
+                  });
+                }
+              }).catch(error=>{
+              });
             }
           }
         }
@@ -97,6 +164,7 @@ export class ChatPage implements OnInit{
       user:this.userName,
       type:"text",
       timestamp:firebase.default.firestore.FieldValue.serverTimestamp()
+    }).then(message=>{
     }).catch(error=>{
       console.log(error);
     });

@@ -14,8 +14,6 @@ import { environment } from 'src/environments/environment.prod';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireStorageModule } from '@angular/fire/storage';
-import { NgxIndexedDBModule } from 'ngx-indexed-db';
-import { SQLite} from '@ionic-native/sqlite/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -29,12 +27,10 @@ import { SQLite} from '@ionic-native/sqlite/ngx';
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,
     AngularFirestoreModule,
-    AngularFireStorageModule,
-    NgxIndexedDBModule.forRoot(environment.dbConfig),
+    AngularFireStorageModule
   ],
   providers: [
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    SQLite
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent],
 })

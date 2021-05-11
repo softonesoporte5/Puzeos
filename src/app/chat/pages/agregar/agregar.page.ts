@@ -1,3 +1,4 @@
+import { DbService } from './../../../services/db.service';
 import { Subscription } from 'rxjs';
 import { IUser, IUserData } from './../../interfaces/user.interface';
 import { Router } from '@angular/router';
@@ -18,14 +19,20 @@ export class AgregarPage implements OnInit, OnDestroy {
   user:IUser;
   buscando:boolean=false;
   userSubscription:Subscription;
+  dbUsers:any;
+  dbMessages:any;
 
   constructor(
     private fireStore:AngularFirestore,
     private appService:AppService,
-    private router:Router
+    private router:Router,
+    private db:DbService
   ) { }
 
   ngOnInit() {
+    this.dbUsers=this.db.cargarDB("users");
+    this.dbMessages=this.db.cargarDB("messages");
+
     //Almacenar los tags en el sessionStorage para que no cargen cada vez
     if(sessionStorage.getItem("tags")){
       this.items=JSON.parse(sessionStorage.getItem("tags"));
@@ -46,11 +53,23 @@ export class AgregarPage implements OnInit, OnDestroy {
 
     this.userSubscription=this.appService.obtenerUsuario()
     .subscribe((user:IUserData)=>{
-      console.log("estado busqueda:",user.buscando)
       this.user={
         id:firebase.default.auth().currentUser.uid,
         data:{...user}
       };
+
+      this.dbUsers.get(this.user.id)
+      .then(doc=>{
+        this.dbUsers.put({
+          _id:firebase.default.auth().currentUser.uid,
+          userName:user.userName,
+          chats:user.chats,
+          buscando:user.buscando,
+          _rev:doc._rev
+        })
+      }).catch(error=>{
+        console.log(error)
+      })
 
       this.buscando=this.user.data.buscando.state;
       sessionStorage.setItem("buscando",JSON.stringify(this.user.data.buscando));
@@ -81,17 +100,17 @@ export class AgregarPage implements OnInit, OnDestroy {
 
     this.fireStore.collection("searchs").doc(tagId).get()
     .subscribe((resp:DocumentSnapshot<searchsUser>)=>{
-      let values:string[]=[];
+      let values:any[]=[];
       const data=resp.data();
 
       for(const key in data.users) {
-        values=[...values,key];
+        console.log(key)
+        values.unshift({id:key,userName:data.users[key]});
       }
-
       if(values.length<1){//Comprobamos si no hay nadie buscando, en ese caso se inserta el usuario a la coleccion de busqueda
         this.actualizarEstadoBusquedaUser(true,tagId);
         this.fireStore.collection("searchs").doc(tagId).update({
-          [`users.${this.user.id}`]:true
+          [`users.${this.user.id}`]:this.user.data.userName
         }).then(()=>{
 
         }).catch(error=>{
@@ -101,10 +120,14 @@ export class AgregarPage implements OnInit, OnDestroy {
       }else{
         this.generarChat({//Creamos el chat
           [this.user.id]:true,
-          [values[0]]:true
-        },values[0]);
-
-
+          [values[0].id]:true
+        },
+        values[0].id,
+        [
+          this.user.data.userName,
+          values[0].userName
+        ]
+        );
         this.fireStore.collection("searchs").doc(tagId).update({//Eliminamos al usuario de la tabla de busquedas
           [`users.${values[0]}`]:firebase.default.firestore.FieldValue.delete()
         })
@@ -112,13 +135,14 @@ export class AgregarPage implements OnInit, OnDestroy {
     });
   }
 
-  generarChat(members:object,contact:string){
+  generarChat(members:object,contact:string, userNames:string[]){
     this.fireStore.collection("chats").add({
       group:false,
       lastMessage: "Se ha creado el chat",
       members:{
         ...members
-      }
+      },
+      userNames:userNames
     }).then((resp)=>{
       resp.get()
       .then(chat=>{//Agregamos el chat a los usuarios
@@ -138,7 +162,14 @@ export class AgregarPage implements OnInit, OnDestroy {
             },
             chats:firebase.default.firestore.FieldValue.arrayUnion(chat.id)
           }).then(()=>{//Redireccionamos al home
-            this.router.navigate(['chat']);
+            this.dbMessages.createIndex({
+              index: {
+                fields: [chat.id],
+                name: chat.id,
+              }
+            }).then(()=>{
+              this.router.navigate(['chat']);
+            })
           }).catch(error=>{
             console.log(error);
           });
@@ -161,5 +192,4 @@ export class AgregarPage implements OnInit, OnDestroy {
       this.actualizarEstadoBusquedaUser(false);
     })
   }
-
 }

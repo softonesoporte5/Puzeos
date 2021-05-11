@@ -1,5 +1,5 @@
+import { DbService } from './services/db.service';
 import { Component } from '@angular/core';
-import { SqliteService } from './services/sqlite.service';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +8,9 @@ import { SqliteService } from './services/sqlite.service';
 })
 export class AppComponent {
   constructor(
-    private sql:SqliteService
+    private db:DbService
   ) {
+    // this.db.createDB("chats");
+    // this.db.createDB("users");
   }
 }

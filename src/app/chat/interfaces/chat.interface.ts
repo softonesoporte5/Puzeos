@@ -7,4 +7,5 @@ export class IChatData{
   group:boolean;
   lastMessage:string;
   members:object;
+  userNames:string[];
 }

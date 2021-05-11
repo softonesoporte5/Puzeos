@@ -5,9 +5,11 @@ export interface IUser{
 
 export class IUserData{
   userName:string;
-  chats:[];
+  chats:string[];
   buscando:{
     state:boolean;
     tagId?:string;
   };
+  _rev?:string;
+  _id?:string;
 }

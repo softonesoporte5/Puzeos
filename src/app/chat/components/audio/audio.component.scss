@@ -13,3 +13,7 @@
     --color:var(--ion-color-secondary);
   }
 }
+
+ ion-range.disabled{
+   --knob-size:0px;
+ }

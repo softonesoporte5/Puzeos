@@ -1,3 +1,4 @@
+import { DbService } from './../../../services/db.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { LoadingService } from './../../../services/loading.service';
 import { AppService } from './../../../app.service';
@@ -15,6 +16,7 @@ import { Router } from '@angular/router';
 export class RegisterPage implements OnInit {
 
   private _emailPattern: any = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  dbUsers:any;
 
   miFormulario:FormGroup=this.fb.group({
     name:['',[Validators.required,Validators.minLength(10)]],
@@ -42,7 +44,8 @@ export class RegisterPage implements OnInit {
     private auth:AngularFireAuth,
     private router:Router,
     private loadingService:LoadingService,
-    private fireStore:AngularFirestore
+    private fireStore:AngularFirestore,
+    private db:DbService
   ) { }
 
   ngOnInit() {}
@@ -104,6 +107,16 @@ export class RegisterPage implements OnInit {
               }
             });
 
+            this.dbUsers=this.db.cargarDB("users");
+            this.dbUsers.put({
+              _id:userInfo.user.uid,
+              userName:this.name.value,
+              chats:[],
+              buscando:{
+                state:false,
+                tagId:''
+              }
+            })
             this.router.navigate(['chat']);
            })
            .catch(error=>{

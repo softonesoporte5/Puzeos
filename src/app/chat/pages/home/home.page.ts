@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 import { MenuController } from '@ionic/angular';
 import { IChat} from '../../interfaces/chat.interface';
 import * as firebase from 'firebase';
-import { SqliteService } from 'src/app/services/sqlite.service';
+import { DbService } from 'src/app/services/db.service';
 
 @Component({
   selector: 'app-home',
@@ -19,49 +19,86 @@ export class HomePage implements OnInit{
   user:IUser;
   userSubscription:Subscription;
   chats:IChat[]=[];
-  cargar:boolean=true;
+  chatsFirebase:number=0;
+  dbChats:any;
 
   constructor(
     private menu: MenuController,
     private appService:AppService,
     private firestore:AngularFirestore,
-    private sql:SqliteService
+    private db:DbService
   ) { }
 
   ngOnInit() {
+    this.dbChats=this.db.cargarDB("chats");
 
-    this.sql.CreateUser(1,"Andrison","Sanchez");
+    this.dbChats.allDocs({include_docs: true})
+    .then(docs=>{console.log(docs)
+      docs.rows.forEach((chat,i:number) => {
+        this.chats[i]={
+          id:chat.id,
+          data:chat.doc.data
+        }
+      });
+    }).catch(error=>{
+      console.log(error);
+    });
 
     this.userSubscription=this.appService.obtenerUsuario()
     .subscribe((user:IUserData)=>{
-
       this.user={
         id:firebase.default.auth().currentUser.uid,
         data:{...user}
       };
 
-      if(this.chats.length<user.chats.length){
-        if(this.chats.length===0){
-          this.chats=[];
+      if(this.chatsFirebase<this.user?.data?.chats?.length){
+        if(this.chatsFirebase===0){
           let cont=0;
 
-          user.chats.forEach(chat=>{
-
+          this.user.data.chats.forEach(chat=>{
             const i=cont;
             this.firestore.collection("chats").doc(chat)
             .valueChanges()
             .subscribe((resp:IChatData)=>{
-              this.cargar=false;
+
+              //Comprobamos si existe en la bd local
+              this.dbChats.get(chat)
+              .then(doc=>{
+                doc.data={
+                  group:resp.group,
+                  lastMessage:resp.lastMessage,
+                  members:resp.members,
+                  userNames:resp.userNames
+                }
+                this.dbChats.put(doc);
+              })
+              .catch(error=>{
+                if(error.status===404){
+                  const chatDB={
+                    _id:chat,
+                    data:{
+                      group:resp.group,
+                      lastMessage:resp.lastMessage,
+                      members:resp.members,
+                      userNames:resp.userNames
+                    }
+                  };
+                  this.dbChats.put(chatDB);
+                }
+              });
+
               this.chats[i]={
                 id:chat,
                 data:{
                   group:resp.group,
                   lastMessage:resp.lastMessage,
                   members:resp.members,
+                  userNames:resp.userNames
                 }
               }
             });
             cont++;
+            this.chatsFirebase=this.chatsFirebase+1;
           });
         }else{
           for(let index=this.chats.length; index<user.chats.length; index++){
@@ -74,8 +111,10 @@ export class HomePage implements OnInit{
                   group:chat.group,
                   lastMessage:chat.lastMessage,
                   members:chat.members,
+                  userNames:chat.userNames
                 }
               }
+              console.log(this.chats);
             })
           }
         }
