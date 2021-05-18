@@ -45,7 +45,7 @@ export class FirebaseStorageService {
     })
   }
 
-  getAudio(url:string){console.log("uno")
+  getAudio(url:string){
     return this.storage.ref(url).getDownloadURL();
   }
 }

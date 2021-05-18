@@ -11,6 +11,7 @@ import { ChatPageRoutingModule } from './chat-routing.module';
 import { ChatPage } from './chat.page';
 import { Ionic4EmojiPickerModule } from 'ionic4-emoji-picker';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   imports: [
@@ -19,7 +20,8 @@ import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-ch
     IonicModule,
     ChatPageRoutingModule,
     ReactiveFormsModule,
-    Ionic4EmojiPickerModule
+    Ionic4EmojiPickerModule,
+    HttpClientModule
   ],
   declarations: [
     ChatPage,

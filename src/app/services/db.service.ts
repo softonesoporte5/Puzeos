@@ -1,19 +1,18 @@
+import { ILocalForage } from './../chat/interfaces/localForage.interface';
 import { Injectable } from '@angular/core';
 import PouchFind from 'pouchdb-find';
 const PouchDB = require('pouchdb').default;
 PouchDB.plugin(PouchFind);
-import * as firebase from 'firebase';
+const localForage = require("localforage") as ILocalForage;
 
 @Injectable({
   providedIn: 'root'
 })
 export class DbService {
 
-  private _DB:any;
-
   constructor() {}
 
-  public cargarDB(name:string){
+  public cargarDB(name:string,id:string=''){
     if(name==="users"){
       return new PouchDB("users");
     }
@@ -21,15 +20,19 @@ export class DbService {
       return new PouchDB("chats");
     }
     else if(name==="messages"){
-      return new PouchDB("messages");
+      return new PouchDB("messages"+id);
     }
   }
 
-  // public createDBUsers() {
-  //   this._DB=
-  // }
 
-  // public getDB(){
-  //   return this._DB;
-  // }
+  cargarDB2(){
+    return localForage;
+  }
+
+  loadStore(name:string){
+    return localForage.createInstance({
+      name        : localForage._config.name,
+      storeName   : name
+    });
+  }
 }

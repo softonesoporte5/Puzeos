@@ -20,7 +20,6 @@ export class AgregarPage implements OnInit, OnDestroy {
   buscando:boolean=false;
   userSubscription:Subscription;
   dbUsers:any;
-  dbMessages:any;
 
   constructor(
     private fireStore:AngularFirestore,
@@ -31,7 +30,6 @@ export class AgregarPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.dbUsers=this.db.cargarDB("users");
-    this.dbMessages=this.db.cargarDB("messages");
 
     //Almacenar los tags en el sessionStorage para que no cargen cada vez
     if(sessionStorage.getItem("tags")){
@@ -129,7 +127,7 @@ export class AgregarPage implements OnInit, OnDestroy {
         ]
         );
         this.fireStore.collection("searchs").doc(tagId).update({//Eliminamos al usuario de la tabla de busquedas
-          [`users.${values[0]}`]:firebase.default.firestore.FieldValue.delete()
+          [`users.${values[0].id}`]:firebase.default.firestore.FieldValue.delete()
         })
       }
     });
@@ -162,14 +160,7 @@ export class AgregarPage implements OnInit, OnDestroy {
             },
             chats:firebase.default.firestore.FieldValue.arrayUnion(chat.id)
           }).then(()=>{//Redireccionamos al home
-            this.dbMessages.createIndex({
-              index: {
-                fields: [chat.id],
-                name: chat.id,
-              }
-            }).then(()=>{
-              this.router.navigate(['chat']);
-            })
+            this.router.navigate(['chat']);
           }).catch(error=>{
             console.log(error);
           });

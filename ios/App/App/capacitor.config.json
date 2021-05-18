@@ -3,7 +3,7 @@
   "appName": "myApp",
   "bundledWebRuntime": false,
   "npmClient": "npm",
-  "webDir": "src",
+  "webDir": "www",
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 0

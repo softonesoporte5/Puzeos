@@ -12,8 +12,12 @@
     ></ion-icon>
   </ion-button>
 
-  <ion-button *ngIf="descargar">
-    <ion-icon name="download" slot="icon-only"></ion-icon>
+  <ion-button *ngIf="descargar" (click)="downloadFile()">
+    <ion-icon
+      name="download"
+      slot="icon-only"
+
+    ></ion-icon>
   </ion-button>
 
   <ion-range
@@ -24,8 +28,8 @@
     [(ngModel)]="progress"
     color="secondary"
     (touchend)="seek()"
-    (mouseup)="seek()"
     (touchstart)="setPause()"
+    (mouseup)="seek()"
     (mousedown)="setPause()"
   ></ion-range>
 </div>

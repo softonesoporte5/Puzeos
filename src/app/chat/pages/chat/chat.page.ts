@@ -1,5 +1,4 @@
 import { DbService } from 'src/app/services/db.service';
-import { Subscription, Observable } from 'rxjs';
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
 import { MediaRecorderService } from './../../../services/media-recorder.service';
 import { IUserData } from './../../interfaces/user.interface';
@@ -52,27 +51,28 @@ export class ChatPage implements OnInit{
   ngOnInit() {
     this.idChat=this.route.snapshot.paramMap.get("id");
     this.dbChat=this.db.cargarDB("chats");
-    this.dbMessages=this.db.cargarDB("messages");
+    this.dbMessages=this.db.cargarDB("messages",this.idChat);
 
-    this.dbMessages.find({
-      selector: {[this.idChat]: true},
-      limit: 30
-    }).then(result=>{
-      result.docs.forEach(message => {
-        this.mensajes.push(message);
+    this.dbMessages.allDocs({include_docs: true})
+    .then(docs=>{
+      docs.rows.forEach((message,i:number) => {
+        console.log(message)
+        this.mensajes[i]={
+          ...message.doc
+        }
       });
-    }).catch(err=>{
-      console.log(err);
+    }).catch(error=>{
+      console.log(error);
     });
 
     this.dbChat.get(this.idChat)
-    .then(chat=>{
+    .then(chat=>{console.log(chat)
       chat.data.userNames.forEach(userName=>{
         if(userName!==this.userName){
           this.contactName=userName;
         };
       });
-    });
+    }).catch(err=>console.log(err));
 
     this.appService.obtenerUsuario()
     .subscribe((user:IUserData)=>{
@@ -80,7 +80,6 @@ export class ChatPage implements OnInit{
 
       this.mediaRecorderService.audio$
       .subscribe(audio=>{
-        console.log(audio)
         this.firebaseStorageService.uploadAudio(audio,this.userName,this.idChat);
       });
     })
@@ -93,27 +92,20 @@ export class ChatPage implements OnInit{
         if(mensaje.type!=='removed'){
           if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
             const data=mensaje.doc.data() as IMessage;
-            if(data.type==='voice'){//Comprobar si es una nota de voz
-              /* const getAudio:Subscription=this.firebaseStorageService.getAudio(data.ref)
-              .subscribe(resp=>{
-                this.mensajes.push({
-                  ...data,
-                  timestamp:data.timestamp.toDate(),
-                  ref:resp
-                });
-                 getAudio.unsubscribe();
-              });*/
-              this.mensajes.push({
-                ...data,
-                timestamp:data.timestamp.toDate()
-              });
-
               this.dbMessages.put({
                 _id:mensaje.doc.id,
                 ...data,
+                download:false,
                 timestamp:data.timestamp.toDate(),
                 [this.idChat]:true
               }).then(()=>{
+                this.mensajes.push({
+                  _id:mensaje.doc.id,
+                  ...data,
+                  download:false,
+                  timestamp:data.timestamp.toDate()
+                });
+
                 if(data.user!==this.userName){
                   this.firestore.collection("messages").doc(this.idChat)
                   .collection("messages").doc(mensaje.doc.id)
@@ -123,32 +115,10 @@ export class ChatPage implements OnInit{
                   });
                 }
               }).catch(error=>{
-              });
-            }
-            else if(data.type==='text'){//Comprobar si es un mensaje de texto
-              this.mensajes.push({
-                ...data,
-                timestamp:data.timestamp.toDate()
-              });
-              this.dbMessages.put({
-                _id:mensaje.doc.id,
-                ...data,
-                timestamp:data.timestamp.toDate(),
-                [this.idChat]:true
-              }).then(resp=>{
-                if(data.user!==this.userName){
-                  this.firestore.collection("messages").doc(this.idChat)
-                  .collection("messages").doc(mensaje.doc.id)
-                  .delete()
-                  .catch(error=>{
-                    console.log(error);
-                  });
-                }
-              }).catch(error=>{
+
               });
             }
           }
-        }
       })
     })
   }

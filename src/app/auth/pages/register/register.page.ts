@@ -116,8 +116,12 @@ export class RegisterPage implements OnInit {
                 state:false,
                 tagId:''
               }
+            }).then(()=>{
+              this.router.navigate(['chat']);
+            }).catch(err=>{
+              console.log(err);
+              this.router.navigate(['chat']);
             })
-            this.router.navigate(['chat']);
            })
            .catch(error=>{
             console.log(error);

@@ -1,3 +1,4 @@
+import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IChatData } from './../../interfaces/chat.interface';
 import { IUser, IUserData } from './../../interfaces/user.interface';
 import { AngularFirestore} from '@angular/fire/firestore';
@@ -20,7 +21,7 @@ export class HomePage implements OnInit{
   userSubscription:Subscription;
   chats:IChat[]=[];
   chatsFirebase:number=0;
-  dbChats:any;
+  dbChats:ILocalForage;
 
   constructor(
     private menu: MenuController,
@@ -30,19 +31,28 @@ export class HomePage implements OnInit{
   ) { }
 
   ngOnInit() {
-    this.dbChats=this.db.cargarDB("chats");
+    this.dbChats=this.db.loadStore('chats');
+    //this.dbChats=this.db.cargarDB("chats");
 
-    this.dbChats.allDocs({include_docs: true})
-    .then(docs=>{console.log(docs)
-      docs.rows.forEach((chat,i:number) => {
-        this.chats[i]={
-          id:chat.id,
-          data:chat.doc.data
-        }
-      });
-    }).catch(error=>{
-      console.log(error);
-    });
+    this.dbChats.iterate((values,key,iterationNumber)=>{
+      console.log(values,key,iterationNumber);
+      // this.chats[iterationNumber]={
+      //   id:key,
+      //   data:values
+      // }
+    }).catch(err=>console.log(err));
+
+    // this.dbChats.allDocs({include_docs: true})
+    // .then(docs=>{console.log(docs)
+    //   docs.rows.forEach((chat,i:number) => {
+    //     this.chats[i]={
+    //       id:chat.id,
+    //       data:chat.doc.data
+    //     }
+    //   });
+    // }).catch(error=>{
+    //   console.log(error);
+    // });
 
     this.userSubscription=this.appService.obtenerUsuario()
     .subscribe((user:IUserData)=>{
@@ -60,32 +70,40 @@ export class HomePage implements OnInit{
             this.firestore.collection("chats").doc(chat)
             .valueChanges()
             .subscribe((resp:IChatData)=>{
+              //Insertamos/actualizamos en la bd local
+              this.dbChats.setItem(chat,{
+                group:resp.group,
+                lastMessage:resp.lastMessage,
+                members:resp.members,
+                userNames:resp.userNames
+              }).catch(err=>console.log(err))
 
-              //Comprobamos si existe en la bd local
-              this.dbChats.get(chat)
-              .then(doc=>{
-                doc.data={
-                  group:resp.group,
-                  lastMessage:resp.lastMessage,
-                  members:resp.members,
-                  userNames:resp.userNames
-                }
-                this.dbChats.put(doc);
-              })
-              .catch(error=>{
-                if(error.status===404){
-                  const chatDB={
-                    _id:chat,
-                    data:{
-                      group:resp.group,
-                      lastMessage:resp.lastMessage,
-                      members:resp.members,
-                      userNames:resp.userNames
-                    }
-                  };
-                  this.dbChats.put(chatDB);
-                }
-              });
+              // this.dbChats.get(chat)
+              // .then(doc=>{
+              //   console.log(doc)
+              //   if(doc.lastMessage!==resp.lastMessage){
+              //     this.dbChats.put({
+              //       _id:chat,
+              //       _rev: doc._rev,
+              //       id:chat,
+              //       lastMessage:resp.lastMessage,
+              //     }).then(resp=>console.log(resp))
+              //     .catch(err=>console.log(err));
+              //   }
+              // })
+              // .catch(error=>{
+              //   if(error.status===404){
+              //     this.dbChats.put({
+              //       _id:chat,
+              //       data:{
+              //         group:resp.group,
+              //         lastMessage:resp.lastMessage,
+              //         members:resp.members,
+              //         userNames:resp.userNames
+              //       }
+              //     }).catch(err=>console.log(err))
+              //   }
+              // });
 
               this.chats[i]={
                 id:chat,
@@ -114,7 +132,6 @@ export class HomePage implements OnInit{
                   userNames:chat.userNames
                 }
               }
-              console.log(this.chats);
             })
           }
         }
