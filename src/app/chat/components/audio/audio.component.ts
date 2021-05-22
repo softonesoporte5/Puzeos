@@ -1,12 +1,13 @@
+import { ILocalForage } from './../../interfaces/localForage.interface';
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
-import { DbService } from './../../../services/db.service';
 import { IMessage } from './../../interfaces/message.interface';
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, SecurityContext, ViewChild } from '@angular/core';
 import {Howl} from 'howler';
 import { IonRange } from '@ionic/angular';
-import {Plugins, FilesystemDirectory, FilesystemEncoding} from '@capacitor/core';
+import {Plugins, FilesystemDirectory, FilesystemEncoding, FileWriteResult} from '@capacitor/core';
 import { HttpClient, HttpEventType } from '@angular/common/http';
-const {Filesystem, Storage} = Plugins;
+import { DomSanitizer } from '@angular/platform-browser';
+const {Filesystem} = Plugins;
 
 const FILE_KEY='files';
 
@@ -18,7 +19,7 @@ const FILE_KEY='files';
 export class AudioComponent implements OnInit {
 
   @Input() audio:IMessage;
-  @Input() dbMessages:any;
+  @Input() dbMessages:ILocalForage;
   progress=0;
   player:Howl;
   pause:boolean=true;
@@ -28,77 +29,96 @@ export class AudioComponent implements OnInit {
   downloadProgress=0;
   downloadUrl:string;
   messageDB:IMessage;
+  pruebaUrl;
 
   constructor(
-    private db:DbService,
     private http:HttpClient,
     private firebaseService:FirebaseStorageService,
+    private domSanitizer: DomSanitizer
   ) { }
 
   ngOnInit() {
-    this.dbMessages.get(this.audio._id)
+    this.dbMessages.getItem(this.audio.id)
     .then((message:IMessage)=>{
-      this.messageDB=message;
-      if(message.download===false){
-        this.descargar=true;
+      if(message){
+        this.messageDB=message;
+        if(message.download===false){
+          this.descargar=true;
+        }else{
+          this.descargar=false;
+
+          Filesystem.readFile({
+            path:this.audio.ref,
+            directory:FilesystemDirectory.Documents
+          }).then(resp=>{
+            let url=this.domSanitizer.sanitize(SecurityContext.NONE,resp.data);
+            this.controls(url);
+          }).catch(err=>console.log(err));
+
+        }
       }else{
-        this.descargar=false;
-
-        Filesystem.readFile({
-          path:this.audio.ref,
-          encoding: FilesystemEncoding.UTF8,
-          directory:FilesystemDirectory.Documents,
-        }).then(resp=>{
-          console.log(resp);
-        }).catch(err=>console.log(err));
-
-        this.controls(this.audio.ref);
+        this.descargar=true;
       }
+
     }).catch(error=>{
-      this.descargar=true;
+      console.log(error);
     });
   }
 
   private convertBlobToBase64=(blob:Blob)=>new Promise((resolve,reject)=>{
+    console.log("linea 69")
     const reader=new FileReader;
     reader.onerror=reject;
     reader.onload=()=>resolve(reader.result);
     reader.readAsDataURL(blob);
+    console.log("linea 74")
   });
 
-
   downloadFile(){
+    console.log("Descargando...");
     this.firebaseService.getAudio(this.audio.ref).
     subscribe(resul=>{
+      console.log("linea 80")
       this.downloadUrl=resul;
       this.http.get(this.downloadUrl,{
         responseType:'blob',
         reportProgress:true,
         observe:'events'
       }).subscribe(async event=>{
+        console.log("linea 87")
+
         if(event.type===HttpEventType.DownloadProgress){
+          console.log("linea 90")
+
           this.downloadProgress=Math.round((100*event.loaded)/event.total);
         }else if(event.type===HttpEventType.Response){
+          console.log("linea 94")
+
           this.downloadProgress=0;
 
-          const name='audio'+this.audio._id+'.ogg';
-          const base64=await this.convertBlobToBase64(event.body) as string;
+          let base64;
 
-          const savedFile=await Filesystem.writeFile({
-            path:'audio/'+name,
-            data:base64,
-            directory:FilesystemDirectory.Documents,
-            encoding: FilesystemEncoding.UTF8,
-          });
+          const name='audio'+this.audio.id+'.ogg';
+          this.convertBlobToBase64(event.body)
+          .then(result=>{
+            base64=result;
 
-          const path=savedFile.uri;
-          console.log(path);
-          this.dbMessages.put({
-            _rev:this.messageDB._rev,
-            _id:this.audio._id,
-            download:true,
-            ref:path
-          }).catch(err=>console.log(err))
+            Filesystem.writeFile({
+              path:'audio/'+name,
+              data:base64,
+              directory:FilesystemDirectory.Documents,
+              encoding: FilesystemEncoding.UTF8
+            }).then((resp:FileWriteResult)=>{
+
+
+
+              this.dbMessages.setItem(this.audio.id,{
+                ...this.audio,
+                download:true,
+                ref:'audio/'+name
+              }).catch(err=>console.log(err));
+            }).catch(err=>console.log(err));
+          }).catch(err=>console.log(err));
         }
       });
     });
@@ -107,6 +127,7 @@ export class AudioComponent implements OnInit {
   controls(src:string):Howl{
     this.player=new Howl({
       src: [src],
+      format:'ogg',
       onplay:()=>{
         this.updateProgress();
       },

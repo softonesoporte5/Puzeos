@@ -1,3 +1,6 @@
+import { Subscription } from 'rxjs';
+import { IChat } from './../../interfaces/chat.interface';
+import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
 import { MediaRecorderService } from './../../../services/media-recorder.service';
@@ -5,7 +8,7 @@ import { IUserData } from './../../interfaces/user.interface';
 import { AppService } from './../../../app.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import {Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as firebase from 'firebase';
 import { PopoverController } from '@ionic/angular';
@@ -18,7 +21,7 @@ import { IMessage } from '../../interfaces/message.interface';
   templateUrl: './chat.page.html',
   styleUrls: ['./chat.page.scss'],
 })
-export class ChatPage implements OnInit{
+export class ChatPage implements OnInit, OnDestroy{
 
   idChat:string;
   mensajes:IMessage[]=[];
@@ -28,8 +31,11 @@ export class ChatPage implements OnInit{
   @ViewChild("content") content:ElementRef;
   tooglePress:boolean=false;
   progress=0;
-  dbChat:any;
-  dbMessages:any;
+  dbChat:ILocalForage;
+  dbMessages:ILocalForage;
+  dbUsers:ILocalForage;
+  obtenerUsuarioSubscribe:Subscription;
+  mensajesSubscribe:any;
 
   miFormulario:FormGroup=this.fb.group({
     mensaje:['',[Validators.required,Validators.minLength(1)]]
@@ -48,33 +54,39 @@ export class ChatPage implements OnInit{
     private db:DbService
   ) { }
 
-  ngOnInit() {
+  ngOnInit(){
+    this.dbUsers=this.db.loadStore("users");
     this.idChat=this.route.snapshot.paramMap.get("id");
-    this.dbChat=this.db.cargarDB("chats");
-    this.dbMessages=this.db.cargarDB("messages",this.idChat);
+    this.dbChat=this.db.loadStore("chats");
+    this.dbMessages=this.db.loadStore("messages"+this.idChat);
 
-    this.dbMessages.allDocs({include_docs: true})
-    .then(docs=>{
-      docs.rows.forEach((message,i:number) => {
-        console.log(message)
-        this.mensajes[i]={
-          ...message.doc
-        }
-      });
-    }).catch(error=>{
-      console.log(error);
-    });
+    this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
+    .then(user=>{
+      this.userName=user.userName;
+    }).catch(err=>console.log(err));
 
-    this.dbChat.get(this.idChat)
-    .then(chat=>{console.log(chat)
-      chat.data.userNames.forEach(userName=>{
+    this.dbChat.getItem(this.idChat)
+    .then((chat:IChat)=>{console.log(chat)
+      chat.userNames.forEach(userName=>{
         if(userName!==this.userName){
           this.contactName=userName;
         };
       });
+
     }).catch(err=>console.log(err));
 
-    this.appService.obtenerUsuario()
+    let cont=0;
+    this.dbMessages.iterate((values,key,iterationNumber)=>{
+      this.mensajes[cont]={
+          ...values
+        }
+      cont++;
+    }).then(()=>console.log("completo"))
+    .catch(error=>{
+      console.log(error);
+    });
+
+    this.obtenerUsuarioSubscribe=this.appService.obtenerUsuario()
     .subscribe((user:IUserData)=>{
       this.userName=user.userName;
 
@@ -84,24 +96,22 @@ export class ChatPage implements OnInit{
       });
     })
 
-    this.firestore.collection("messages").doc(this.idChat).collection("messages")
+    this.mensajesSubscribe=this.firestore.collection("messages").doc(this.idChat).collection("messages")
     .ref
     .orderBy('timestamp')
     .onSnapshot(resp=>{
       resp.docChanges().forEach(mensaje=>{
         if(mensaje.type!=='removed'){
           if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
-            const data=mensaje.doc.data() as IMessage;
-              this.dbMessages.put({
-                _id:mensaje.doc.id,
-                ...data,
-                download:false,
-                timestamp:data.timestamp.toDate(),
-                [this.idChat]:true
-              }).then(()=>{
+            console.log(mensaje.doc.id)
+            this.dbMessages.getItem(mensaje.doc.id)
+            .then(resp=>{
+              if(!resp){
+                const data=mensaje.doc.data() as IMessage;
+
                 this.mensajes.push({
-                  _id:mensaje.doc.id,
                   ...data,
+                  id:mensaje.doc.id,
                   download:false,
                   timestamp:data.timestamp.toDate()
                 });
@@ -114,13 +124,30 @@ export class ChatPage implements OnInit{
                     console.log(error);
                   });
                 }
-              }).catch(error=>{
 
-              });
-            }
+                this.dbMessages.setItem(mensaje.doc.id,{
+                  id:mensaje.doc.id,
+                  ...data,
+                  download:false,
+                  timestamp:data.timestamp.toDate(),
+                }).then(()=>{
+
+                 }).catch(error=>{
+                  console.log(error);
+                });
+              }
+            }).catch(err=>{console.log(err)});
+
           }
+        }
       })
-    })
+    });
+
+  }
+
+  ngOnDestroy(){
+    this.obtenerUsuarioSubscribe.unsubscribe();
+    this.mensajesSubscribe();
   }
 
   agregarMensaje(){

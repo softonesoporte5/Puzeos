@@ -1,5 +1,4 @@
 import { ILocalForage } from './../../interfaces/localForage.interface';
-import { IChatData } from './../../interfaces/chat.interface';
 import { IUser, IUserData } from './../../interfaces/user.interface';
 import { AngularFirestore} from '@angular/fire/firestore';
 import { Subscription } from 'rxjs';
@@ -32,27 +31,14 @@ export class HomePage implements OnInit{
 
   ngOnInit() {
     this.dbChats=this.db.loadStore('chats');
-    //this.dbChats=this.db.cargarDB("chats");
-
+    let cont=0;
     this.dbChats.iterate((values,key,iterationNumber)=>{
-      console.log(values,key,iterationNumber);
-      // this.chats[iterationNumber]={
-      //   id:key,
-      //   data:values
-      // }
+      this.chats[cont]={
+        id:key,
+        ...values
+      }
+      cont++;
     }).catch(err=>console.log(err));
-
-    // this.dbChats.allDocs({include_docs: true})
-    // .then(docs=>{console.log(docs)
-    //   docs.rows.forEach((chat,i:number) => {
-    //     this.chats[i]={
-    //       id:chat.id,
-    //       data:chat.doc.data
-    //     }
-    //   });
-    // }).catch(error=>{
-    //   console.log(error);
-    // });
 
     this.userSubscription=this.appService.obtenerUsuario()
     .subscribe((user:IUserData)=>{
@@ -64,12 +50,12 @@ export class HomePage implements OnInit{
       if(this.chatsFirebase<this.user?.data?.chats?.length){
         if(this.chatsFirebase===0){
           let cont=0;
-
+          console.log("f")
           this.user.data.chats.forEach(chat=>{
             const i=cont;
             this.firestore.collection("chats").doc(chat)
             .valueChanges()
-            .subscribe((resp:IChatData)=>{
+            .subscribe((resp:IChat)=>{
               //Insertamos/actualizamos en la bd local
               this.dbChats.setItem(chat,{
                 group:resp.group,
@@ -78,41 +64,12 @@ export class HomePage implements OnInit{
                 userNames:resp.userNames
               }).catch(err=>console.log(err))
 
-              // this.dbChats.get(chat)
-              // .then(doc=>{
-              //   console.log(doc)
-              //   if(doc.lastMessage!==resp.lastMessage){
-              //     this.dbChats.put({
-              //       _id:chat,
-              //       _rev: doc._rev,
-              //       id:chat,
-              //       lastMessage:resp.lastMessage,
-              //     }).then(resp=>console.log(resp))
-              //     .catch(err=>console.log(err));
-              //   }
-              // })
-              // .catch(error=>{
-              //   if(error.status===404){
-              //     this.dbChats.put({
-              //       _id:chat,
-              //       data:{
-              //         group:resp.group,
-              //         lastMessage:resp.lastMessage,
-              //         members:resp.members,
-              //         userNames:resp.userNames
-              //       }
-              //     }).catch(err=>console.log(err))
-              //   }
-              // });
-
               this.chats[i]={
                 id:chat,
-                data:{
-                  group:resp.group,
-                  lastMessage:resp.lastMessage,
-                  members:resp.members,
-                  userNames:resp.userNames
-                }
+                group:resp.group,
+                lastMessage:resp.lastMessage,
+                members:resp.members,
+                userNames:resp.userNames
               }
             });
             cont++;
@@ -122,15 +79,21 @@ export class HomePage implements OnInit{
           for(let index=this.chats.length; index<user.chats.length; index++){
             this.firestore.collection("chats").doc(user.chats[index])
             .valueChanges()
-            .subscribe((chat:IChatData)=>{
+            .subscribe((chat:IChat)=>{
+
+              this.dbChats.setItem(user.chats[index],{
+                group:chat.group,
+                lastMessage:chat.lastMessage,
+                members:chat.members,
+                userNames:chat.userNames
+              }).catch(err=>console.log(err))
+
               this.chats[index]={
                 id:user.chats[index],
-                data:{
-                  group:chat.group,
-                  lastMessage:chat.lastMessage,
-                  members:chat.members,
-                  userNames:chat.userNames
-                }
+                group:chat.group,
+                lastMessage:chat.lastMessage,
+                members:chat.members,
+                userNames:chat.userNames
               }
             })
           }

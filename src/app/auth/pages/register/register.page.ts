@@ -1,3 +1,4 @@
+import { ILocalForage } from './../../../chat/interfaces/localForage.interface';
 import { DbService } from './../../../services/db.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { LoadingService } from './../../../services/loading.service';
@@ -16,7 +17,7 @@ import { Router } from '@angular/router';
 export class RegisterPage implements OnInit {
 
   private _emailPattern: any = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  dbUsers:any;
+  dbUsers:ILocalForage;
 
   miFormulario:FormGroup=this.fb.group({
     name:['',[Validators.required,Validators.minLength(10)]],
@@ -107,9 +108,8 @@ export class RegisterPage implements OnInit {
               }
             });
 
-            this.dbUsers=this.db.cargarDB("users");
-            this.dbUsers.put({
-              _id:userInfo.user.uid,
+            this.dbUsers=this.db.loadStore("users");
+            this.dbUsers.setItem(userInfo.user.uid,{
               userName:this.name.value,
               chats:[],
               buscando:{
@@ -123,9 +123,9 @@ export class RegisterPage implements OnInit {
               this.router.navigate(['chat']);
             })
            })
-           .catch(error=>{
+          .catch(error=>{
             console.log(error);
-           });
+          });
 
        }).catch(error=>{
         this.loadingService.dismiss();

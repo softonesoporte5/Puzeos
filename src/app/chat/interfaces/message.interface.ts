@@ -4,7 +4,7 @@ export interface IMessage{
   user:string,
   timestamp:any,
   ref?:string,
-  _id?:string,
-  _rev?:string,
-  download:boolean
+  download:boolean,
+  state?:boolean,
+  id?:string
 }

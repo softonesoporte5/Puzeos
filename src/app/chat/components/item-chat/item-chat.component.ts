@@ -1,3 +1,4 @@
+import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from './../../../services/db.service';
 import { AngularFirestore, DocumentSnapshot } from '@angular/fire/firestore';
 import { AppService } from './../../../app.service';
@@ -14,20 +15,17 @@ export class ItemChatComponent implements OnInit {
 
   @Input("chat") chat:IChat;
   chatUser:string;
-  dbUsers:any;
+  dbUsers:ILocalForage;
 
   constructor(
-    private appService:AppService,
-    private fireStore:AngularFirestore,
     private db:DbService
   ) {}
 
   ngOnInit() {
-    this.dbUsers=this.db.cargarDB("users");
-    this.dbUsers.get(firebase.default.auth().currentUser.uid)
+    this.dbUsers=this.db.loadStore("users");
+    this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then(user=>{
-      console.log(this.chat)
-      this.chat.data.userNames.forEach(userName=>{
+      this.chat.userNames.forEach(userName=>{
         if(userName!==user.userName){
           this.chatUser=userName;
         };

@@ -22,10 +22,6 @@ export class AppService {
   }
 
   obtenerUsuario(){
-    // return this.db.getDB().get(firebase.default.auth().currentUser.uid)
-    // .then(chat=>{
-    //   return chat.data;
-    // })
     return this.firestore.collection("users").doc(firebase.default.auth().currentUser.uid).valueChanges();
   }
 

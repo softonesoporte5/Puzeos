@@ -1,3 +1,4 @@
+import { File } from '@ionic-native/file/ngx';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -15,7 +16,6 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
-import { File } from '@ionic-native/file/ngx';
 
 @NgModule({
   declarations: [AppComponent],

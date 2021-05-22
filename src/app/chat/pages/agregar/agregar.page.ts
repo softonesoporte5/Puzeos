@@ -1,3 +1,4 @@
+import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from './../../../services/db.service';
 import { Subscription } from 'rxjs';
 import { IUser, IUserData } from './../../interfaces/user.interface';
@@ -19,7 +20,7 @@ export class AgregarPage implements OnInit, OnDestroy {
   user:IUser;
   buscando:boolean=false;
   userSubscription:Subscription;
-  dbUsers:any;
+  dbUsers:ILocalForage;
 
   constructor(
     private fireStore:AngularFirestore,
@@ -29,7 +30,7 @@ export class AgregarPage implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.dbUsers=this.db.cargarDB("users");
+    this.dbUsers=this.db.loadStore("users");
 
     //Almacenar los tags en el sessionStorage para que no cargen cada vez
     if(sessionStorage.getItem("tags")){
@@ -56,18 +57,11 @@ export class AgregarPage implements OnInit, OnDestroy {
         data:{...user}
       };
 
-      this.dbUsers.get(this.user.id)
-      .then(doc=>{
-        this.dbUsers.put({
-          _id:firebase.default.auth().currentUser.uid,
-          userName:user.userName,
-          chats:user.chats,
-          buscando:user.buscando,
-          _rev:doc._rev
-        })
-      }).catch(error=>{
-        console.log(error)
-      })
+      this.dbUsers.setItem(firebase.default.auth().currentUser.uid,{
+        userName:user.userName,
+        chats:user.chats,
+        buscando:user.buscando,
+      }).catch(err=>console.log(err));
 
       this.buscando=this.user.data.buscando.state;
       sessionStorage.setItem("buscando",JSON.stringify(this.user.data.buscando));
