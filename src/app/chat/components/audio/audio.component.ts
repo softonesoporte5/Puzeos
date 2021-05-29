@@ -1,12 +1,12 @@
+import { AppService } from './../../../app.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
 import { IMessage } from './../../interfaces/message.interface';
-import { Component, Input, OnInit, SecurityContext, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import {Howl} from 'howler';
 import { IonRange } from '@ionic/angular';
-import {Plugins, FilesystemDirectory, FilesystemEncoding, FileWriteResult} from '@capacitor/core';
+import {Plugins, FilesystemDirectory, FilesystemEncoding} from '@capacitor/core';
 import { HttpClient, HttpEventType } from '@angular/common/http';
-import { DomSanitizer } from '@angular/platform-browser';
 const {Filesystem} = Plugins;
 
 const FILE_KEY='files';
@@ -25,7 +25,7 @@ export class AudioComponent implements OnInit {
   pause:boolean=true;
   @ViewChild('range') range:IonRange;
   interval:any;
-  descargar:boolean=true;
+  descargar:number=1;
   downloadProgress=0;
   downloadUrl:string;
   messageDB:IMessage;
@@ -34,7 +34,7 @@ export class AudioComponent implements OnInit {
   constructor(
     private http:HttpClient,
     private firebaseService:FirebaseStorageService,
-    private domSanitizer: DomSanitizer
+    private appService:AppService
   ) { }
 
   ngOnInit() {
@@ -43,21 +43,19 @@ export class AudioComponent implements OnInit {
       if(message){
         this.messageDB=message;
         if(message.download===false){
-          this.descargar=true;
+          this.descargar=1;
         }else{
-          this.descargar=false;
+          this.descargar=3;
 
           Filesystem.readFile({
             path:this.audio.ref,
             directory:FilesystemDirectory.Documents
           }).then(resp=>{
-            let url=this.domSanitizer.sanitize(SecurityContext.NONE,resp.data);
-            this.controls(url);
+            this.controls(resp.data);
           }).catch(err=>console.log(err));
-
         }
       }else{
-        this.descargar=true;
+        this.descargar=1;
       }
 
     }).catch(error=>{
@@ -65,17 +63,9 @@ export class AudioComponent implements OnInit {
     });
   }
 
-  private convertBlobToBase64=(blob:Blob)=>new Promise((resolve,reject)=>{
-    console.log("linea 69")
-    const reader=new FileReader;
-    reader.onerror=reject;
-    reader.onload=()=>resolve(reader.result);
-    reader.readAsDataURL(blob);
-    console.log("linea 74")
-  });
-
   downloadFile(){
     console.log("Descargando...");
+    this.descargar=2;
     this.firebaseService.getAudio(this.audio.ref).
     subscribe(resul=>{
       console.log("linea 80")
@@ -91,6 +81,7 @@ export class AudioComponent implements OnInit {
           console.log("linea 90")
 
           this.downloadProgress=Math.round((100*event.loaded)/event.total);
+
         }else if(event.type===HttpEventType.Response){
           console.log("linea 94")
 
@@ -99,8 +90,8 @@ export class AudioComponent implements OnInit {
           let base64;
 
           const name='audio'+this.audio.id+'.ogg';
-          this.convertBlobToBase64(event.body)
-          .then(result=>{
+          this.appService.convertBlobToBase64(event.body)
+          .then((result:string | ArrayBuffer)=>{
             base64=result;
 
             Filesystem.writeFile({
@@ -108,9 +99,15 @@ export class AudioComponent implements OnInit {
               data:base64,
               directory:FilesystemDirectory.Documents,
               encoding: FilesystemEncoding.UTF8
-            }).then((resp:FileWriteResult)=>{
+            }).then(()=>{
+              this.descargar=3;
 
-
+              Filesystem.readFile({
+                path:'audio/'+name,
+                directory:FilesystemDirectory.Documents
+              }).then(resp=>{
+                this.controls(resp.data);
+              }).catch(err=>console.log(err));
 
               this.dbMessages.setItem(this.audio.id,{
                 ...this.audio,

@@ -1,9 +1,15 @@
+import { DbService } from './../../../services/db.service';
+import { ILocalForage } from './../../interfaces/localForage.interface';
 import { CameraService } from './../../../services/camera.service';
 import { IUser } from './../../interfaces/user.interface';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActionSheetController } from '@ionic/angular';
+import {Plugins, FilesystemDirectory} from '@capacitor/core';
+import * as firebase from 'firebase';
+
+const {Filesystem} = Plugins;
 
 @Component({
   selector: 'app-menu',
@@ -12,16 +18,36 @@ import { ActionSheetController } from '@ionic/angular';
 })
 export class MenuComponent implements OnInit {
 
-  @Input() user:IUser;
+  dbUsers:ILocalForage;
+  user:IUser;
+  imgPath:string="../../../../assets/person.jpg";
 
   constructor(
     private router:Router,
     private auth:AngularFireAuth,
     private actionSheetController: ActionSheetController,
-    private camara:CameraService
+    private camara:CameraService,
+    private db:DbService
   ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.dbUsers=this.db.loadStore("users");
+
+    this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
+    .then(resp=>{
+      this.user={
+        data:resp,
+        id:firebase.default.auth().currentUser.uid
+      }
+      Filesystem.readFile({
+        path:this.user.data.imageUrlLoc,
+        directory:FilesystemDirectory.Data
+      }).then(resp=>{
+        this.imgPath=`data:image/jpeg;base64,${resp.data}`;
+      }).catch(err=>console.log(err));
+    })
+    .catch(err=>console.log(err));
+  }
 
   logout(){
     this.auth.signOut()
@@ -32,19 +58,30 @@ export class MenuComponent implements OnInit {
       });
   }
 
-  tomarFoto(){
-
-  }
 
   async presentActionSheet() {
     const actionSheet = await this.actionSheetController.create({
       cssClass: 'my-custom-class',
       buttons: [
         {
-          text: 'Cambiar foto de perfil',
+          text: 'Camara',
+          icon: 'camera-sharp',
+          handler: () => {
+            this.camara.takePicture(this.user).then(resp=>{
+              this.dbUsers.setItem(this.user.id,{
+                ...this.user.data,
+                // imageUrl:resp.firebasePath,
+                // imageUrlLoc:resp.filepath
+              }).catch(err=>console.log(err));
+              //this.imgPath=resp.base64Data;
+            })
+          }
+        },
+        {
+          text: 'Galería',
           icon: 'image-sharp',
           handler: () => {
-            this.camara.takePicture();
+            //this.camara.takePicture();
           }
         },
         {
@@ -54,11 +91,6 @@ export class MenuComponent implements OnInit {
           handler: () => {
             console.log('Delete clicked');
           }
-        },
-        {
-          text: 'Cancelar',
-          icon: 'close',
-          role: 'cancel'
         }
       ]
     });

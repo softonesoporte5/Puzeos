@@ -26,7 +26,8 @@
 </ion-header>
 
 <div class="loc__content" #content>
-  <ion-card
+
+  <!-- <ion-card
   *ngFor="let mensaje of mensajes"
   [class]="userName===mensaje.user?'enviado':''"
   >
@@ -36,24 +37,37 @@
     </ion-card-content>
 
     <ion-card-content *ngIf="mensaje.type==='voice'">
-      <app-audio [audio]="mensaje" [dbMessages]="dbMessages"></app-audio>
-      <!-- <audio [src]="mensaje.ref" controls></audio> -->
-      <ion-text color="tertiary">{{mensaje.timestamp | date: 'shortTime'}}</ion-text>
+      <app-audio [audio]="mensaje" [dbMessages]="dbMessages"></app-audio> -->
+      <!-- e<audio [src]="mensaje.ref" controls></audio> -->
+      <!-- <ion-text color="tertiary">{{mensaje.timestamp | date: 'shortTime'}}</ion-text>
     </ion-card-content>
 
-  </ion-card>
+  </ion-card> -->
 
 </div>
 
 <ion-footer>
   <form [formGroup]="miFormulario" style="display: contents;">
     <ion-toolbar class="loc_toolbar d-flex">
+      <div
+        class="loc__info-grabar"
+        *ngIf="tooglePress===true"
+      >
+        <ion-icon name="radio-button-on-outline" class="loc__icon-grabando"></ion-icon>
+        <p>{{tiempoGrabacion}}</p>
+
+        <ion-icon name="chevron-back-outline"></ion-icon>
+        <p>
+          Deslice para cancelar
+        </p>
+      </div>
       <ion-icon
         [name]="showEmojiPicker?'keypad':'happy-sharp'"
         slot="start"
         color="secondary"
         class="loc_icon-footer"
         (click)="showEmojiPicker = !showEmojiPicker"
+        *ngIf="tooglePress===false"
       ></ion-icon>
 
       <ion-textarea
@@ -63,11 +77,15 @@
         auto-grow="true"
         spellcheck="true"
         rows="1"
+        *ngIf="tooglePress===false"
       ></ion-textarea>
 
-      <ion-buttons slot="end">
-        <span *ngIf="miFormulario.invalid;else btnEnviar">
-          <ion-button slot="icon-only">
+      <ion-buttons
+        slot="end"
+        [class]="tooglePress?'footer-grabando loc__btns-footer':'loc__btns-footer'"
+        *ngIf="miFormulario.invalid;else btnEnviar"
+      >
+          <ion-button *ngIf="tooglePress===false" slot="icon-only">
             <ion-icon
               name="attach-sharp"
               color="secondary"
@@ -75,31 +93,45 @@
             ></ion-icon>
           </ion-button>
 
-          <ion-button
-            slot="icon-only"
-            (mousedown)="recorder()"
-            (mouseup)="stop()"
-            (touchend)="stop()"
-            (touchstart)="recorder()"
-            [class]="tooglePress?'loc__press':''"
-          >
-            <ion-icon
-              name="mic-sharp"
-              color="secondary"
-              class="loc_icon-footer"
-            ></ion-icon>
-          </ion-button>
-        </span>
+          <ion-item-sliding (ionDrag)="handleSlide($event)" #sliding>
+            <ion-item >
+              <ion-label>
+                <ion-button
+                  slot="icon-only"
+                  [class]="tooglePress?'loc__press':''"
+                  (mousedown)="recorder()"
+                  (mouseup)="stop()"
+                  (touchend)="stop()"
+                  (touchstart)="recorder()"
+                >
+                  <ion-icon
+                    name="mic-sharp"
+                    color="secondary"
+                    class="loc_icon-footer"
+                  ></ion-icon>
+                </ion-button>
+              </ion-label>
+            </ion-item>
+
+            <ion-item-options side="end">
+              <ion-item-option expandable [class]="tooglePress?'grabando':''">
+
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        </ion-buttons>
 
         <ng-template #btnEnviar>
-          <ion-icon
-            name="send"
-            color="secondary"
-            class="loc_icon-footer"
-            (click)="agregarMensaje()"
-          ></ion-icon>
+          <ion-buttons slot="end" class="loc__btns-footer">
+            <ion-icon
+              name="send"
+              color="secondary"
+              class="loc_icon-footer"
+              (click)="agregarMensaje()"
+            ></ion-icon>
+          </ion-buttons>
         </ng-template>
-      </ion-buttons>
+
     </ion-toolbar>
   </form>
 </ion-footer>

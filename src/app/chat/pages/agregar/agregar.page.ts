@@ -50,22 +50,18 @@ export class AgregarPage implements OnInit, OnDestroy {
       this.buscando=JSON.parse(sessionStorage.getItem("buscando")).state;
     }
 
-    this.userSubscription=this.appService.obtenerUsuario()
-    .subscribe((user:IUserData)=>{
+    this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
+    .then(user=>{
       this.user={
         id:firebase.default.auth().currentUser.uid,
         data:{...user}
       };
 
-      this.dbUsers.setItem(firebase.default.auth().currentUser.uid,{
-        userName:user.userName,
-        chats:user.chats,
-        buscando:user.buscando,
-      }).catch(err=>console.log(err));
-
       this.buscando=this.user.data.buscando.state;
       sessionStorage.setItem("buscando",JSON.stringify(this.user.data.buscando));
-    });
+
+    }).catch(err=>console.log(err));
+
   }
 
   ngOnDestroy(){
@@ -81,6 +77,14 @@ export class AgregarPage implements OnInit, OnDestroy {
         state:estado,
         tagId:tagId
       }
+    }).then(()=>{
+      this.dbUsers.setItem(this.user.id,{
+        ...this.user,
+        buscando:{
+          state:estado,
+          tagId:tagId
+        }
+      }).catch(err=>console.log(err));
     })
     .catch(error=>{
       console.log("Hubo un error",error);
@@ -146,6 +150,15 @@ export class AgregarPage implements OnInit, OnDestroy {
           },
           chats:firebase.default.firestore.FieldValue.arrayUnion(chat.id)
         }).then(()=>{
+          this.dbUsers.setItem(this.user.id,{
+            ...this.user,
+            buscando:{
+              tagId:"",
+              state:false
+            },
+            chats:[...this.user.data.chats,chat.id]
+          }).catch(err=>console.log(err));
+
           this.fireStore.collection("users").doc(contact)
           .update({
             buscando:{

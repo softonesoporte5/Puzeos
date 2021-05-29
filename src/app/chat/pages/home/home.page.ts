@@ -22,6 +22,7 @@ export class HomePage implements OnInit{
   chatsFirebase:number=0;
   dbChats:ILocalForage;
 
+
   constructor(
     private menu: MenuController,
     private appService:AppService,
@@ -40,8 +41,8 @@ export class HomePage implements OnInit{
       cont++;
     }).catch(err=>console.log(err));
 
-    this.userSubscription=this.appService.obtenerUsuario()
-    .subscribe((user:IUserData)=>{
+    this.appService.obtenerUsuario()
+    .then((user:IUserData)=>{
       this.user={
         id:firebase.default.auth().currentUser.uid,
         data:{...user}

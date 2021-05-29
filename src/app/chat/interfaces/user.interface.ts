@@ -10,6 +10,6 @@ export class IUserData{
     state:boolean;
     tagId?:string;
   };
-  _rev?:string;
-  _id?:string;
+  imageUrl?:string;
+  imageUrlLoc?:string;
 }

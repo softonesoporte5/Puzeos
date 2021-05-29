@@ -11,7 +11,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
 import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as firebase from 'firebase';
-import { PopoverController } from '@ionic/angular';
+import { IonItemSliding, PopoverController } from '@ionic/angular';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
 import { IMessage } from '../../interfaces/message.interface';
 
@@ -36,6 +36,10 @@ export class ChatPage implements OnInit, OnDestroy{
   dbUsers:ILocalForage;
   obtenerUsuarioSubscribe:Subscription;
   mensajesSubscribe:any;
+  tiempoGrabacion:string='00:00';
+  bucleTime:NodeJS.Timeout;
+  cancelar:boolean=false;
+  @ViewChild('sliding', { static: false }) sliding: IonItemSliding;
 
   miFormulario:FormGroup=this.fb.group({
     mensaje:['',[Validators.required,Validators.minLength(1)]]
@@ -63,6 +67,13 @@ export class ChatPage implements OnInit, OnDestroy{
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then(user=>{
       this.userName=user.userName;
+
+      this.mediaRecorderService.audio$
+      .subscribe(audio=>{
+        if(!this.cancelar){
+          this.firebaseStorageService.uploadAudio(audio,this.userName,this.idChat);
+        }
+      });
     }).catch(err=>console.log(err));
 
     this.dbChat.getItem(this.idChat)
@@ -85,16 +96,6 @@ export class ChatPage implements OnInit, OnDestroy{
     .catch(error=>{
       console.log(error);
     });
-
-    this.obtenerUsuarioSubscribe=this.appService.obtenerUsuario()
-    .subscribe((user:IUserData)=>{
-      this.userName=user.userName;
-
-      this.mediaRecorderService.audio$
-      .subscribe(audio=>{
-        this.firebaseStorageService.uploadAudio(audio,this.userName,this.idChat);
-      });
-    })
 
     this.mensajesSubscribe=this.firestore.collection("messages").doc(this.idChat).collection("messages")
     .ref
@@ -151,9 +152,6 @@ export class ChatPage implements OnInit, OnDestroy{
   }
 
   agregarMensaje(){
-    const date=new Date().valueOf();
-    const randomId=Math.round(Math.random()*1000)+date;
-
     const mensaje=this.mensaje.value;
 
     this.firestore.collection("messages").doc(this.idChat).collection("messages").add({
@@ -187,11 +185,34 @@ export class ChatPage implements OnInit, OnDestroy{
 
   recorder(){
     this.tooglePress=true;
+    this.cancelar=false;
     this.mediaRecorderService.recorder();
+    let seconds=0;
+
+    this.bucleTime=setInterval(()=>{
+      seconds++;
+      let minute:string | number = Math.floor((seconds / 60) % 60);
+      minute = (minute < 10)? '0' + minute : minute;
+      let second:string | number = seconds % 60;
+      second = (second < 10)? '0' + second : second;
+      this.tiempoGrabacion=minute + ':' + second;
+    }
+    ,1000);
+
   }
 
   stop(){
     this.tooglePress=false;
-     this.mediaRecorderService.stop();
+    this.sliding.close();
+    this.mediaRecorderService.stop();
+    this.tiempoGrabacion='00:00';
+    clearInterval(this.bucleTime);
+  }
+
+  public handleSlide(event: any): void {
+    if(event.detail.ratio>=1 && this.tooglePress || event.detail.ratio==1){
+      this.stop();
+      this.cancelar=true;
+    }
   }
 }
