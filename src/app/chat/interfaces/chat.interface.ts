@@ -3,5 +3,6 @@ export interface IChat{
   group:boolean;
   lastMessage:string;
   members:object;
+  timestamp:any;
   userNames:string[];
 }

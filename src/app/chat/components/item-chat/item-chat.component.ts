@@ -14,7 +14,7 @@ import * as firebase from 'firebase';
 export class ItemChatComponent implements OnInit {
 
   @Input("chat") chat:IChat;
-  chatUser:string;
+  @Input("chatUser") chatUser:string;
   dbUsers:ILocalForage;
 
   constructor(
@@ -23,13 +23,5 @@ export class ItemChatComponent implements OnInit {
 
   ngOnInit() {
     this.dbUsers=this.db.loadStore("users");
-    this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
-    .then(user=>{
-      this.chat.userNames.forEach(userName=>{
-        if(userName!==user.userName){
-          this.chatUser=userName;
-        };
-      })
-    });
   }
 }

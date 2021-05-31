@@ -11,12 +11,11 @@ import { AppRoutingModule } from './app-routing.module';
 import { AuthModule } from './auth/auth.module';
 import { SnackbarModule } from 'ngx-snackbar';
 import { environment } from 'src/environments/environment.prod';
-
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
-import { Crop } from '@ionic-native/crop/ngx';
+import { ImageCropperModule } from 'ngx-image-cropper';
 
 @NgModule({
   declarations: [AppComponent],
@@ -30,12 +29,12 @@ import { Crop } from '@ionic-native/crop/ngx';
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,
     AngularFirestoreModule,
-    AngularFireStorageModule
+    AngularFireStorageModule,
+    ImageCropperModule
   ],
   providers: [
     FileOpener,
     File,
-    Crop,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
   bootstrap: [AppComponent],

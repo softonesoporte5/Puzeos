@@ -33,8 +33,9 @@
 <ion-content color="light" id="content">
 
   <app-item-chat
-    *ngFor="let chat of chats"
-    [chat]="chat"
+    *ngFor="let chat of chats | keyvalue"
+    [chat]="chat.value"
+    [chatUser]="user?.data.userName"
   ></app-item-chat>
 
   <ion-fab

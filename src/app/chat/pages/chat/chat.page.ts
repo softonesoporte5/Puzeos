@@ -1,11 +1,8 @@
-import { Subscription } from 'rxjs';
 import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
 import { MediaRecorderService } from './../../../services/media-recorder.service';
-import { IUserData } from './../../interfaces/user.interface';
-import { AppService } from './../../../app.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
@@ -14,7 +11,6 @@ import * as firebase from 'firebase';
 import { IonItemSliding, PopoverController } from '@ionic/angular';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
 import { IMessage } from '../../interfaces/message.interface';
-
 
 @Component({
   selector: 'app-chat',
@@ -34,7 +30,6 @@ export class ChatPage implements OnInit, OnDestroy{
   dbChat:ILocalForage;
   dbMessages:ILocalForage;
   dbUsers:ILocalForage;
-  obtenerUsuarioSubscribe:Subscription;
   mensajesSubscribe:any;
   tiempoGrabacion:string='00:00';
   bucleTime:NodeJS.Timeout;
@@ -51,7 +46,6 @@ export class ChatPage implements OnInit, OnDestroy{
     private fb:FormBuilder,
     private route:ActivatedRoute,
     private firestore:AngularFirestore,
-    private appService:AppService,
     private popoverController: PopoverController,
     private mediaRecorderService:MediaRecorderService,
     private firebaseStorageService:FirebaseStorageService,
@@ -87,7 +81,7 @@ export class ChatPage implements OnInit, OnDestroy{
     }).catch(err=>console.log(err));
 
     let cont=0;
-    this.dbMessages.iterate((values,key,iterationNumber)=>{
+    this.dbMessages.iterate((values)=>{
       this.mensajes[cont]={
           ...values
         }
@@ -147,7 +141,6 @@ export class ChatPage implements OnInit, OnDestroy{
   }
 
   ngOnDestroy(){
-    this.obtenerUsuarioSubscribe.unsubscribe();
     this.mensajesSubscribe();
   }
 
@@ -159,13 +152,14 @@ export class ChatPage implements OnInit, OnDestroy{
       user:this.userName,
       type:"text",
       timestamp:firebase.default.firestore.FieldValue.serverTimestamp()
-    }).then(message=>{
+    }).then(()=>{
     }).catch(error=>{
       console.log(error);
     });
 
     this.firestore.collection("chats").doc(this.idChat).update({//Agregar ultimo mensaje al chat
-      lastMessage:`${mensaje}`
+      lastMessage:`${mensaje}`,
+      timestamp:firebase.default.firestore.FieldValue.serverTimestamp()
     })
 
     this.mensaje.setValue('');

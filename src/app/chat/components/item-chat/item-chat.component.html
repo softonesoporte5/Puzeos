@@ -5,7 +5,7 @@
   <ion-label>
     <span class="agrupar">
       {{chatUser}}
-      <ion-text color="tertiary">2:34</ion-text>
+      <ion-text color="tertiary">{{chat.timestamp | date: 'shortTime'}}</ion-text>
     </span>
     <ion-text color="tertiary" class="agrupar">
       <p>{{chat.lastMessage}}</p>

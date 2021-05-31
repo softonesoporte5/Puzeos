@@ -36,17 +36,16 @@ export class MenuComponent implements OnInit {
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then(resp=>{
       this.user={
-        data:resp,
+        data:{...resp},
         id:firebase.default.auth().currentUser.uid
       }
-      Filesystem.readFile({
-        path:this.user.data.imageUrlLoc,
-        directory:FilesystemDirectory.Data
-      }).then(resp=>{
-        this.imgPath=`data:image/jpeg;base64,${resp.data}`;
-      }).catch(err=>console.log(err));
-    })
-    .catch(err=>console.log(err));
+      // Filesystem.readFile({
+      //   path:this.user.data.imageUrlLoc,
+      //   directory:FilesystemDirectory.Data
+      // }).then(resp=>{
+      //   this.imgPath=`data:image/jpeg;base64,${resp.data}`;
+      // }).catch(err=>console.log(err));
+    }).catch(err=>console.log(err));
   }
 
   logout(){
@@ -70,10 +69,10 @@ export class MenuComponent implements OnInit {
             this.camara.takePicture(this.user).then(resp=>{
               this.dbUsers.setItem(this.user.id,{
                 ...this.user.data,
-                // imageUrl:resp.firebasePath,
-                // imageUrlLoc:resp.filepath
+                imageUrl:resp.firebasePath,
+                imageUrlLoc:resp.filepath
               }).catch(err=>console.log(err));
-              //this.imgPath=resp.base64Data;
+              this.imgPath=resp.base64Data;
             })
           }
         },

@@ -60,6 +60,22 @@ export class AgregarPage implements OnInit, OnDestroy {
       this.buscando=this.user.data.buscando.state;
       sessionStorage.setItem("buscando",JSON.stringify(this.user.data.buscando));
 
+      this.userSubscription=this.appService.obtenerUsuario()
+      .subscribe(user=>{
+        this.user={
+          id:firebase.default.auth().currentUser.uid,
+          data:{...user}
+        };
+
+        this.dbUsers.setItem(firebase.default.auth().currentUser.uid,{
+          userName:user.userName,
+          chats:user.chats,
+          buscando:user.buscando,
+        }).catch(err=>console.log(err));
+
+        this.buscando=this.user.data.buscando.state;
+        sessionStorage.setItem("buscando",JSON.stringify(this.user.data.buscando));
+      });
     }).catch(err=>console.log(err));
 
   }
@@ -79,7 +95,7 @@ export class AgregarPage implements OnInit, OnDestroy {
       }
     }).then(()=>{
       this.dbUsers.setItem(this.user.id,{
-        ...this.user,
+        ...this.user.data,
         buscando:{
           state:estado,
           tagId:tagId
@@ -135,6 +151,7 @@ export class AgregarPage implements OnInit, OnDestroy {
     this.fireStore.collection("chats").add({
       group:false,
       lastMessage: "Se ha creado el chat",
+      timestamp:firebase.default.firestore.FieldValue.serverTimestamp(),
       members:{
         ...members
       },
@@ -151,7 +168,7 @@ export class AgregarPage implements OnInit, OnDestroy {
           chats:firebase.default.firestore.FieldValue.arrayUnion(chat.id)
         }).then(()=>{
           this.dbUsers.setItem(this.user.id,{
-            ...this.user,
+            ...this.user.data,
             buscando:{
               tagId:"",
               state:false
