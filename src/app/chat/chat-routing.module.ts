@@ -13,8 +13,11 @@ const routes:Routes=[
   {
     path: 'agregar',
     loadChildren: () => import('./pages/agregar/agregar.module').then( m => m.AgregarPageModule)
-  }
-  ,
+  },
+  {
+    path: 'saved-messages',
+    loadChildren: () => import('./pages/saved-messages/saved-messages.module').then( m => m.SavedMessagesPageModule)
+  },
   {
     path:'**',
     pathMatch:'full',

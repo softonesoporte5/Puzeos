@@ -9,10 +9,6 @@ export class DbService {
 
   constructor() {}
 
-  cargarDB(){
-    return localForage;
-  }
-
   loadStore(name:string){
     return localForage.createInstance({
       name        : localForage._config.name,

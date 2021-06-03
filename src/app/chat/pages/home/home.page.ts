@@ -1,4 +1,3 @@
-import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IUser, IUserData } from './../../interfaces/user.interface';
 import { AngularFirestore} from '@angular/fire/firestore';
@@ -6,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { AppService } from './../../../app.service';
 import { Component, OnInit } from '@angular/core';
 import { MenuController } from '@ionic/angular';
+import { IChat} from '../../interfaces/chat.interface';
 import * as firebase from 'firebase';
 import { DbService } from 'src/app/services/db.service';
 
@@ -18,10 +18,11 @@ export class HomePage implements OnInit{
 
   user:IUser;
   userSubscription:Subscription;
-  chats={};
+  chats:IChat[]=[];
   chatsFirebase:number=0;
   dbChats:ILocalForage;
   dbUsers:ILocalForage;
+  chatsObj={};
 
   constructor(
     private menu: MenuController,
@@ -33,15 +34,16 @@ export class HomePage implements OnInit{
   ngOnInit() {
     this.dbChats=this.db.loadStore('chats');
     this.dbUsers=this.db.loadStore("users");
-
     let cont=0;
     this.dbChats.iterate((values,key)=>{
-      this.chats[key]={
+      this.chatsObj[key]={
         id:key,
+        pos:cont,
         ...values
       }
       cont++;
-    }).catch(err=>console.log(err));
+    }).then(()=>this.orderChats())
+    .catch(err=>console.log(err));
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then(user=>{
@@ -51,72 +53,67 @@ export class HomePage implements OnInit{
       };
       this.appService.obtenerUsuario()
       .subscribe(user=>{
-        console.log(user);
         this.user={
           id:firebase.default.auth().currentUser.uid,
           data:{...user}
         };
 
-        if(this.chatsFirebase<this.user?.data?.chats?.length){
-          if(this.chatsFirebase===0){console.log("prueba")
-            let cont=0;
-            this.user.data.chats.forEach(chat=>{
-              const i=cont;
-              this.firestore.collection("chats").doc(chat)
-              .valueChanges()
-              .subscribe((resp:IChat)=>{
-                //Insertamos/actualizamos en la bd local
-                this.dbChats.setItem(chat,{
-                  group:resp.group,
-                  lastMessage:resp.lastMessage,
-                  members:resp.members,
-                  userNames:resp.userNames,
-                  timestamp:resp.timestamp.toDate()
-                }).catch(err=>console.log(err))
+      if(this.chatsFirebase<this.user?.data?.chats?.length){
+        if(this.chatsFirebase===0){
+          let cont=0;
+          this.user.data.chats.forEach(chat=>{
+            this.firestore.collection("chats").doc(chat)
+            .valueChanges()
+            .subscribe((resp:IChat)=>{
+              //Insertamos/actualizamos en la bd local
+              console.log(resp);
+              this.dbChats.setItem(chat,{
+                group:resp.group,
+                lastMessage:resp.lastMessage,
+                members:resp.members,
+                userNames:resp.userNames,
+                timestamp:resp.timestamp.toDate()
+              }).catch(err=>console.log(err))
 
-                this.chats[chat]={
-                  id:chat,
-                  group:resp.group,
-                  lastMessage:resp.lastMessage,
-                  members:resp.members,
-                  userNames:resp.userNames,
-                  timestamp:resp.timestamp.toDate()
-                }
-              });
-              cont++;
-              this.chatsFirebase=this.chatsFirebase+1;
-            });console.log("orden")
-            this.orderChats(this.chats);
+              this.chatsObj[chat]={
+                ...resp,
+                id:chat,
+                pos:cont,
+                timestamp:resp.timestamp.toDate()
+              }
 
-          }else{
-            for(let index=Object.keys(this.chats).length; index<user.chats.length; index++){
-              this.firestore.collection("chats").doc(user.chats[index])
-              .valueChanges()
-              .subscribe((chat:IChat)=>{
+              this.orderChats();
+            });
+            cont++;
+            this.chatsFirebase=this.chatsFirebase+1;
+          });
+        }else{console.log("D")
+          for(let index=this.chats.length; index<user.chats.length; index++){
+            this.firestore.collection("chats").doc(user.chats[index])
+            .valueChanges()
+            .subscribe((chat:IChat)=>{
 
-                this.dbChats.setItem(user.chats[index],{
-                  group:chat.group,
-                  lastMessage:chat.lastMessage,
-                  members:chat.members,
-                  userNames:chat.userNames,
-                  timestamp:chat.timestamp.toDate()
-                }).catch(err=>console.log(err));
+              this.dbChats.setItem(user.chats[index],{
+                group:chat.group,
+                lastMessage:chat.lastMessage,
+                members:chat.members,
+                userNames:chat.userNames,
+                timestamp:chat.timestamp.toDate()
+              }).catch(err=>console.log(err));
 
-                this.chats[chat.id]={
-                  id:user.chats[index],
-                  group:chat.group,
-                  lastMessage:chat.lastMessage,
-                  members:chat.members,
-                  userNames:chat.userNames,
-                  timestamp:chat.timestamp.toDate()
-                }
-              });
-            }
-            console.log(this.chats);
+              this.chatsObj[user.chats[index]]={
+                ...chat,
+                id:user.chats[index],
+                pos:index,
+                timestamp:chat.timestamp.toDate()
+              }
+              this.orderChats();
+            });
           }
         }
-     });
+      }
     });
+   });
   }
 
   openMenu(){
@@ -126,8 +123,9 @@ export class HomePage implements OnInit{
     open();
   }
 
-  orderChats(chats:{}){
+  orderChats(){
     let chatsArr=[];
+    const chats={...this.chatsObj};
     for (let property in chats) {
       chatsArr.push({...chats[property],timestamp:chats[property].timestamp.valueOf()});
     }
@@ -143,20 +141,8 @@ export class HomePage implements OnInit{
       return 0;
     });
 
-    let chatsObject={};
-
-    for (let index = chatsArr.length; index > chatsArr.length; index--) {
-      chatsObject[chatsArr[index].id]=chatsArr[index];
-    }
-
-    chatsArr.forEach((chat:IChat)=>{
-      chatsObject[chat.id]=chat;
-    });
-
-    console.log(chatsArr);
-    console.log(chatsObject);
-
-    this.chats=chatsObject;
+    this.chats=chatsArr;
   }
+
 }
 

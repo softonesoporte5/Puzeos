@@ -35,19 +35,20 @@
     padding
   >
     <ion-list>
-      <ion-item>
+      <ion-item disabled="true">
         <ion-icon
           color="secondary"
           name="people-sharp"
           slot="start"
         ></ion-icon>
-        <span color="dark">Crear grupo</span>
+        <span color="dark">Crear grupo <br/><small>Próximamente</small></span>
       </ion-item>
-      <ion-item>
+      <ion-item routerLink="/chat/saved-messages">
         <ion-icon
           color="secondary"
           slot="start"
-          name="bookmark-sharp"></ion-icon>
+          name="bookmark-sharp"
+        ></ion-icon>
           <span color="dark">Mensajes guardados</span>
       </ion-item>
       <ion-item>
@@ -69,6 +70,7 @@
           color="secondary"
           slot="start"
           name="log-out-outline"
+          button
         ></ion-icon>
         <span color="dark">Cerrar Sesión</span>
       </ion-item>

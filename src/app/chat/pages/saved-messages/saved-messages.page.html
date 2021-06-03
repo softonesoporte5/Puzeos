@@ -1,0 +1,27 @@
+<div class="fondo"></div>
+
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-back-button
+      slot="start"
+      defaultHref="/chat"
+      text=""
+      mode="md"
+    ></ion-back-button>
+
+    <ion-title class="ion-no-padding">Mensajes guardados</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="loc__main">
+  <ion-card *ngFor="let message of messages">
+    <ion-card-header class="ion-no-padding">
+      <ion-card-subtitle>{{message.user}}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      {{message.message}}
+      <ion-text color="tertiary">{{message.timestamp | date: 'shortTime'}}</ion-text>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

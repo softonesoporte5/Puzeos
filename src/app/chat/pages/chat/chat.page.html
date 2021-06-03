@@ -24,25 +24,40 @@
   </ion-toolbar>
 
 </ion-header>
+<div class="loc__espacio"></div>
 
 <div class="loc__content" #content>
 
-  <!-- <ion-card
-  *ngFor="let mensaje of mensajes"
-  [class]="userName===mensaje.user?'enviado':''"
+  <!-- <ion-infinite-scroll threshold="100px" position="top" (ionInfinite)="loadData($event)">
+    <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll> -->
+
+  <ion-card
+    *ngFor="let mensaje of mensajes"
+    [class]="userName===mensaje.user?'enviado':''"
   >
-    <ion-card-content *ngIf="mensaje.type==='text'">
+    <ion-card-content
+      *ngIf="mensaje.type==='text'"
+      (click)="presentPopoverMessage($event,mensaje)"
+    >
       {{mensaje.message}}
-      <ion-text color="tertiary">{{mensaje.timestamp | date: 'shortTime'}}</ion-text>
+
+      <ion-text color="tertiary">
+        {{mensaje.timestamp | date: 'shortTime'}}
+        <ion-icon name="checkmark-outline" *ngIf="mensaje.state===false"></ion-icon>
+        <ion-icon name="checkmark-done-outline" *ngIf="mensaje.state===true"></ion-icon>
+      </ion-text>
     </ion-card-content>
 
     <ion-card-content *ngIf="mensaje.type==='voice'">
-      <app-audio [audio]="mensaje" [dbMessages]="dbMessages"></app-audio> -->
-      <!-- e<audio [src]="mensaje.ref" controls></audio> -->
-      <!-- <ion-text color="tertiary">{{mensaje.timestamp | date: 'shortTime'}}</ion-text>
+      <app-audio [audio]="mensaje" [dbMessages]="dbMessages"></app-audio>
+      <!-- <audio [src]="mensaje.ref" controls></audio> -->
+      <!-- <ion-text color="tertiary">{{mensaje.timestamp | date: 'shortTime'}}</ion-text>-->
     </ion-card-content>
 
-  </ion-card> -->
+  </ion-card>
+
 
 </div>
 

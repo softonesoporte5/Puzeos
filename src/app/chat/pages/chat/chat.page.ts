@@ -1,3 +1,4 @@
+import { IMessage } from './../../interfaces/message.interface';
 import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
@@ -5,12 +6,12 @@ import { FirebaseStorageService } from './../../../services/firebase-storage.ser
 import { MediaRecorderService } from './../../../services/media-recorder.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as firebase from 'firebase';
 import { IonItemSliding, PopoverController } from '@ionic/angular';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
-import { IMessage } from '../../interfaces/message.interface';
+import { PopoverChatMessageComponent } from '../../components/popover-chat-message/popover-chat-message.component';
 
 @Component({
   selector: 'app-chat',
@@ -24,7 +25,6 @@ export class ChatPage implements OnInit, OnDestroy{
   userName:string='';
   contactName:string='';
   showEmojiPicker:boolean=false;
-  @ViewChild("content") content:ElementRef;
   tooglePress:boolean=false;
   progress=0;
   dbChat:ILocalForage;
@@ -108,7 +108,8 @@ export class ChatPage implements OnInit, OnDestroy{
                   ...data,
                   id:mensaje.doc.id,
                   download:false,
-                  timestamp:data.timestamp.toDate()
+                  timestamp:data.timestamp.toDate(),
+                  state:false
                 });
 
                 if(data.user!==this.userName){
@@ -125,14 +126,27 @@ export class ChatPage implements OnInit, OnDestroy{
                   ...data,
                   download:false,
                   timestamp:data.timestamp.toDate(),
-                }).then(()=>{
-
-                 }).catch(error=>{
-                  console.log(error);
-                });
+                  state:false
+                }).catch(error=>console.log(error));
               }
-            }).catch(err=>{console.log(err)});
+            }).catch(err=>console.log(err));
 
+          }
+        }else{
+          for (let i = this.mensajes.length -1; i > 0; i--){
+            console.log(this.mensajes[i].id)
+            if(this.mensajes[i].id===mensaje.doc.id){
+              this.mensajes[i].state=true;
+
+              this.dbMessages.setItem(mensaje.doc.id,{
+                id:mensaje.doc.id,
+                ...mensaje.doc.data(),
+                timestamp:mensaje.doc.data().timestamp.toDate(),
+                state:true
+              }).catch(error=>console.log(error));
+
+              break;
+            }
           }
         }
       })
@@ -146,12 +160,13 @@ export class ChatPage implements OnInit, OnDestroy{
 
   agregarMensaje(){
     const mensaje=this.mensaje.value;
+    const timestamp=firebase.default.firestore.FieldValue.serverTimestamp()
 
     this.firestore.collection("messages").doc(this.idChat).collection("messages").add({
       message:mensaje,
       user:this.userName,
       type:"text",
-      timestamp:firebase.default.firestore.FieldValue.serverTimestamp()
+      timestamp:timestamp
     }).then(()=>{
     }).catch(error=>{
       console.log(error);
@@ -159,7 +174,7 @@ export class ChatPage implements OnInit, OnDestroy{
 
     this.firestore.collection("chats").doc(this.idChat).update({//Agregar ultimo mensaje al chat
       lastMessage:`${mensaje}`,
-      timestamp:firebase.default.firestore.FieldValue.serverTimestamp()
+      timestamp:timestamp
     })
 
     this.mensaje.setValue('');
@@ -208,5 +223,18 @@ export class ChatPage implements OnInit, OnDestroy{
       this.stop();
       this.cancelar=true;
     }
+  }
+
+  async presentPopoverMessage(ev: any,message:IMessage) {
+    const popover = await this.popoverController.create({
+      component: PopoverChatMessageComponent,
+      event: ev,
+      componentProps:{"message":message}
+    });
+    return await popover.present();
+  }
+
+  loadData(e:any){
+    console.log(e)
   }
 }
