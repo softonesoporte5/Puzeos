@@ -1,5 +1,5 @@
 import { ILocalForage } from './../../interfaces/localForage.interface';
-import { IUser, IUserData } from './../../interfaces/user.interface';
+import { IUser } from './../../interfaces/user.interface';
 import { AngularFirestore} from '@angular/fire/firestore';
 import { Subscription } from 'rxjs';
 import { AppService } from './../../../app.service';
@@ -42,7 +42,14 @@ export class HomePage implements OnInit{
         ...values
       }
       cont++;
-    }).then(()=>this.orderChats())
+    }).then(()=>{
+      this.orderChats();
+      //Nos subscribimos a los chats de manera local
+      this.db.getItemsChat()
+      .subscribe(resp=>{
+        console.log(resp);
+      });
+    })
     .catch(err=>console.log(err));
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)

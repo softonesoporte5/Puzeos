@@ -1,10 +1,5 @@
-import { ILocalForage } from './../../interfaces/localForage.interface';
-import { DbService } from './../../../services/db.service';
-import { AngularFirestore, DocumentSnapshot } from '@angular/fire/firestore';
-import { AppService } from './../../../app.service';
 import { IChat } from './../../interfaces/chat.interface';
 import { Component, Input, OnInit } from '@angular/core';
-import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-item-chat',
@@ -15,13 +10,12 @@ export class ItemChatComponent implements OnInit {
 
   @Input("chat") chat:IChat;
   @Input("chatUser") chatUser:string;
-  dbUsers:ILocalForage;
+  chatName:string;
 
-  constructor(
-    private db:DbService
-  ) {}
+  constructor() {}
 
   ngOnInit() {
-    this.dbUsers=this.db.loadStore("users");
+    let arrUser=this.chat.userNames.filter(userName=>userName!==this.chatName);
+    this.chatName=arrUser[0];
   }
 }

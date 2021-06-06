@@ -45,8 +45,10 @@
 
       <ion-text color="tertiary">
         {{mensaje.timestamp | date: 'shortTime'}}
-        <ion-icon name="checkmark-outline" *ngIf="mensaje.state===false"></ion-icon>
-        <ion-icon name="checkmark-done-outline" *ngIf="mensaje.state===true"></ion-icon>
+        <span *ngIf="userName===mensaje.user" style="display: contents;">
+          <ion-icon name="checkmark-outline" *ngIf="mensaje.state===false"></ion-icon>
+          <ion-icon name="checkmark-done-outline" *ngIf="mensaje.state===true"></ion-icon>
+        </span>
       </ion-text>
     </ion-card-content>
 

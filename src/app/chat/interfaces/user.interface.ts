@@ -12,5 +12,5 @@ export class IUserData{
   };
   imageUrl?:string;
   imageUrlLoc?:string;
-  savedMessages?:object[];
+  blockedUsers:string[];
 }

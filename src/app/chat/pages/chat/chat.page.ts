@@ -28,6 +28,7 @@ export class ChatPage implements OnInit, OnDestroy{
   tooglePress:boolean=false;
   progress=0;
   dbChat:ILocalForage;
+  chat:IChat;
   dbMessages:ILocalForage;
   dbUsers:ILocalForage;
   mensajesSubscribe:any;
@@ -71,7 +72,8 @@ export class ChatPage implements OnInit, OnDestroy{
     }).catch(err=>console.log(err));
 
     this.dbChat.getItem(this.idChat)
-    .then((chat:IChat)=>{console.log(chat)
+    .then((chat:IChat)=>{
+      this.chat=chat;
       chat.userNames.forEach(userName=>{
         if(userName!==this.userName){
           this.contactName=userName;
@@ -162,6 +164,11 @@ export class ChatPage implements OnInit, OnDestroy{
     const mensaje=this.mensaje.value;
     const timestamp=firebase.default.firestore.FieldValue.serverTimestamp()
 
+    // this.db.setItemChat(this.idChat,{
+    //   ...this.chat,
+    //   lastMessage:mensaje
+    // })
+
     this.firestore.collection("messages").doc(this.idChat).collection("messages").add({
       message:mensaje,
       user:this.userName,
@@ -183,6 +190,11 @@ export class ChatPage implements OnInit, OnDestroy{
   async presentPopover(ev: any) {
     const popover = await this.popoverController.create({
       component: PopoverChatComponent,
+      componentProps:{
+        "id":this.idChat,
+        "idUser":firebase.default.auth().currentUser.uid,
+        "contactName":this.contactName
+      },
       event: ev
     });
     return await popover.present();

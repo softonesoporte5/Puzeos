@@ -1,4 +1,3 @@
-import { LoadingComponent } from './../components/loading/loading.component';
 import { SnackbarModule } from 'ngx-snackbar';
 import { IonicModule } from '@ionic/angular';
 import { AuthRoutingModule } from './auth-routing.module';
@@ -10,7 +9,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
-    LoadingComponent,
     RegisterPage,
     LoginPage
   ],

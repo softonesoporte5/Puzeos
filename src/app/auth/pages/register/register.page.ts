@@ -105,7 +105,8 @@ export class RegisterPage implements OnInit {
               buscando:{
                 state:false,
                 tagId:''
-              }
+              },
+              blockedUsers:[]
             });
 
             this.dbUsers=this.db.loadStore("users");
@@ -115,7 +116,8 @@ export class RegisterPage implements OnInit {
               buscando:{
                 state:false,
                 tagId:''
-              }
+              },
+              blockedUsers:[]
             }).then(()=>{
               this.router.navigate(['chat']);
             }).catch(err=>{

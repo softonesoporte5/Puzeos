@@ -19,6 +19,10 @@ const routes:Routes=[
     loadChildren: () => import('./pages/saved-messages/saved-messages.module').then( m => m.SavedMessagesPageModule)
   },
   {
+    path: 'blocked-users',
+    loadChildren: () => import('./pages/blocked-users/blocked-users.module').then( m => m.BlockedUsersPageModule)
+  },
+  {
     path:'**',
     pathMatch:'full',
     redirectTo:''

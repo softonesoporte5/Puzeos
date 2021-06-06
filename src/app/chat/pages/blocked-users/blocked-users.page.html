@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-back-button
+      slot="start"
+      defaultHref="/chat"
+      text=""
+      mode="md"
+    ></ion-back-button>
+
+    <ion-title class="ion-no-padding">Usuarios bloqueados</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="loc__main">
+  <ion-list>
+    <ion-item-sliding *ngFor="let userBlocked of blockedUsers">
+      <ion-item >
+        <p>{{userBlocked}}</p>
+      </ion-item>
+
+      <ion-item-options side="end">
+        <ion-item-option (click)="unlockUser(userBlocked)">
+          Desbloquear
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <small>Deslice para desbloquear</small>
+</ion-content>

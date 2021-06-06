@@ -49,7 +49,6 @@ export class AgregarPage implements OnInit, OnDestroy {
     if(JSON.parse(sessionStorage.getItem("buscando"))){
       this.buscando=JSON.parse(sessionStorage.getItem("buscando")).state;
     }
-
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then(user=>{
       this.user={
@@ -68,16 +67,13 @@ export class AgregarPage implements OnInit, OnDestroy {
         };
 
         this.dbUsers.setItem(firebase.default.auth().currentUser.uid,{
-          userName:user.userName,
-          chats:user.chats,
-          buscando:user.buscando,
+          ...user
         }).catch(err=>console.log(err));
 
         this.buscando=this.user.data.buscando.state;
         sessionStorage.setItem("buscando",JSON.stringify(this.user.data.buscando));
       });
     }).catch(err=>console.log(err));
-
   }
 
   ngOnDestroy(){
@@ -114,17 +110,17 @@ export class AgregarPage implements OnInit, OnDestroy {
     .subscribe((resp:DocumentSnapshot<searchsUser>)=>{
       let values:any[]=[];
       const data=resp.data();
-
+      console.log(this.user.data);
       for(const key in data.users) {
-        console.log(key)
-        values.unshift({id:key,userName:data.users[key]});
+        if(!this.user.data.blockedUsers.includes(data.users[key])){
+          values.unshift({id:key,userName:data.users[key]});
+        }
       }
+
       if(values.length<1){//Comprobamos si no hay nadie buscando, en ese caso se inserta el usuario a la coleccion de busqueda
         this.actualizarEstadoBusquedaUser(true,tagId);
         this.fireStore.collection("searchs").doc(tagId).update({
           [`users.${this.user.id}`]:this.user.data.userName
-        }).then(()=>{
-
         }).catch(error=>{
           console.log(error);
         });
