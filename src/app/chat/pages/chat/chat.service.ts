@@ -1,17 +1,33 @@
+import { DbService } from 'src/app/services/db.service';
+import { Subject } from 'rxjs';
+import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IMessage } from './../../interfaces/message.interface';
-import { Injectable } from '@angular/core';
-import { CollectionReference } from '@angular/fire/firestore';
+import { Injectable, OnInit } from '@angular/core';
+import { CollectionReference, AngularFirestore, DocumentChange } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ChatService {
+export class ChatService implements OnInit{
 
-  constructor() { }
+  private messages$=new Subject<DocumentChange<IMessage>[]>();
+  dbMessages:ILocalForage;
+  userName:string;
+  idChat:string;
+
+  constructor(
+    private db:DbService,
+    private firestore:AngularFirestore
+  ) { }
+
+  ngOnInit(){}
 
   subscribeMessages(ref:CollectionReference<IMessage>){
     ref.onSnapshot(resp=>{
-      resp.docChanges().forEach(mensaje=>{
+      this.messages$.next(resp.docChanges());
+      console.log(resp.docChanges());
+
+      /*resp.docChanges().forEach(mensaje=>{
         if(mensaje.type!=='removed'){
           if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
             this.dbMessages.getItem(mensaje.doc.id)
@@ -19,14 +35,13 @@ export class ChatService {
               if(!resp){
                 const data=mensaje.doc.data() as IMessage;
 
-                this.mensajes.push({
-                  ...data,
-                  id:mensaje.doc.id,
-                  download:false,
-                  timestamp:data.timestamp.toDate(),
-                  state:false
-                });
-                this.orderMessages();
+                // this.messages$.next({
+                //   ...data,
+                //   id:mensaje.doc.id,
+                //   download:false,
+                //   timestamp:data.timestamp.toDate(),
+                //   state:false
+                // });
 
                 if(data.user!==this.userName){
                   this.firestore.collection("messages").doc(this.idChat)
@@ -48,9 +63,9 @@ export class ChatService {
             }).catch(err=>console.log(err));
           }
         }else{
-          for (let i = this.mensajes.length -1; i > 0; i--){
-            if(this.mensajes[i].id===mensaje.doc.id){
-              this.mensajes[i].state=true;
+          for (let i = this.messages.length -1; i > 0; i--){
+            if(this.messages[i].id===mensaje.doc.id){
+              this.messages[i].state=true;
 
               this.dbMessages.setItem(mensaje.doc.id,{
                 id:mensaje.doc.id,
@@ -63,8 +78,16 @@ export class ChatService {
             }
           }
         }
-      })
+      })*/
     });
+  }
+
+  getMessages(ref:CollectionReference<IMessage>, idChat:string, userName:string){
+    this.dbMessages=this.db.loadStore("messages"+idChat);
+    this.idChat=idChat;
+    this.userName=userName;
+    this.subscribeMessages(ref);
+    return this.messages$.asObservable();
   }
 
   orderMessages(mesagges:IMessage[]){

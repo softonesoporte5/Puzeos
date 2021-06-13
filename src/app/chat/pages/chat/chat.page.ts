@@ -89,7 +89,9 @@ export class ChatPage implements OnInit, OnDestroy{
           ...values
         }
       cont++;
-    }).then(()=>this.mensajes=this.chatService.orderMessages(this.mensajes))
+    }).then(()=>{
+      this.mensajes=this.chatService.orderMessages(this.mensajes)
+    })
     .catch(error=>{
       console.log(error);
     });
@@ -100,7 +102,50 @@ export class ChatPage implements OnInit, OnDestroy{
     const ref=this.firestore.collection("messages")
     .doc(this.idChat).collection<IMessage>("messages")
     .ref;
-    this.mensajesSubscribe=this.chatService.subscribeMessages(ref);
+
+    this.mensajesSubscribe=this.chatService.getMessages(ref, this.idChat, this.userName)
+    .subscribe(resp=>{
+      //Si viene más de un mensaje
+      if(resp.length>1){
+        for (let index = 0; index < resp.length; index++) {
+          const message=resp[index].doc.data();
+          console.log(resp[index].type,message);
+          //Si es un mensaje nuevo
+          if(resp[index].type!=='removed'){
+            //Comprobamos si es un mensaje que fue visto
+            if(message.state===true){
+              //Lo agregamos a la base de datos local
+              this.dbMessages.setItem(message.id,{
+                ...message,
+                state:true
+              })
+              .then(resp=>{})
+              .catch(error=>console.log(error));
+
+            }
+          }else{
+            if(message.user!==this.userName){
+              this.firestore.collection("messages").doc(this.idChat)
+              .collection("messages").doc(message.id)
+              .delete()
+              .catch(error=>{
+                console.log(error);
+              });
+            }
+          }
+        }
+      }else{
+        const data=resp[0].doc.data();
+        console.log(resp[0].type,data);
+        this.mensajes.push({
+          ...data,
+          id:resp[0].doc.id,
+          download:false,
+          timestamp:data.timestamp.toDate(),
+          state:false
+        })
+      }
+    })
   }
 
   ngOnDestroy(){
