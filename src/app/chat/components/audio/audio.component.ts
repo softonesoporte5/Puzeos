@@ -29,7 +29,6 @@ export class AudioComponent implements OnInit {
   downloadProgress=0;
   downloadUrl:string;
   messageDB:IMessage;
-  pruebaUrl;
 
   constructor(
     private http:HttpClient,

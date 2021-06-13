@@ -1,3 +1,4 @@
+import { ItemMessageComponent } from './../../components/item-message/item-message.component';
 import { PopoverChatMessageComponent } from './../../components/popover-chat-message/popover-chat-message.component';
 import { AudioComponent } from './../../components/audio/audio.component';
 import { SafePipe } from './../../../pipes/safe.pipe';
@@ -29,7 +30,8 @@ import { HttpClientModule } from '@angular/common/http';
     SafePipe,
     AudioComponent,
     PopoverChatComponent,
-    PopoverChatMessageComponent
+    PopoverChatMessageComponent,
+    ItemMessageComponent
   ]
 })
 export class ChatPageModule {}

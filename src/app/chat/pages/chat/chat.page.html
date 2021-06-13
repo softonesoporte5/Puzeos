@@ -33,34 +33,13 @@
     </ion-infinite-scroll-content>
   </ion-infinite-scroll> -->
 
-  <ion-card
-    *ngFor="let mensaje of mensajes"
-    [class]="userName===mensaje.user?'enviado':''"
-  >
-    <ion-card-content
-      *ngIf="mensaje.type==='text'"
-      (click)="presentPopoverMessage($event,mensaje)"
-    >
-      {{mensaje.message}}
-
-      <ion-text color="tertiary">
-        {{mensaje.timestamp | date: 'shortTime'}}
-        <span *ngIf="userName===mensaje.user" style="display: contents;">
-          <ion-icon name="checkmark-outline" *ngIf="mensaje.state===false"></ion-icon>
-          <ion-icon name="checkmark-done-outline" *ngIf="mensaje.state===true"></ion-icon>
-        </span>
-      </ion-text>
-    </ion-card-content>
-
-    <ion-card-content *ngIf="mensaje.type==='voice'">
-      <app-audio [audio]="mensaje" [dbMessages]="dbMessages"></app-audio>
-      <!-- <audio [src]="mensaje.ref" controls></audio> -->
-      <!-- <ion-text color="tertiary">{{mensaje.timestamp | date: 'shortTime'}}</ion-text>-->
-    </ion-card-content>
-
-  </ion-card>
-
-
+  <app-item-message
+    *ngFor="let mensaje of mensajes; trackBy: trackByFn"
+    [message]="mensaje"
+    [userName]="userName"
+    [dbMessage]="dbMessages"
+    [content]="content"
+  ></app-item-message>
 </div>
 
 <ion-footer>
@@ -154,5 +133,5 @@
 </ion-footer>
 
 <ion-footer class="emojiContainer" [style.height]="showEmojiPicker?'300px':'0px'"> <!--Show/Hide emoji picker. Don't use *ngIf because the component will be created again and again and cause performance issue-->
-  <emoji-picker (onEmojiSelect)="addEmoji($event)"></emoji-picker>
+  <!-- <emoji-picker (onEmojiSelect)="addEmoji($event)"></emoji-picker> -->
 </ion-footer>

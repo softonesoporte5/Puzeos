@@ -17,7 +17,7 @@ export class DbService{
     this.dbChats=this.loadStore("chats");
   }
 
-  loadStore(name:string){
+  loadStore(name: string){
     return localForage.createInstance({
       name        : localForage._config.name,
       storeName   : name

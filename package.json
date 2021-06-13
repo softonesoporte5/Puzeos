@@ -25,6 +25,7 @@
     "@capacitor/android": "^3.0.0-beta.3",
     "@capacitor/core": "^2.4.7",
     "@capacitor/ios": "^2.4.7",
+    "@ctrl/ngx-emoji-mart": "^6.0.0",
     "@ionic-native/core": "^5.32.1",
     "@ionic-native/file": "^5.33.0",
     "@ionic-native/file-opener": "^5.33.0",

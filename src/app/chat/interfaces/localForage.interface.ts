@@ -36,3 +36,10 @@ export interface ILocalForage{
     description?: string
   })=>any
 }
+
+
+export enum dbNames{
+  CHATS="chats",
+  USERS="users",
+  SAVEDMESSAGES="savedMessages"
+}

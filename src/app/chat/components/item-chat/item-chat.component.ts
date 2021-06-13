@@ -15,7 +15,7 @@ export class ItemChatComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    let arrUser=this.chat.userNames.filter(userName=>userName!==this.chatName);
+    let arrUser=this.chat.userNames.filter(userName=>userName!==this.chatUser);
     this.chatName=arrUser[0];
   }
 }

@@ -1,0 +1,25 @@
+<ion-card
+  #item
+  [class]="userName===message.user?'enviado':''"
+>
+  <ion-card-content
+
+    *ngIf="message.type==='text'"
+    (click)="presentPopoverMessage($event,message)"
+  >
+    {{message.message}}
+
+    <ion-text color="tertiary" >
+      {{message.timestamp | date: 'shortTime'}}
+      <span *ngIf="userName===message.user" style="display: contents;">
+        <ion-icon name="checkmark-outline" *ngIf="message.state===false"></ion-icon>
+        <ion-icon name="checkmark-done-outline" *ngIf="message.state===true"></ion-icon>
+      </span>
+    </ion-text>
+  </ion-card-content>
+
+  <ion-card-content *ngIf="message.type==='voice'">
+    <app-audio [audio]="message" [dbMessages]="dbMessage"></app-audio>
+    <ion-text color="tertiary">{{message.timestamp | date: 'shortTime'}}</ion-text>
+  </ion-card-content>
+</ion-card>

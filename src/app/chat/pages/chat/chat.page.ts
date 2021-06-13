@@ -1,3 +1,4 @@
+import { ChatService } from './chat.service';
 import { IMessage } from './../../interfaces/message.interface';
 import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
@@ -11,7 +12,6 @@ import { ActivatedRoute } from '@angular/router';
 import * as firebase from 'firebase';
 import { IonItemSliding, PopoverController } from '@ionic/angular';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
-import { PopoverChatMessageComponent } from '../../components/popover-chat-message/popover-chat-message.component';
 
 @Component({
   selector: 'app-chat',
@@ -50,7 +50,8 @@ export class ChatPage implements OnInit, OnDestroy{
     private popoverController: PopoverController,
     private mediaRecorderService:MediaRecorderService,
     private firebaseStorageService:FirebaseStorageService,
-    private db:DbService
+    private db:DbService,
+    private chatService:ChatService
   ) { }
 
   ngOnInit(){
@@ -88,72 +89,18 @@ export class ChatPage implements OnInit, OnDestroy{
           ...values
         }
       cont++;
-    }).then(()=>console.log("completo"))
+    }).then(()=>this.mensajes=this.chatService.orderMessages(this.mensajes))
     .catch(error=>{
       console.log(error);
     });
 
-    this.mensajesSubscribe=this.firestore.collection("messages").doc(this.idChat).collection("messages")
-    .ref
-    .orderBy('timestamp')
-    .onSnapshot(resp=>{
-      resp.docChanges().forEach(mensaje=>{
-        if(mensaje.type!=='removed'){
-          if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
-            console.log(mensaje.doc.id)
-            this.dbMessages.getItem(mensaje.doc.id)
-            .then(resp=>{
-              if(!resp){
-                const data=mensaje.doc.data() as IMessage;
+    const a=this.firestore.collection("messages")
+    .doc(this.idChat).collection<IMessage>("messages").ref
 
-                this.mensajes.push({
-                  ...data,
-                  id:mensaje.doc.id,
-                  download:false,
-                  timestamp:data.timestamp.toDate(),
-                  state:false
-                });
-
-                if(data.user!==this.userName){
-                  this.firestore.collection("messages").doc(this.idChat)
-                  .collection("messages").doc(mensaje.doc.id)
-                  .delete()
-                  .catch(error=>{
-                    console.log(error);
-                  });
-                }
-
-                this.dbMessages.setItem(mensaje.doc.id,{
-                  id:mensaje.doc.id,
-                  ...data,
-                  download:false,
-                  timestamp:data.timestamp.toDate(),
-                  state:false
-                }).catch(error=>console.log(error));
-              }
-            }).catch(err=>console.log(err));
-
-          }
-        }else{
-          for (let i = this.mensajes.length -1; i > 0; i--){
-            console.log(this.mensajes[i].id)
-            if(this.mensajes[i].id===mensaje.doc.id){
-              this.mensajes[i].state=true;
-
-              this.dbMessages.setItem(mensaje.doc.id,{
-                id:mensaje.doc.id,
-                ...mensaje.doc.data(),
-                timestamp:mensaje.doc.data().timestamp.toDate(),
-                state:true
-              }).catch(error=>console.log(error));
-
-              break;
-            }
-          }
-        }
-      })
-    });
-
+    const ref=this.firestore.collection("messages")
+    .doc(this.idChat).collection<IMessage>("messages")
+    .ref;
+    this.mensajesSubscribe=this.chatService.subscribeMessages(ref);
   }
 
   ngOnDestroy(){
@@ -164,17 +111,11 @@ export class ChatPage implements OnInit, OnDestroy{
     const mensaje=this.mensaje.value;
     const timestamp=firebase.default.firestore.FieldValue.serverTimestamp()
 
-    // this.db.setItemChat(this.idChat,{
-    //   ...this.chat,
-    //   lastMessage:mensaje
-    // })
-
     this.firestore.collection("messages").doc(this.idChat).collection("messages").add({
       message:mensaje,
       user:this.userName,
       type:"text",
       timestamp:timestamp
-    }).then(()=>{
     }).catch(error=>{
       console.log(error);
     });
@@ -237,16 +178,7 @@ export class ChatPage implements OnInit, OnDestroy{
     }
   }
 
-  async presentPopoverMessage(ev: any,message:IMessage) {
-    const popover = await this.popoverController.create({
-      component: PopoverChatMessageComponent,
-      event: ev,
-      componentProps:{"message":message}
-    });
-    return await popover.present();
-  }
-
-  loadData(e:any){
-    console.log(e)
+  trackByFn(index:number, item:IMessage):string{
+    return item.id;
   }
 }
