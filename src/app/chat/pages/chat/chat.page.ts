@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import { ChatService } from './chat.service';
 import { IMessage } from './../../interfaces/message.interface';
 import { IChat } from './../../interfaces/chat.interface';
@@ -31,7 +32,7 @@ export class ChatPage implements OnInit, OnDestroy{
   chat:IChat;
   dbMessages:ILocalForage;
   dbUsers:ILocalForage;
-  mensajesSubscribe:any;
+  mensajesSubscribe:Subscription;
   tiempoGrabacion:string='00:00';
   bucleTime:NodeJS.Timeout;
   cancelar:boolean=false;
@@ -80,96 +81,99 @@ export class ChatPage implements OnInit, OnDestroy{
           this.contactName=userName;
         };
       });
-
     }).catch(err=>console.log(err));
 
-    let cont=0;
+    let arrMessages=[];
     this.dbMessages.iterate((values)=>{
-      this.mensajes[cont]={
-          ...values
-        }
-      cont++;
+      arrMessages.push(values);
     }).then(()=>{
-      this.mensajes=this.chatService.orderMessages(this.mensajes)
+      this.mensajes=this.chatService.orderMessages(arrMessages);
     })
     .catch(error=>{
       console.log(error);
     });
-
-    const a=this.firestore.collection("messages")
-    .doc(this.idChat).collection<IMessage>("messages").ref
 
     const ref=this.firestore.collection("messages")
     .doc(this.idChat).collection<IMessage>("messages")
     .ref;
 
     this.mensajesSubscribe=this.chatService.getMessages(ref, this.idChat, this.userName)
-    .subscribe(resp=>{
-      //Si viene más de un mensaje
-      if(resp.length>1){
-        for (let index = 0; index < resp.length; index++) {
-          const message=resp[index].doc.data();
-          console.log(resp[index].type,message);
-          //Si es un mensaje nuevo
-          if(resp[index].type!=='removed'){
-            //Comprobamos si es un mensaje que fue visto
-            if(message.state===true){
-              //Lo agregamos a la base de datos local
-              this.dbMessages.setItem(message.id,{
-                ...message,
-                state:true
-              })
-              .then(resp=>{})
-              .catch(error=>console.log(error));
-
-            }
+    .subscribe(messagesResp=>{
+      //Comprobamos si los mensaje fueron visto y no se detectó
+      for (let index = this.mensajes.length-1; index > 0; index--){
+        const mensaje = this.mensajes[index];
+        if(mensaje.user===this.userName){
+          if(mensaje.state===false){
+            this.dbMessages.setItem(mensaje.id,{
+              ...mensaje,
+              download:false,
+              state:true
+            })
+            .then(resp=>{
+              this.mensajes[index]=resp;
+            })
+            .catch(error=>console.log(error));
           }else{
-            if(message.user!==this.userName){
-              this.firestore.collection("messages").doc(this.idChat)
-              .collection("messages").doc(message.id)
-              .delete()
-              .catch(error=>{
-                console.log(error);
-              });
+            break;
+          }
+        }
+      }
+
+      let arrMensajes:IMessage[]=[];
+      messagesResp.forEach((mensaje,index)=>{
+        arrMensajes=[];
+        if(mensaje.type!=='removed'){
+          if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
+            this.dbMessages.getItem(mensaje.doc.id)
+            .then(resp=>{
+              if(!resp){
+                const data=mensaje.doc.data() as IMessage;
+
+                const message={
+                  ...data,
+                  id:mensaje.doc.id,
+                  download:false,
+                  timestamp:data.timestamp.toDate(),
+                  state:false
+                };
+
+                arrMensajes.push(message);
+                //Agregamos a la DB Local y lo eliminamos de Firebase si no lo envió el ususario
+                this.chatService.addMessage(message);
+
+                //Agregamos todos los mensajes cuando se procese el último
+                if(index===messagesResp.length-1){
+                  Array.prototype.push.apply(this.mensajes,arrMensajes)
+                }
+              }
+            }).catch(err=>console.log(err));
+          }
+        }else{
+          for (let i = this.mensajes.length -1; i > 0; i--){
+            if(this.mensajes[i].id===mensaje.doc.id){
+              this.mensajes[i].state=true;
+
+              this.dbMessages.setItem(mensaje.doc.id,{
+                id:mensaje.doc.id,
+                ...mensaje.doc.data(),
+                timestamp:mensaje.doc.data().timestamp.toDate(),
+                state:true
+              }).catch(error=>console.log(error));
+              break;
             }
           }
         }
-      }else{
-        const data=resp[0].doc.data();
-        console.log(resp[0].type,data);
-        this.mensajes.push({
-          ...data,
-          id:resp[0].doc.id,
-          download:false,
-          timestamp:data.timestamp.toDate(),
-          state:false
-        })
-      }
-    })
+      })
+    });
   }
 
   ngOnDestroy(){
-    this.mensajesSubscribe();
+    this.mensajesSubscribe.unsubscribe();
   }
 
   agregarMensaje(){
-    const mensaje=this.mensaje.value;
-    const timestamp=firebase.default.firestore.FieldValue.serverTimestamp()
-
-    this.firestore.collection("messages").doc(this.idChat).collection("messages").add({
-      message:mensaje,
-      user:this.userName,
-      type:"text",
-      timestamp:timestamp
-    }).catch(error=>{
-      console.log(error);
-    });
-
-    this.firestore.collection("chats").doc(this.idChat).update({//Agregar ultimo mensaje al chat
-      lastMessage:`${mensaje}`,
-      timestamp:timestamp
-    })
-
+    const message=this.mensaje.value;
+    this.chatService.addMessageInFirebase(message);
     this.mensaje.setValue('');
   }
 
@@ -205,7 +209,6 @@ export class ChatPage implements OnInit, OnDestroy{
       this.tiempoGrabacion=minute + ':' + second;
     }
     ,1000);
-
   }
 
   stop(){

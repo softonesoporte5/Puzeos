@@ -4,6 +4,7 @@ import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IMessage } from './../../interfaces/message.interface';
 import { Injectable, OnInit } from '@angular/core';
 import { CollectionReference, AngularFirestore, DocumentChange } from '@angular/fire/firestore';
+import * as firebase from 'firebase';
 
 @Injectable({
   providedIn: 'root'
@@ -20,65 +21,11 @@ export class ChatService implements OnInit{
     private firestore:AngularFirestore
   ) { }
 
-  ngOnInit(){}
+  ngOnInit(){console.log("test")}
 
   subscribeMessages(ref:CollectionReference<IMessage>){
     ref.onSnapshot(resp=>{
       this.messages$.next(resp.docChanges());
-      console.log(resp.docChanges());
-
-      /*resp.docChanges().forEach(mensaje=>{
-        if(mensaje.type!=='removed'){
-          if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
-            this.dbMessages.getItem(mensaje.doc.id)
-            .then(resp=>{
-              if(!resp){
-                const data=mensaje.doc.data() as IMessage;
-
-                // this.messages$.next({
-                //   ...data,
-                //   id:mensaje.doc.id,
-                //   download:false,
-                //   timestamp:data.timestamp.toDate(),
-                //   state:false
-                // });
-
-                if(data.user!==this.userName){
-                  this.firestore.collection("messages").doc(this.idChat)
-                  .collection("messages").doc(mensaje.doc.id)
-                  .delete()
-                  .catch(error=>{
-                    console.log(error);
-                  });
-                }
-
-                this.dbMessages.setItem(mensaje.doc.id,{
-                  id:mensaje.doc.id,
-                  ...data,
-                  download:false,
-                  timestamp:data.timestamp.toDate(),
-                  state:false
-                }).catch(error=>console.log(error));
-              }
-            }).catch(err=>console.log(err));
-          }
-        }else{
-          for (let i = this.messages.length -1; i > 0; i--){
-            if(this.messages[i].id===mensaje.doc.id){
-              this.messages[i].state=true;
-
-              this.dbMessages.setItem(mensaje.doc.id,{
-                id:mensaje.doc.id,
-                ...mensaje.doc.data(),
-                timestamp:mensaje.doc.data().timestamp.toDate(),
-                state:true
-              }).catch(error=>console.log(error));
-
-              break;
-            }
-          }
-        }
-      })*/
     });
   }
 
@@ -104,10 +51,42 @@ export class ChatService implements OnInit{
       if (a.timestamp < b.timestamp) {
         return -1;
       }
-      // a must be equal to b
       return 0;
     });
 
     return messageArr;
   }
+
+  addMessage(message:IMessage){
+    if(message.user!==this.userName){
+      this.firestore.collection("messages").doc(this.idChat)
+      .collection("messages").doc(message.id)
+      .delete()
+      .catch(error=>{
+        console.log(error);
+      });
+    }
+
+    this.dbMessages.setItem(message.id,message)
+    .catch(error=>console.log(error));
+  }
+
+  addMessageInFirebase(message:string){
+    const timestamp=firebase.default.firestore.FieldValue.serverTimestamp();
+
+    this.firestore.collection("messages").doc(this.idChat).collection("messages").add({
+      message:message,
+      user:this.userName,
+      type:"text",
+      timestamp:timestamp
+    }).catch(error=>{
+      console.log(error);
+    });
+
+    this.firestore.collection("chats").doc(this.idChat).update({//Agregar ultimo mensaje al chat
+      lastMessage:`${message}`,
+      timestamp:timestamp
+    });
+  }
 }
+

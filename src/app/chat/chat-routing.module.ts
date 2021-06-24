@@ -23,6 +23,10 @@ const routes:Routes=[
     loadChildren: () => import('./pages/blocked-users/blocked-users.module').then( m => m.BlockedUsersPageModule)
   },
   {
+    path: 'search-message',
+    loadChildren: () => import('./pages/search-message/search-message.module').then( m => m.SearchMessagePageModule)
+  },
+  {
     path:'**',
     pathMatch:'full',
     redirectTo:''

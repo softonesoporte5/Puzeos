@@ -33,13 +33,24 @@
     </ion-infinite-scroll-content>
   </ion-infinite-scroll> -->
 
-  <app-item-message
-    *ngFor="let mensaje of mensajes; trackBy: trackByFn"
-    [message]="mensaje"
-    [userName]="userName"
-    [dbMessage]="dbMessages"
-    [content]="content"
-  ></app-item-message>
+  <span *ngFor="let mensaje of mensajes; trackBy: trackByFn; last as isLast">
+    <app-item-message
+      *ngIf="mensaje.type==='voice'"
+      [message]="mensaje"
+      [userName]="userName"
+      [last]="isLast"
+      [dbMessage]="dbMessages"
+      [content]="content"
+    ></app-item-message>
+    <app-item-message
+      *ngIf="mensaje.type!=='voice'"
+      [message]="mensaje"
+      [userName]="userName"
+      [last]="isLast"
+      [content]="content"
+    ></app-item-message>
+  </span>
+
 </div>
 
 <ion-footer>

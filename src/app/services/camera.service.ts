@@ -2,7 +2,7 @@ import { CropperjsService } from './cropperjs.service';
 import { FirebaseStorageService } from './firebase-storage.service';
 import { Injectable } from '@angular/core';
 import { Plugins, CameraResultType, CameraPhoto, FilesystemDirectory, FilesystemEncoding, Capacitor } from '@capacitor/core';
-import { CropResult } from '@triplesense/capacitor-image-cropx';
+//import { CropResult } from '@triplesense/capacitor-image-cropx';
 import { IUser } from '../chat/interfaces/user.interface';
 const { ImageCropxPlugin } = Plugins;
 

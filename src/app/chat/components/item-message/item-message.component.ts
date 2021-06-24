@@ -1,7 +1,7 @@
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { PopoverController } from '@ionic/angular';
 import { IMessage } from './../../interfaces/message.interface';
-import { AfterContentInit, AfterViewChecked, AfterViewInit, Component, Input } from '@angular/core';
+import { AfterViewChecked, Component, Input, OnInit } from '@angular/core';
 import { PopoverChatMessageComponent } from '../popover-chat-message/popover-chat-message.component';
 
 @Component({
@@ -9,22 +9,26 @@ import { PopoverChatMessageComponent } from '../popover-chat-message/popover-cha
   templateUrl: './item-message.component.html',
   styleUrls: ['./item-message.component.scss'],
 })
-export class ItemMessageComponent implements AfterViewChecked {
+export class ItemMessageComponent implements AfterViewChecked, OnInit {
 
   @Input("message") message:IMessage;
-  @Input("userName") userName:string;
-  @Input("dbMessage") dbMessage:ILocalForage;
+  @Input("last") last:boolean;
   @Input("content") content:HTMLElement;
-  cont=0;
+  @Input("userName") userName:string;
+  @Input("dbMessage") dbMessage?:ILocalForage;
 
   constructor(
     private popoverController: PopoverController
   ) {}
+  ngOnInit() {
+    if(this.last===true){
+      console.log("b")
+    }
+  }
 
   ngAfterViewChecked() {
-    if(this.cont===0){
+    if(this.last===true){
       this.content.lastElementChild.scrollIntoView(false);
-      this.cont++;
     }
   }
 
