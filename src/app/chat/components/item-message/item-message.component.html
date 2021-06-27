@@ -3,7 +3,6 @@
   [class]="userName===message.user?'enviado':''"
 >
   <ion-card-content
-
     *ngIf="message.type==='text'"
     (click)="presentPopoverMessage($event,message)"
   >

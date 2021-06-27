@@ -1,3 +1,4 @@
+import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IUser } from './../../interfaces/user.interface';
 import { AngularFirestore} from '@angular/fire/firestore';
@@ -5,7 +6,6 @@ import { Subscription } from 'rxjs';
 import { AppService } from './../../../app.service';
 import { Component, OnInit } from '@angular/core';
 import { MenuController } from '@ionic/angular';
-import { IChat} from '../../interfaces/chat.interface';
 import * as firebase from 'firebase';
 import { DbService } from 'src/app/services/db.service';
 
@@ -34,20 +34,21 @@ export class HomePage implements OnInit{
   ngOnInit() {
     this.dbChats=this.db.loadStore('chats');
     this.dbUsers=this.db.loadStore("users");
-    let cont=0;
     this.dbChats.iterate((values,key)=>{
       this.chatsObj[key]={
         id:key,
-        pos:cont,
         ...values
       }
-      cont++;
     }).then(()=>{
       this.orderChats();
       //Nos subscribimos a los chats de manera local
       this.db.getItemsChat()
       .subscribe(resp=>{
-        console.log(resp);
+        let chat=resp as IChat;
+        this.chatsObj[chat.id]={
+          ...chat
+        }
+        this.orderChats();
       });
     })
     .catch(err=>console.log(err));
@@ -85,7 +86,6 @@ export class HomePage implements OnInit{
               this.chatsObj[chat]={
                 ...resp,
                 id:chat,
-                pos:cont,
                 timestamp:resp.timestamp.toDate()
               }
 
@@ -111,7 +111,6 @@ export class HomePage implements OnInit{
               this.chatsObj[user.chats[index]]={
                 ...chat,
                 id:user.chats[index],
-                pos:index,
                 timestamp:chat.timestamp.toDate()
               }
               this.orderChats();

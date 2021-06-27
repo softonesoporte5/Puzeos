@@ -22,7 +22,6 @@ export class ItemMessageComponent implements AfterViewChecked, OnInit {
   ) {}
   ngOnInit() {
     if(this.last===true){
-      console.log("b")
     }
   }
 

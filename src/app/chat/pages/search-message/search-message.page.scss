@@ -3,3 +3,23 @@
   align-items:center;
   padding-right: 1rem;
 }
+
+.agrupar{
+  display: flex;
+  justify-content: space-between;
+  p{
+    flex:1;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+ion-item{
+  cursor: pointer;
+}
+
+.bold{
+  color:black;
+  font-weight: 500;
+}

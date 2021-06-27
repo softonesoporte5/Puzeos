@@ -1,3 +1,5 @@
+import { DbService } from './db.service';
+import { ILocalForage } from './../chat/interfaces/localForage.interface';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { Injectable } from '@angular/core';
@@ -11,10 +13,15 @@ import { IUser } from '../chat/interfaces/user.interface';
 
 export class FirebaseStorageService {
 
+  dbChat:ILocalForage;
+
   constructor(
     private storage:AngularFireStorage,
-    private firestore:AngularFirestore
-  ) { }
+    private firestore:AngularFirestore,
+    private db:DbService
+  ) {
+    this.dbChat=this.db.loadStore("chats");
+  }
 
   uploadAudio(audio:Blob,userName:string,idChat:string){
     const date=new Date().valueOf();
@@ -44,7 +51,15 @@ export class FirebaseStorageService {
 
         this.firestore.collection("chats").doc(idChat).update({//Agregar ultimo mensaje al chat
           lastMessage:`${mensaje}`
-        })
+        }).then(()=>{
+          this.dbChat.getItem(idChat)
+          .then(chat=>{
+            this.db.setItemChat(idChat,{
+              ...chat,
+              lastMessage:mensaje
+            })
+          }).catch(err=>console.log(err));
+        }).catch(err=>console.log(err));
       });
 
     }).catch(error=>{

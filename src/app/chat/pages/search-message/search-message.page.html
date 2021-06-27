@@ -27,5 +27,20 @@
 </ion-header>
 
 <ion-content>
-
+  <ion-item detail="false" *ngFor="let message of messages">
+    <ion-label>
+      <span class="agrupar">
+        {{message.userSend}}
+        <ion-text color="tertiary">{{message.timestamp | date: 'shortTime'}}</ion-text>
+      </span>
+      <ion-text color="tertiary" class="agrupar">
+        <p>
+          <span *ngIf="message.user===user.userName">Tú: </span>
+          <span>{{message.message.substr(0,message.index)}}</span>
+          <span class="bold">{{message.message.substr(message.index,searchTxt.value.length)}}</span>
+          <span>{{message.message.substr(message.index+searchTxt.value.length)}}</span>
+        </p>
+      </ion-text>
+    </ion-label>
+  </ion-item>
 </ion-content>

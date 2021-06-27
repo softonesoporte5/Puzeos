@@ -1,5 +1,5 @@
 import { DbService } from 'src/app/services/db.service';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IMessage } from './../../interfaces/message.interface';
 import { Injectable, OnInit } from '@angular/core';
@@ -15,25 +15,30 @@ export class ChatService implements OnInit{
   dbMessages:ILocalForage;
   userName:string;
   idChat:string;
+  dbChat:ILocalForage;
+  updateSubscription:any;
 
   constructor(
     private db:DbService,
     private firestore:AngularFirestore
   ) { }
 
-  ngOnInit(){console.log("test")}
+  ngOnInit(){
+  }
 
   subscribeMessages(ref:CollectionReference<IMessage>){
-    ref.onSnapshot(resp=>{
+    this.updateSubscription=ref.onSnapshot(resp=>{
       this.messages$.next(resp.docChanges());
-    });
+    })
   }
 
   getMessages(ref:CollectionReference<IMessage>, idChat:string, userName:string){
+    this.subscribeMessages(ref);
     this.dbMessages=this.db.loadStore("messages"+idChat);
     this.idChat=idChat;
+    this.dbChat=this.db.loadStore("chats");
+
     this.userName=userName;
-    this.subscribeMessages(ref);
     return this.messages$.asObservable();
   }
 
@@ -57,7 +62,7 @@ export class ChatService implements OnInit{
     return messageArr;
   }
 
-  addMessage(message:IMessage){
+  addMessage(message:IMessage,idChat:string){
     if(message.user!==this.userName){
       this.firestore.collection("messages").doc(this.idChat)
       .collection("messages").doc(message.id)
@@ -66,6 +71,17 @@ export class ChatService implements OnInit{
         console.log(error);
       });
     }
+
+    this.dbChat.getItem(idChat)
+    .then(resp=>{
+      if(resp){
+        this.db.setItemChat(idChat,{
+          ...resp,
+          lastMessage:message.message,
+          timestamp:message.timestamp
+        });
+      }
+    })
 
     this.dbMessages.setItem(message.id,message)
     .catch(error=>console.log(error));
@@ -87,6 +103,10 @@ export class ChatService implements OnInit{
       lastMessage:`${message}`,
       timestamp:timestamp
     });
+  }
+
+  unsubscribe(){
+    this.updateSubscription();
   }
 }
 

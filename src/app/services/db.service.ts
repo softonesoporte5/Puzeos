@@ -26,12 +26,14 @@ export class DbService{
 
   setItemChat(idChat:string,value:IChat){
     this.dbChats.setItem(idChat,value)
-    .then((resp)=>this.dbChats$.next(resp))
+    .then((resp)=>{
+      this.dbChats$.next({...resp,id:idChat})
+    })
     .catch(err=>console.log(err));
   }
 
   getItemsChat(){
-    return this.dbChats$.asObservable();
+    return this.dbChats$.asObservable() ;
   }
 
   cargarItemsChat(){
