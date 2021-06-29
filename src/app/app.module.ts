@@ -1,3 +1,4 @@
+import { FileChooser } from '@ionic-native/file-chooser/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { NgModule } from '@angular/core';
@@ -35,6 +36,7 @@ import { ImageCropperModule } from 'ngx-image-cropper';
   providers: [
     FileOpener,
     File,
+    FileChooser,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
   bootstrap: [AppComponent],

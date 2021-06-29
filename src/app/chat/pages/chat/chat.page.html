@@ -92,13 +92,7 @@
         [class]="tooglePress?'footer-grabando loc__btns-footer':'loc__btns-footer'"
         *ngIf="miFormulario.invalid;else btnEnviar"
       >
-          <ion-button *ngIf="tooglePress===false" slot="icon-only">
-            <ion-icon
-              name="attach-sharp"
-              color="secondary"
-              class="loc_icon-footer"
-            ></ion-icon>
-          </ion-button>
+         <app-file-selector *ngIf="tooglePress===false"></app-file-selector>
 
           <ion-item-sliding (ionDrag)="handleSlide($event)" #sliding>
             <ion-item >

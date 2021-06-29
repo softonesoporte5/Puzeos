@@ -1,7 +1,7 @@
 import { CropperjsService } from './cropperjs.service';
 import { FirebaseStorageService } from './firebase-storage.service';
 import { Injectable } from '@angular/core';
-import { Plugins, CameraResultType, CameraPhoto, FilesystemDirectory, FilesystemEncoding, Capacitor } from '@capacitor/core';
+import { Plugins, CameraResultType, CameraPhoto, FilesystemDirectory, FilesystemEncoding, Capacitor, CameraSource } from '@capacitor/core';
 //import { CropResult } from '@triplesense/capacitor-image-cropx';
 import { IUser } from '../chat/interfaces/user.interface';
 const { ImageCropxPlugin } = Plugins;
@@ -19,6 +19,23 @@ export class CameraService {
     private firebaseStorage:FirebaseStorageService,
     private cropperjsService:CropperjsService
   ) {}
+
+  async openGallery(){
+    const image = await Camera.getPhoto({
+      source:CameraSource.Photos,
+      allowEditing: true,
+      resultType: CameraResultType.Uri
+    });
+
+    console.log(image)
+
+     /* Camera.getPhoto({
+        source:CameraSource.Photos,
+        resultType:CameraResultType.Uri,
+      }).then(resp=>{
+        console.log(resp);
+      })*/
+  }
 
   takePicture = async(user:IUser)=>{
     const cameraPhoto = await Camera.getPhoto({

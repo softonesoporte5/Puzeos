@@ -1,3 +1,4 @@
+import { FileSelectorComponent } from './../../components/file-selector/file-selector.component';
 import { ItemMessageComponent } from './../../components/item-message/item-message.component';
 import { PopoverChatMessageComponent } from './../../components/popover-chat-message/popover-chat-message.component';
 import { AudioComponent } from './../../components/audio/audio.component';
@@ -31,7 +32,8 @@ import { HttpClientModule } from '@angular/common/http';
     AudioComponent,
     PopoverChatComponent,
     PopoverChatMessageComponent,
-    ItemMessageComponent
+    ItemMessageComponent,
+    FileSelectorComponent
   ]
 })
 export class ChatPageModule {}
