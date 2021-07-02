@@ -67,12 +67,12 @@ export class MenuComponent implements OnInit {
           icon: 'camera-sharp',
           handler: () => {
             this.camara.takePicture(this.user).then(resp=>{
-              this.dbUsers.setItem(this.user.id,{
+              /*this.dbUsers.setItem(this.user.id,{
                 ...this.user.data,
                 imageUrl:resp.firebasePath,
                 imageUrlLoc:resp.filepath
               }).catch(err=>console.log(err));
-              this.imgPath=resp.base64Data;
+              this.imgPath=resp.base64Data;*/
             })
           }
         },

@@ -6,7 +6,9 @@ export interface IMessage{
   ref?:string,
   download:boolean,
   state?:boolean,
-  id?:string
+  id?:string,
+  localRef?:string,
+  fileName?:string
 }
 
 export interface IMessageSearch{

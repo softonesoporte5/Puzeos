@@ -92,7 +92,11 @@
         [class]="tooglePress?'footer-grabando loc__btns-footer':'loc__btns-footer'"
         *ngIf="miFormulario.invalid;else btnEnviar"
       >
-         <app-file-selector *ngIf="tooglePress===false"></app-file-selector>
+         <app-file-selector
+          *ngIf="tooglePress===false"
+          [userName]="userName"
+          [idChat]="idChat"
+        ></app-file-selector>
 
           <ion-item-sliding (ionDrag)="handleSlide($event)" #sliding>
             <ion-item >

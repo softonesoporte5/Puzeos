@@ -13,6 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 import * as firebase from 'firebase';
 import { IonItemSliding, PopoverController } from '@ionic/angular';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-chat',

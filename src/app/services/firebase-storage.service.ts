@@ -87,4 +87,17 @@ export class FirebaseStorageService {
 
     return refUrl;
   }
+
+  async uploadImageInChat(data:string,userName:string){
+    const date=new Date().valueOf();
+    const randomId=Math.round(Math.random()*1000)+date;
+    const refUrl=`${userName}/send/${randomId}.jpeg`;
+    const ref = this.storage.ref(refUrl);
+
+    await ref.putString(data, 'data_url').then(resp=>{
+
+    }).catch(err=>console.log(err));
+
+    return refUrl;
+  }
 }

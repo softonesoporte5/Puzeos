@@ -1,12 +1,12 @@
 import { CropperjsService } from './cropperjs.service';
 import { FirebaseStorageService } from './firebase-storage.service';
 import { Injectable } from '@angular/core';
-import { Plugins, CameraResultType, CameraPhoto, FilesystemDirectory, FilesystemEncoding, Capacitor, CameraSource } from '@capacitor/core';
+import { Plugins } from '@capacitor/core';
 //import { CropResult } from '@triplesense/capacitor-image-cropx';
+import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
+
 import { IUser } from '../chat/interfaces/user.interface';
 const { ImageCropxPlugin } = Plugins;
-
-const { Camera, Filesystem } = Plugins;
 
 @Injectable({
   providedIn: 'root'
@@ -17,17 +17,24 @@ export class CameraService {
 
   constructor(
     private firebaseStorage:FirebaseStorageService,
-    private cropperjsService:CropperjsService
+    private cropperjsService:CropperjsService,
+    private camera:Camera
   ) {}
 
   async openGallery(){
-    const image = await Camera.getPhoto({
-      source:CameraSource.Photos,
-      allowEditing: true,
-      resultType: CameraResultType.Uri
-    });
+    let cameraOptions = {
+      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY,
+      destinationType: this.camera.DestinationType.FILE_URI,
+      quality: 100,
+      targetWidth: 1000,
+      targetHeight: 1000,
+      encodingType: this.camera.EncodingType.JPEG,
+      correctOrientation: true
+    }
 
-    console.log(image)
+    this.camera.getPicture(cameraOptions)
+      .then(file_uri => console.log(file_uri),
+      err => console.log(err));
 
      /* Camera.getPhoto({
         source:CameraSource.Photos,
@@ -38,16 +45,19 @@ export class CameraService {
   }
 
   takePicture = async(user:IUser)=>{
-    const cameraPhoto = await Camera.getPhoto({
-      quality: 90,
-      allowEditing: true,
-      resultType: CameraResultType.Uri
+    const cameraPhoto = await this.camera.getPicture({
+      quality: 100,
+      destinationType: this.camera.DestinationType.FILE_URI,
+      encodingType: this.camera.EncodingType.JPEG,
+      mediaType: this.camera.MediaType.PICTURE,
     });
 
-    const base64Data = await this.readAsBase64(cameraPhoto);
+    const base64Data = 'data:image/jpeg;base64,' + cameraPhoto;
 
-    const response = await fetch(cameraPhoto.webPath);
-    const blob = await response.blob();
+    //const base64Data = await this.readAsBase64(cameraPhoto);
+
+    //const response = await fetch(cameraPhoto.webPath);
+    //const blob = await response.blob();
 
   //   ImageCropxPlugin.show({
   //     source:base64Data,
@@ -60,20 +70,20 @@ export class CameraService {
   // .catch(err =>{console.log(err)})
 
     //Agregar a firebaseStorage
-    const photoFirebase=await this.firebaseStorage.uploadPhoto(blob, user);
-    console.log(photoFirebase);
+    //const photoFirebase=await this.firebaseStorage.uploadPhoto(blob, user);
+    //console.log(photoFirebase);
 
     // Write the file to the data directory
-    const fileName = new Date().getTime() + '.jpeg';
+    //const fileName = new Date().getTime() + '.jpeg';
 
-    return {
+    /*return {
       filepath: fileName,
       firebasePath:photoFirebase,
       base64Data:base64Data
-    };
+    };*/
   }
 
-  private async readAsBase64(cameraPhoto: CameraPhoto) {
+  /*private async readAsBase64(cameraPhoto: CameraPhoto) {
 
     // Fetch the photo, read as a blob, then convert to base64 format
     const response = await fetch(cameraPhoto.webPath);
@@ -89,5 +99,5 @@ export class CameraService {
         resolve(reader.result);
     };
     reader.readAsDataURL(blob);
-  });
+  });*/
 }
