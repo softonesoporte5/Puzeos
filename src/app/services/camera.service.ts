@@ -1,12 +1,10 @@
 import { CropperjsService } from './cropperjs.service';
 import { FirebaseStorageService } from './firebase-storage.service';
 import { Injectable } from '@angular/core';
-import { Plugins } from '@capacitor/core';
 //import { CropResult } from '@triplesense/capacitor-image-cropx';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 
 import { IUser } from '../chat/interfaces/user.interface';
-const { ImageCropxPlugin } = Plugins;
 
 @Injectable({
   providedIn: 'root'

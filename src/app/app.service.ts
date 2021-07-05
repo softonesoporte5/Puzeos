@@ -20,13 +20,18 @@ export class AppService {
   }
 
   obtenerUsuario(){
-    //return this.dbUsers.getItem(firebase.default.auth().currentUser.uid);
-
     return this.firestore.collection("users").doc(firebase.default.auth().currentUser.uid).valueChanges() as Observable<IUserData>;
   }
 
+  private getFileReader(): FileReader {
+    const fileReader = new FileReader();
+    const zoneOriginalInstance = (fileReader as any)["__zone_symbol__originalInstance"];
+    return zoneOriginalInstance || fileReader;
+  }
+
   convertBlobToBase64=(blob:Blob)=>new Promise((resolve,reject)=>{
-    const reader=new FileReader;
+    console.log("netro")
+    const reader=this.getFileReader();
     reader.onerror=reject;
     reader.onload=()=>resolve(reader.result);
     reader.readAsDataURL(blob);

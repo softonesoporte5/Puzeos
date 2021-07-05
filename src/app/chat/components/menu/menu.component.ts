@@ -6,10 +6,9 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { ActionSheetController } from '@ionic/angular';
-import {Plugins, FilesystemDirectory} from '@capacitor/core';
-import * as firebase from 'firebase';
-
+import {Plugins, FilesystemDirectory, FilesystemEncoding} from '@capacitor/core';
 const {Filesystem} = Plugins;
+import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-menu',

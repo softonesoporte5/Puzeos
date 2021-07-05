@@ -1,7 +1,6 @@
 import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { IMediaRecorder, MediaRecorder } from 'extendable-media-recorder';
-import { DomSanitizer } from '@angular/platform-browser';
 
 @Injectable({
   providedIn: 'root'
@@ -36,5 +35,4 @@ export class MediaRecorderService {
   stop(){
     this.mediaRecorder.stop();
   }
-
 }

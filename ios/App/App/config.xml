@@ -6,6 +6,10 @@
     <param name="ios-package" value="CDVCamera"/>
   </feature>
 
+  <feature name="Chooser">
+    <param name="ios-package" value="Chooser"/>
+  </feature>
+
   <feature name="CropPlugin">
     <param name="ios-package" value="CTCrop"/>
   </feature>
@@ -17,6 +21,14 @@
 
   <feature name="FileOpener2">
     <param name="ios-package" value="FileOpener2"/>
+  </feature>
+
+  <feature name="Media">
+    <param name="ios-package" value="CDVSound"/>
+  </feature>
+
+  <feature name="Capture">
+    <param name="ios-package" value="CDVCapture"/>
   </feature>
 
   

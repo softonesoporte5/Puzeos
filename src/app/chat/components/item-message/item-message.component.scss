@@ -2,6 +2,7 @@ ion-card{
   --color:black;
   width: 85%;
   padding: 6px;
+  max-height: 24rem;
   box-shadow: 0px 0 3px gray;
   margin: 5px;
   float: left;
@@ -12,6 +13,8 @@ ion-card{
     display: flex;
     flex-direction: column;
     font-weight: 600;
+    max-height: 23rem;
+    max-width: 100%;
 
     ion-text{
       flex: 1;
@@ -28,6 +31,11 @@ ion-card{
 }
 
 .enviado{
-  --background:#c4a3e2;
+  --background:#c4a3e294;
   float: right;
+}
+
+app-image-message{
+  max-height: 22rem;
+  overflow: hidden;
 }

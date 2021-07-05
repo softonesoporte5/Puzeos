@@ -5,8 +5,9 @@ import { IMessage } from './../../interfaces/message.interface';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import {Howl} from 'howler';
 import { IonRange } from '@ionic/angular';
-import {Plugins, FilesystemDirectory, FilesystemEncoding} from '@capacitor/core';
 import { HttpClient, HttpEventType } from '@angular/common/http';
+
+import {Plugins, FilesystemDirectory, FilesystemEncoding} from '@capacitor/core';
 const {Filesystem} = Plugins;
 
 const FILE_KEY='files';
@@ -29,7 +30,6 @@ export class AudioComponent implements OnInit {
   downloadProgress=0;
   downloadUrl:string;
   messageDB:IMessage;
-
   constructor(
     private http:HttpClient,
     private firebaseService:FirebaseStorageService,
@@ -63,36 +63,28 @@ export class AudioComponent implements OnInit {
   }
 
   downloadFile(){
-    console.log("Descargando...");
     this.descargar=2;
-    this.firebaseService.getAudio(this.audio.ref).
+
+    let storageSubscribe=this.firebaseService.getAudio(this.audio.ref).
     subscribe(resul=>{
-      console.log("linea 80")
       this.downloadUrl=resul;
-      this.http.get(this.downloadUrl,{
+
+      let httpSubscribe=this.http.get(this.downloadUrl,{
         responseType:'blob',
         reportProgress:true,
         observe:'events'
       }).subscribe(async event=>{
-        console.log("linea 87")
-
         if(event.type===HttpEventType.DownloadProgress){
-          console.log("linea 90")
-
           this.downloadProgress=Math.round((100*event.loaded)/event.total);
 
         }else if(event.type===HttpEventType.Response){
-          console.log("linea 94")
-
           this.downloadProgress=0;
-
           let base64;
 
           const name='audio'+this.audio.id+'.ogg';
           this.appService.convertBlobToBase64(event.body)
           .then((result:string | ArrayBuffer)=>{
             base64=result;
-
             Filesystem.writeFile({
               path:'audio/'+name,
               data:base64,
@@ -113,6 +105,9 @@ export class AudioComponent implements OnInit {
                 download:true,
                 ref:'audio/'+name
               }).catch(err=>console.log(err));
+
+              storageSubscribe.unsubscribe();
+              httpSubscribe.unsubscribe();
             }).catch(err=>console.log(err));
           }).catch(err=>console.log(err));
         }

@@ -1,23 +1,25 @@
 <div *ngIf="image.user===userName">
-  <img [src]="imageUrl" alt="Imágen">
+  <img [src]="imageUrl" alt="Imágen" (click)="openModal()">
 </div>
 
-<!-- <div *ngIf="image.download===false">
-  <ion-button>
+<div *ngIf="image.user!==userName">
+  <img
+    [src]="imageUrl"
+    alt="Imágen"
+    *ngIf="image.download===true"
+    (click)="openModal()"
+  >
+
+  <ion-button
+    *ngIf="image.download===false"
+    color="secondary"
+    expand="block"
+  >
     <ion-icon
-      slot="icon-only"
       name="arrow-down-circle-outline"
+      slot="icon-only"
     ></ion-icon>
+    <p>Descargar imágen</p>
   </ion-button>
-  <ion-label>Imágen</ion-label>
 </div>
 
-<div *ngIf="image.download===true">
-  <ion-button>
-    <ion-icon
-      slot="icon-only"
-      name="arrow-down-circle-outline"
-    ></ion-icon>
-  </ion-button>
-  <ion-label>Imágen</ion-label>
-</div> -->

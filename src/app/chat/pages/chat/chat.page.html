@@ -35,7 +35,7 @@
 
   <span *ngFor="let mensaje of mensajes; trackBy: trackByFn; last as isLast">
     <app-item-message
-      *ngIf="mensaje.type==='voice'"
+      *ngIf="mensaje.type!=='text'"
       [message]="mensaje"
       [userName]="userName"
       [last]="isLast"
@@ -43,7 +43,7 @@
       [content]="content"
     ></app-item-message>
     <app-item-message
-      *ngIf="mensaje.type!=='voice'"
+      *ngIf="mensaje.type==='text'"
       [message]="mensaje"
       [userName]="userName"
       [last]="isLast"

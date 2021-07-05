@@ -23,7 +23,7 @@
   </ion-card-content>
 
   <ion-card-content *ngIf="message.type==='image'">
-    <app-image-message [image]="message" [userName]="userName"></app-image-message>
+    <app-image-message [image]="message" [userName]="userName" [dbMessages]="dbMessage"></app-image-message>
     <ion-text color="tertiary">{{message.timestamp | date: 'shortTime'}}</ion-text>
   </ion-card-content>
 

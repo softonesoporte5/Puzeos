@@ -1,9 +1,15 @@
-import { FilePath } from '@ionic-native/file-path/ngx';
+import { ImageModalComponent } from './../image-modal/image-modal.component';
+import { ILocalForage } from './../../interfaces/localForage.interface';
+import { AppService } from './../../../app.service';
+import { HttpClient, HttpEventType } from '@angular/common/http';
 import { IMessage } from './../../interfaces/message.interface';
 import { Component, Input, OnInit } from '@angular/core';
-import { File, FileEntry } from '@ionic-native/file/ngx';
-import { Plugins, FilesystemDirectory, FilesystemEncoding, Capacitor } from '@capacitor/core';
-const { Filesystem } = Plugins;
+import { FirebaseStorageService } from 'src/app/services/firebase-storage.service';
+import { ModalController } from '@ionic/angular';
+import {Plugins, FilesystemDirectory, FilesystemEncoding} from '@capacitor/core';
+const {Filesystem} = Plugins;
+import { Capacitor } from '@capacitor/core';
+
 
 @Component({
   selector: 'app-image-message',
@@ -14,54 +20,76 @@ export class ImageMessageComponent implements OnInit {
 
   @Input() image:IMessage;
   @Input() userName:string;
+  @Input() dbMessages:ILocalForage;
   imageUrl:string;
 
   constructor(
-    private file:File,
-    private filePath: FilePath
+    private storageService:FirebaseStorageService,
+    private http:HttpClient,
+    private appService:AppService,
+    private modal:ModalController
   ) { }
 
   ngOnInit(){
-    console.log(Capacitor.platform)
+
     if(this.image.user===this.userName){
       //Obtener la URL del archivo
-      this.filePath.resolveNativePath(this.image.localRef)
-      .then(filePath=>{
-        this.imageUrl=Capacitor.convertFileSrc(filePath);
-        /*Filesystem.readFile({path:filePath})
-        .then(resp=>{
-          console.log(resp)
-        }).catch(err=>console.log(err));*/
+      this.imageUrl=Capacitor.convertFileSrc(this.image.localRef);
+    }else{
+      if(this.image.download===false){
+        let storageSubscribe=this.storageService.getImage(this.image.ref)
+        .subscribe(downloadUrl=>{
+          let httpSubscribe=this.http.get(downloadUrl,{
+            responseType:'blob',
+            reportProgress:true,
+            observe:'events'
+          }).subscribe(async event=>{
 
-        /*console.log(this.imageUrl)
-        //Extraemos la ruta de la carpeta y el nombre del archivo
-        const path = filePath.substring(0, filePath.lastIndexOf('/'));
-        const file = filePath.substring(filePath.lastIndexOf('/')+1, filePath.length);
-        //Obtenemos el archivo
-        this.file.resolveDirectoryUrl(path)
-        .then(directory=>{
-          console.log(directory)
-          console.log(filePath)
+            if(event.type===HttpEventType.DownloadProgress){
+              console.log(Math.round((100*event.loaded)/event.total));
+            }else if(event.type===HttpEventType.Response){
+              let base64;
+              const date=new Date().valueOf();
+              const randomId=Math.round(Math.random()*1000)+date;
+              const reader=new FileReader;
+              console.log(reader)
 
-          this.file.resolveLocalFilesystemUrl(filePath)
-          .then(entry => {
-            (<FileEntry>entry).file(file => {
-              this.file.readAsDataURL("cdvfile://localhost/sdcard/Download/","at.jpg")
-              .then(resp=>{
-                let a=resp;
-                console.log(a);
-                console.log("f")
-              })
-              .catch(err=>console.log(err))
+              this.appService.convertBlobToBase64(event.body)
+              .then((result:string | ArrayBuffer)=>{
+                base64=result;
+                Filesystem.writeFile({
+                  path:randomId+'.jpeg',
+                  data:base64,
+                  directory:FilesystemDirectory.Data
+                }).then(resp=>{
+                  this.dbMessages.setItem(this.image.id,{
+                    ...this.image,
+                    localRef:resp.uri,
+                    download:true
+                  }).then(()=>{
+                    this.image.download=true
+                    this.imageUrl=Capacitor.convertFileSrc(resp.uri);
 
-            });
-          }).catch(err=>console.log(err));
-
+                    storageSubscribe.unsubscribe();
+                    httpSubscribe.unsubscribe();
+                  }).catch(err=>console.log(err));
+                }).catch(err=>console.log(err));
+              }).catch(err=>console.log(err));
+            }
+          });
         })
-        .catch(err=>console.log(err));
-        // this.file.getFile()*/
-      }).catch(err=>console.log(err));
+      }else{
+        this.imageUrl=Capacitor.convertFileSrc(this.image.localRef);
+      }
     }
   }
 
+  openModal(){
+    this.modal.create({
+      component:ImageModalComponent,
+      componentProps:{
+        path:this.imageUrl
+      }
+    }).then(modal=>modal.present());
+  }
 }

@@ -1,3 +1,4 @@
+import { ImageModalComponent } from './../../components/image-modal/image-modal.component';
 import { ImageMessageComponent } from './../../components/image-message/image-message.component';
 import { FileSelectorComponent } from './../../components/file-selector/file-selector.component';
 import { ItemMessageComponent } from './../../components/item-message/item-message.component';
@@ -35,7 +36,8 @@ import { HttpClientModule } from '@angular/common/http';
     PopoverChatMessageComponent,
     ItemMessageComponent,
     FileSelectorComponent,
-    ImageMessageComponent
+    ImageMessageComponent,
+    ImageModalComponent
   ]
 })
 export class ChatPageModule {}

@@ -100,4 +100,8 @@ export class FirebaseStorageService {
 
     return refUrl;
   }
+
+  getImage(url:string){
+    return this.storage.ref(url).getDownloadURL();
+  }
 }

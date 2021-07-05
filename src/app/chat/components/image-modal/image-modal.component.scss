@@ -1,0 +1,30 @@
+.close-fake{
+  --background:transparent;
+  z-index: 9;
+  ion-icon{
+    font-size:2rem;
+    color:white;
+  }
+  margin-top:20px;
+}
+
+ion-content{
+  --background:rgb(26, 26, 26);
+}
+
+ion-slides{
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.swiper-slide img{
+  height: 100%;
+}
+
+ion-button{
+  --background: transparent;
+  --box-shadow:none;
+}

@@ -1,6 +1,7 @@
 import { File } from '@ionic-native/file/ngx';
 import { Camera } from '@ionic-native/camera/ngx';
 import { FilePath } from '@ionic-native/file-path/ngx';
+import { Media } from '@ionic-native/media/ngx';
 
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { NgModule } from '@angular/core';
@@ -42,6 +43,7 @@ import { Chooser } from '@ionic-native/chooser/ngx';
     Chooser,
     Camera,
     FilePath,
+    Media,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
   bootstrap: [AppComponent],
