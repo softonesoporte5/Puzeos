@@ -179,7 +179,7 @@ export class AgregarPage implements OnInit, OnDestroy {
               state:false
             },
             chats:firebase.default.firestore.FieldValue.arrayUnion(chat.id)
-          }).then(()=>{//Redireccionamos al home
+          }).then((resp)=>{//Redireccionamos al home
             this.router.navigate(['chat']);
           }).catch(error=>{
             console.log(error);

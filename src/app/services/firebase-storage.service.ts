@@ -71,13 +71,13 @@ export class FirebaseStorageService {
     return this.storage.ref(url).getDownloadURL();
   }
 
-  async uploadPhoto(photo:Blob,user:IUser){
+  async uploadPhoto(photo:string,user:IUser){
     const date=new Date().valueOf();
     const randomId=Math.round(Math.random()*1000)+date;
     const refUrl=`${user.data.userName}/images/${randomId}.jpeg`;
     const ref = this.storage.ref(refUrl);
 
-    await ref.put(photo).then(resp=>{
+    await ref.putString(photo, 'data_url').then(resp=>{
       this.firestore.collection("users").doc(user.id).update({
         imageUrl:refUrl,
       }).catch(error=>{

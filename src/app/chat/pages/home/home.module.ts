@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { ItemChatComponent } from './../../components/item-chat/item-chat.component';
 import { MenuComponent } from './../../components/menu/menu.component';
 import { NgModule } from '@angular/core';
@@ -15,7 +16,8 @@ import { HomePage } from './home.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    HomePageRoutingModule
+    HomePageRoutingModule,
+    HttpClientModule
   ],
   declarations: [HomePage, MenuComponent, ItemChatComponent]
 })

@@ -26,12 +26,16 @@
 </ion-header>
 <div class="loc__espacio"></div>
 
-<div class="loc__content" #content>
+<div class="loc__content" #content (scroll)="scrollEvent($event)">
 
   <!-- <ion-infinite-scroll threshold="100px" position="top" (ionInfinite)="loadData($event)">
     <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Loading more data...">
     </ion-infinite-scroll-content>
   </ion-infinite-scroll> -->
+  <app-scroll-bottom
+    [content]="content"
+    *ngIf="showScrollButton"
+  ></app-scroll-bottom>
 
   <span *ngFor="let mensaje of mensajes; trackBy: trackByFn; last as isLast">
     <app-item-message
@@ -50,7 +54,6 @@
       [content]="content"
     ></app-item-message>
   </span>
-
 </div>
 
 <ion-footer>

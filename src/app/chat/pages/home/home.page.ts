@@ -94,17 +94,14 @@ export class HomePage implements OnInit{
             cont++;
             this.chatsFirebase=this.chatsFirebase+1;
           });
-        }else{console.log("D")
+        }else{
           for(let index=this.chats.length; index<user.chats.length; index++){
             this.firestore.collection("chats").doc(user.chats[index])
             .valueChanges()
             .subscribe((chat:IChat)=>{
 
               this.dbChats.setItem(user.chats[index],{
-                group:chat.group,
-                lastMessage:chat.lastMessage,
-                members:chat.members,
-                userNames:chat.userNames,
+                ...chat,
                 timestamp:chat.timestamp.toDate()
               }).catch(err=>console.log(err));
 
@@ -116,6 +113,7 @@ export class HomePage implements OnInit{
               this.orderChats();
             });
           }
+          this.chatsFirebase=this.chatsFirebase+1;
         }
       }
     });

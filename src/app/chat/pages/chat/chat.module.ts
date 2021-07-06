@@ -1,3 +1,4 @@
+import { ScrollBottomComponent } from './../../components/scroll-bottom/scroll-bottom.component';
 import { ImageModalComponent } from './../../components/image-modal/image-modal.component';
 import { ImageMessageComponent } from './../../components/image-message/image-message.component';
 import { FileSelectorComponent } from './../../components/file-selector/file-selector.component';
@@ -37,7 +38,8 @@ import { HttpClientModule } from '@angular/common/http';
     ItemMessageComponent,
     FileSelectorComponent,
     ImageMessageComponent,
-    ImageModalComponent
+    ImageModalComponent,
+    ScrollBottomComponent
   ]
 })
 export class ChatPageModule {}

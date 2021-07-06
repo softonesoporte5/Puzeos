@@ -56,3 +56,7 @@ a{
 .scroll-y{
   display: flex;
 }
+
+.scroll{
+  scroll-behavior: smooth;
+}

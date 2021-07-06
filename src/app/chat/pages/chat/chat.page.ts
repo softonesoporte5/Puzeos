@@ -37,6 +37,8 @@ export class ChatPage implements OnInit, OnDestroy{
   tiempoGrabacion:string='00:00';
   bucleTime:NodeJS.Timeout;
   cancelar:boolean=false;
+  showScrollButton=false;
+  @ViewChild('content') content: HTMLElement;
   @ViewChild('sliding', { static: false }) sliding: IonItemSliding;
 
   miFormulario:FormGroup=this.fb.group({
@@ -232,5 +234,13 @@ export class ChatPage implements OnInit, OnDestroy{
 
   trackByFn(index:number, item:IMessage):string{
     return item.id;
+  }
+
+  scrollEvent(e){
+    if(e.target.scrollHeight-e.target.offsetHeight-e.target.scrollTop>300){
+      if(this.showScrollButton!==true) this.showScrollButton=true;
+    }else{
+      if(this.showScrollButton===true) this.showScrollButton=false;
+    }
   }
 }

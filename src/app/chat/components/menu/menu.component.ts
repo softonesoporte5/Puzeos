@@ -1,13 +1,12 @@
 import { DbService } from './../../../services/db.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { CameraService } from './../../../services/camera.service';
-import { IUser } from './../../interfaces/user.interface';
+import { IUser, IUserData } from './../../interfaces/user.interface';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { ActionSheetController } from '@ionic/angular';
-import {Plugins, FilesystemDirectory, FilesystemEncoding} from '@capacitor/core';
-const {Filesystem} = Plugins;
+import { Capacitor, CameraSource } from '@capacitor/core';
 import * as firebase from 'firebase';
 
 @Component({
@@ -33,17 +32,15 @@ export class MenuComponent implements OnInit {
     this.dbUsers=this.db.loadStore("users");
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
-    .then(resp=>{
+    .then((resp:IUserData)=>{
       this.user={
         data:{...resp},
         id:firebase.default.auth().currentUser.uid
       }
-      // Filesystem.readFile({
-      //   path:this.user.data.imageUrlLoc,
-      //   directory:FilesystemDirectory.Data
-      // }).then(resp=>{
-      //   this.imgPath=`data:image/jpeg;base64,${resp.data}`;
-      // }).catch(err=>console.log(err));
+
+      if(resp.imageUrlLoc){
+        this.imgPath=Capacitor.convertFileSrc(resp.imageUrlLoc);
+      }
     }).catch(err=>console.log(err));
   }
 
@@ -56,6 +53,17 @@ export class MenuComponent implements OnInit {
       });
   }
 
+  private selectImage(source:CameraSource){
+    this.camara.takePicture(this.user,source).then(resp=>{
+
+      this.dbUsers.setItem(this.user.id,{
+        ...this.user.data,
+        imageUrl:resp.firebasePath,
+        imageUrlLoc:resp.filepath
+      }).catch(err=>console.log(err));
+      this.imgPath=resp.base64Data;
+    })
+  }
 
   async presentActionSheet() {
     const actionSheet = await this.actionSheetController.create({
@@ -65,21 +73,14 @@ export class MenuComponent implements OnInit {
           text: 'Camara',
           icon: 'camera-sharp',
           handler: () => {
-            this.camara.takePicture(this.user).then(resp=>{
-              /*this.dbUsers.setItem(this.user.id,{
-                ...this.user.data,
-                imageUrl:resp.firebasePath,
-                imageUrlLoc:resp.filepath
-              }).catch(err=>console.log(err));
-              this.imgPath=resp.base64Data;*/
-            })
+            this.selectImage(CameraSource.Camera)
           }
         },
         {
           text: 'Galería',
           icon: 'image-sharp',
           handler: () => {
-            //this.camara.takePicture();
+            this.selectImage(CameraSource.Photos)
           }
         },
         {

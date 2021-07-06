@@ -80,7 +80,7 @@ ion-back-button {
   }
 
   h6{
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 400;
     margin: 0;
     flex:1;
@@ -124,6 +124,7 @@ ion-back-button {
   overflow-y: scroll;
   overflow-x: hidden;
   position: relative;
+  margin-bottom: 10px;
 
   ion-card{
     -webkit-user-select: none;

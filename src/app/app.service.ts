@@ -30,7 +30,6 @@ export class AppService {
   }
 
   convertBlobToBase64=(blob:Blob)=>new Promise((resolve,reject)=>{
-    console.log("netro")
     const reader=this.getFileReader();
     reader.onerror=reject;
     reader.onload=()=>resolve(reader.result);
