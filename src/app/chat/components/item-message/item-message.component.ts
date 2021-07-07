@@ -1,7 +1,7 @@
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { PopoverController } from '@ionic/angular';
 import { IMessage } from './../../interfaces/message.interface';
-import { AfterViewInit, Component, Input, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { PopoverChatMessageComponent } from '../popover-chat-message/popover-chat-message.component';
 
 @Component({
@@ -12,10 +12,14 @@ import { PopoverChatMessageComponent } from '../popover-chat-message/popover-cha
 export class ItemMessageComponent implements AfterViewInit, OnInit {
 
   @Input("message") message:IMessage;
-  @Input("last") last:boolean;
+  @Input("last") last?:boolean;
   @Input("content") content:HTMLElement;
   @Input("userName") userName:string;
   @Input("dbMessage") dbMessage?:ILocalForage;
+  @Input("searchMessage") searchMessage?:string;
+  @Input("idSearch") idSearch?:string;
+  @ViewChild("messageItem") messageItem:ElementRef;
+
   maxScroll:number;
   scrollTop:number;
 
@@ -30,13 +34,34 @@ export class ItemMessageComponent implements AfterViewInit, OnInit {
   }
 
   ngAfterViewInit() {
-    if(this.last===true){
-      setTimeout(()=>{
-        if(this.maxScroll-this.scrollTop<120 || this.content.scrollTop<10){
-          this.content.lastElementChild.scrollIntoView(false);
-        }
-        this.content.classList.add("scroll");
-      },200);
+    if(this.idSearch!==undefined){
+      if(this.idSearch===this.message.id){
+        //messageTxt.indexOf(search)
+        const index=this.message.message.indexOf(this.searchMessage);
+        let txt1=this.message.message.substr(0,index)
+        let txt2=this.message.message.substr(index,this.searchMessage.length);
+        let txt3=this.message.message.substr(index+this.searchMessage.length);
+
+        this.messageItem.nativeElement.innerHTML=`
+          <span>${txt1}</span>
+          <span class="resaltar">${txt2}</span>
+          <span>${txt3}</span>
+        `;
+        setTimeout(()=>{
+          this.content.querySelector(`#${this.idSearch}`).scrollIntoView();
+          console.log(this.content.querySelector(`#${this.idSearch}`), this.idSearch)
+          this.content.classList.add("scroll");
+        },220);
+      }
+    }else{
+      if(this.last===true){
+        setTimeout(()=>{
+          if(this.maxScroll-this.scrollTop<120 || this.content.scrollTop<10){
+            this.content.lastElementChild.scrollIntoView(false);
+          }
+          this.content.classList.add("scroll");
+        },220);
+      }
     }
   }
 

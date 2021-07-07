@@ -1,12 +1,14 @@
 <ion-card
-  #item
+  [id]="message.id"
   [class]="userName===message.user?'enviado':''"
 >
   <ion-card-content
     *ngIf="message.type==='text'"
     (click)="presentPopoverMessage($event,message)"
   >
-    {{message.message}}
+    <span #messageItem>
+      {{message.message}}
+    </span>
 
     <ion-text color="tertiary" >
       {{message.timestamp | date: 'shortTime'}}

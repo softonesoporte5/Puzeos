@@ -1,0 +1,20 @@
+<ion-content fullscreen color="light">
+  <ion-item class="close-fake" lines="none" text-center>
+    <ion-button (click)="close()">
+      <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+    </ion-button>
+  </ion-item>
+
+  <div class="loc__cont-info">
+    <img [src]="imgPath" alt="">
+    <h3>{{user.userName}}</h3>
+    <div class="loc__cont-des">
+      <h6>Información</h6>
+      <ion-item>Aquí va la descripción</ion-item>
+      <ion-item>
+        Se unió a Puzeos el 24 de febreo del 2008
+      </ion-item>
+    </div>
+  </div>
+
+</ion-content>

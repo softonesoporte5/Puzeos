@@ -1,0 +1,43 @@
+.close-fake{
+  --background:#00000030;
+  z-index: 9;
+  ion-icon{
+    font-size:2rem;
+    color:white;
+  }
+}
+
+ion-button{
+  --background: transparent;
+  --box-shadow:none;
+}
+
+.loc__cont-info{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  img{
+    width: 100%;
+  }
+
+  h3{
+    margin: -3rem 0 0 1rem;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 0 0.1rem black;
+  }
+}
+
+.loc__cont-des{
+  background-color: #fff;
+  h6{
+    margin-left: 0.5rem;
+    color:var(--ion-color-primary);
+  }
+
+  ion-item{
+    font-size: 15px;
+  }
+}
+

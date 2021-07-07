@@ -1,3 +1,4 @@
+import { PerfilModalComponent } from './../../components/perfil-modal/perfil-modal.component';
 import { ScrollBottomComponent } from './../../components/scroll-bottom/scroll-bottom.component';
 import { ImageModalComponent } from './../../components/image-modal/image-modal.component';
 import { ImageMessageComponent } from './../../components/image-message/image-message.component';
@@ -39,7 +40,8 @@ import { HttpClientModule } from '@angular/common/http';
     FileSelectorComponent,
     ImageMessageComponent,
     ImageModalComponent,
-    ScrollBottomComponent
+    ScrollBottomComponent,
+    PerfilModalComponent
   ]
 })
 export class ChatPageModule {}

@@ -1,3 +1,5 @@
+import { IUserData } from './../../interfaces/user.interface';
+import { PerfilModalComponent } from './../../components/perfil-modal/perfil-modal.component';
 import { Subscription } from 'rxjs';
 import { ChatService } from './chat.service';
 import { IMessage } from './../../interfaces/message.interface';
@@ -9,10 +11,11 @@ import { MediaRecorderService } from './../../../services/media-recorder.service
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import * as firebase from 'firebase';
-import { IonItemSliding, PopoverController } from '@ionic/angular';
+import { IonItemSliding, PopoverController, ModalController } from '@ionic/angular';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-chat',
@@ -24,10 +27,8 @@ export class ChatPage implements OnInit, OnDestroy{
   idChat:string;
   mensajes:IMessage[]=[];
   userName:string='';
-  contactName:string='';
   showEmojiPicker:boolean=false;
   tooglePress:boolean=false;
-  progress=0;
   dbChat:ILocalForage;
   chat:IChat;
   dbMessages:ILocalForage;
@@ -38,6 +39,9 @@ export class ChatPage implements OnInit, OnDestroy{
   bucleTime:NodeJS.Timeout;
   cancelar:boolean=false;
   showScrollButton=false;
+  routeQuery:Params;
+  user:IUserData;
+  imgPath:string;
   @ViewChild('content') content: HTMLElement;
   @ViewChild('sliding', { static: false }) sliding: IonItemSliding;
 
@@ -55,7 +59,8 @@ export class ChatPage implements OnInit, OnDestroy{
     private mediaRecorderService:MediaRecorderService,
     private firebaseStorageService:FirebaseStorageService,
     private db:DbService,
-    private chatService:ChatService
+    private chatService:ChatService,
+    private modal:ModalController
   ) { }
 
   ngOnInit(){
@@ -63,6 +68,12 @@ export class ChatPage implements OnInit, OnDestroy{
     this.idChat=this.route.snapshot.paramMap.get("id");
     this.dbChat=this.db.loadStore("chats");
     this.dbMessages=this.db.loadStore("messages"+this.idChat);
+
+    this.route.queryParams
+      .subscribe(params => {
+        this.routeQuery=params;
+      }
+    );
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then(user=>{
@@ -159,11 +170,20 @@ export class ChatPage implements OnInit, OnDestroy{
     this.dbChat.getItem(this.idChat)
     .then((chat:IChat)=>{
       this.chat=chat;
-      chat.userNames.forEach(userName=>{
-        if(userName!==this.userName){
-          this.contactName=userName;
-        };
-      });
+      for (const key in chat.members) {
+        if(firebase.default.auth().currentUser.uid!==key){
+          this.dbUsers.getItem(key)
+          .then(user=>{
+            console.log(user)
+            this.user=user;
+            if(this.user.imageUrlLoc){
+              this.imgPath=Capacitor.convertFileSrc(this.user.imageUrlLoc);
+            }else{
+              this.imgPath="assets/person.jpg";
+            }
+          });
+        }
+      }
     }).catch(err=>console.log(err));
 
     const ref=this.firestore.collection("messages")
@@ -189,7 +209,7 @@ export class ChatPage implements OnInit, OnDestroy{
       componentProps:{
         "id":this.idChat,
         "idUser":firebase.default.auth().currentUser.uid,
-        "contactName":this.contactName
+        "contactName":this.user.userName
       },
       event: ev
     });
@@ -242,5 +262,14 @@ export class ChatPage implements OnInit, OnDestroy{
     }else{
       if(this.showScrollButton===true) this.showScrollButton=false;
     }
+  }
+
+  openModal(){
+    this.modal.create({
+      component:PerfilModalComponent,
+      componentProps:{
+        user:this.user
+      }
+    }).then(modal=>modal.present());
   }
 }

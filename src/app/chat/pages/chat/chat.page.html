@@ -10,12 +10,12 @@
       mode="md"
     ></ion-back-button>
 
-    <span class="loc_contac-info">
+    <span class="loc_contac-info" (click)="openModal()">
       <img
-        src="assets/person.jpg"
+        [src]="imgPath"
         class="chat__img "
       >
-      <h6>{{this.contactName}}</h6>
+      <h6>{{user?.userName}}</h6>
     </span>
 
     <ion-button slot="end" mode="ios" (click)="presentPopover($event)">
@@ -28,16 +28,13 @@
 
 <div class="loc__content" #content (scroll)="scrollEvent($event)">
 
-  <!-- <ion-infinite-scroll threshold="100px" position="top" (ionInfinite)="loadData($event)">
-    <ion-infinite-scroll-content loadingSpinner="crescent" loadingText="Loading more data...">
-    </ion-infinite-scroll-content>
-  </ion-infinite-scroll> -->
   <app-scroll-bottom
     [content]="content"
     *ngIf="showScrollButton"
   ></app-scroll-bottom>
 
   <span *ngFor="let mensaje of mensajes; trackBy: trackByFn; last as isLast">
+
     <app-item-message
       *ngIf="mensaje.type!=='text'"
       [message]="mensaje"
@@ -45,6 +42,8 @@
       [last]="isLast"
       [dbMessage]="dbMessages"
       [content]="content"
+      [searchMessage]="routeQuery.search"
+      [idSearch]="routeQuery.id"
     ></app-item-message>
     <app-item-message
       *ngIf="mensaje.type==='text'"
@@ -52,6 +51,8 @@
       [userName]="userName"
       [last]="isLast"
       [content]="content"
+      [searchMessage]="routeQuery.search"
+      [idSearch]="routeQuery.id"
     ></app-item-message>
   </span>
 </div>

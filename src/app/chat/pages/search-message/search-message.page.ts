@@ -26,6 +26,7 @@ export class SearchMessagePage implements OnInit {
   searchTimeOut:NodeJS.Timeout;
   dbChats:ILocalForage;
   arrChats:IChat[]=[];
+  search:string;
 
   constructor(
     private fb:FormBuilder,
@@ -43,7 +44,7 @@ export class SearchMessagePage implements OnInit {
         resp.chats.forEach((chatID:string)=>{
           this.dbChats.getItem(chatID)
           .then(chat=>{
-            this.arrChats.push(chat);
+            this.arrChats.push({...chat,id:chatID});
           }).catch(err=>console.log(err));
           console.log(this.dbChatsMessages)
           this.dbChatsMessages.push(this.db.loadStore("messages"+chatID));
@@ -56,29 +57,33 @@ export class SearchMessagePage implements OnInit {
     this.searchTxt.statusChanges.subscribe(()=>{
       search=this.searchTxt.value.normalize('NFD').replace(/[\u0300-\u036f]/g,"");
       search=search.toLocaleLowerCase();
+      this.search=search;
       clearTimeout(this.searchTimeOut);
-      console.log(search);
+
       if(this.searchTxt.value.trim()!==''){
         this.searchTimeOut=setTimeout(()=>{
           this.messages=[];
 
           this.dbChatsMessages.forEach((chatDb,index)=>{
             chatDb.iterate((message:IMessage)=>{
-              let messageTxt=message.message.normalize('NFD').replace(/[\u0300-\u036f]/g,"");
-              messageTxt=messageTxt.toLocaleLowerCase();
-              if(message.type==="text" && messageTxt.indexOf(search)!==-1){
-                let arrUser=this.arrChats[index].userNames.filter(userName=>userName!==this.user.userName);
-                let chatName=arrUser[0];
-                this.messages.push({
-                  timestamp:message.timestamp,
-                  type:message.type,
-                  id:message.id,
-                  message:message.message,
-                  userSend:chatName,
-                  idChat:this.arrChats[index].id,
-                  user:message.user,
-                  index:messageTxt.indexOf(search)
-                });
+              if(message.type==="text"){
+                let messageTxt=message.message.normalize('NFD').replace(/[\u0300-\u036f]/g,"");
+                messageTxt=messageTxt.toLocaleLowerCase();
+                if(messageTxt.indexOf(search)!==-1){
+                  let arrUser=this.arrChats[index].userNames.filter(userName=>userName!==this.user.userName);
+                  let chatName=arrUser[0];
+
+                  this.messages.push({
+                    timestamp:message.timestamp,
+                    type:message.type,
+                    id:message.id,
+                    message:message.message,
+                    userSend:chatName,
+                    idChat:this.arrChats[index].id,
+                    user:message.user,
+                    index:messageTxt.indexOf(search)
+                  });
+                }
               }
             }).catch(err=>console.log(err));
           })
@@ -88,7 +93,6 @@ export class SearchMessagePage implements OnInit {
   }
 
   clearSearch(){
-    console.log(this.messages);
     this.searchTxt.setValue('');
   }
 
