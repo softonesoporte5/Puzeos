@@ -1,13 +1,14 @@
 import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IUser } from './../../interfaces/user.interface';
-import { AngularFirestore} from '@angular/fire/firestore';
-import { Subscription } from 'rxjs';
+import { AngularFirestore, DocumentChange } from '@angular/fire/firestore';
+import { Subscription, Subject } from 'rxjs';
 import { AppService } from './../../../app.service';
 import { Component, OnInit } from '@angular/core';
 import { MenuController } from '@ionic/angular';
 import * as firebase from 'firebase';
 import { DbService } from 'src/app/services/db.service';
+import { IMessage } from '../../interfaces/message.interface';
 
 @Component({
   selector: 'app-home',
@@ -32,6 +33,7 @@ export class HomePage implements OnInit{
   ) { }
 
   ngOnInit() {
+
     this.dbChats=this.db.loadStore('chats');
     this.dbUsers=this.db.loadStore("users");
     this.dbChats.iterate((values,key)=>{
@@ -65,59 +67,8 @@ export class HomePage implements OnInit{
           id:firebase.default.auth().currentUser.uid,
           data:{...user}
         };
-
-      if(this.chatsFirebase<this.user?.data?.chats?.length){
-        if(this.chatsFirebase===0){
-          let cont=0;
-          this.user.data.chats.forEach(chat=>{
-            this.firestore.collection("chats").doc(chat)
-            .valueChanges()
-            .subscribe((resp:IChat)=>{
-              //Insertamos/actualizamos en la bd local
-              console.log(resp);
-              this.dbChats.setItem(chat,{
-                group:resp.group,
-                lastMessage:resp.lastMessage,
-                members:resp.members,
-                userNames:resp.userNames,
-                timestamp:resp.timestamp.toDate()
-              }).catch(err=>console.log(err))
-
-              this.chatsObj[chat]={
-                ...resp,
-                id:chat,
-                timestamp:resp.timestamp.toDate()
-              }
-
-              this.orderChats();
-            });
-            cont++;
-            this.chatsFirebase=this.chatsFirebase+1;
-          });
-        }else{
-          for(let index=this.chats.length; index<user.chats.length; index++){
-            this.firestore.collection("chats").doc(user.chats[index])
-            .valueChanges()
-            .subscribe((chat:IChat)=>{
-
-              this.dbChats.setItem(user.chats[index],{
-                ...chat,
-                timestamp:chat.timestamp.toDate()
-              }).catch(err=>console.log(err));
-
-              this.chatsObj[user.chats[index]]={
-                ...chat,
-                id:user.chats[index],
-                timestamp:chat.timestamp.toDate()
-              }
-              this.orderChats();
-            });
-          }
-          this.chatsFirebase=this.chatsFirebase+1;
-        }
-      }
+      });
     });
-   });
   }
 
   openMenu(){
@@ -147,6 +98,5 @@ export class HomePage implements OnInit{
 
     this.chats=chatsArr;
   }
-
 }
 

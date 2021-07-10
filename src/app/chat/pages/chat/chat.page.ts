@@ -1,6 +1,6 @@
 import { IUserData } from './../../interfaces/user.interface';
 import { PerfilModalComponent } from './../../components/perfil-modal/perfil-modal.component';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject } from 'rxjs';
 import { ChatService } from './chat.service';
 import { IMessage } from './../../interfaces/message.interface';
 import { IChat } from './../../interfaces/chat.interface';
@@ -8,7 +8,7 @@ import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
 import { MediaRecorderService } from './../../../services/media-recorder.service';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore, DocumentChange } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
@@ -70,25 +70,23 @@ export class ChatPage implements OnInit, OnDestroy{
     this.dbMessages=this.db.loadStore("messages"+this.idChat);
 
     this.route.queryParams
-      .subscribe(params => {
-        this.routeQuery=params;
-      }
-    );
+    .subscribe(params => {
+      this.routeQuery=params;
+    });
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then(user=>{
       this.userName=user.userName;
-
       let arrMessages=[];
-      this.dbMessages.iterate((values)=>{
+      //Obtenemos los messages de la DB local
+      this.dbMessages.iterate((values:IMessage)=>{
         arrMessages.push(values);
       }).then(()=>{
         this.mensajes=this.chatService.orderMessages(arrMessages);
       })
       .catch(error=>console.log(error));
 
-      this.mensajesSubscribe=this.chatService.getMessages(ref, this.idChat, this.userName)
-      .subscribe(messagesResp=>{
+      const processMessages=(messagesResp:DocumentChange<IMessage>[])=>{
         //Comprobamos si los mensaje fueron visto y no se detectó
         if(messagesResp.length==0){
           for (let index = this.mensajes.length-1; index > 0; index--){
@@ -97,7 +95,6 @@ export class ChatPage implements OnInit, OnDestroy{
               if(mensaje.state===false){
                 this.dbMessages.setItem(mensaje.id,{
                   ...mensaje,
-                  download:false,
                   state:true
                 })
                 .then(resp=>{
@@ -133,7 +130,7 @@ export class ChatPage implements OnInit, OnDestroy{
 
                   arrMensajes.push(message);
                   //Agregamos a la DB Local y lo eliminamos de Firebase si no lo envió el ususario
-                  this.chatService.addMessage(message,this.idChat);
+                  this.chatService.addMessage(message,this.idChat,this.dbChat, this.dbMessages);
                   //Agregamos todos los mensajes cuando se procese el último
                   if(index===messagesResp.length-1){
                     Array.prototype.push.apply(this.mensajes,arrMensajes)
@@ -142,22 +139,48 @@ export class ChatPage implements OnInit, OnDestroy{
               }).catch(err=>console.log(err));
             }
           }else{
+            let deletePer=false;
             for (let i = this.mensajes.length -1; i > 0; i--){
               if(this.mensajes[i].id===mensaje.doc.id){
-                this.mensajes[i].state=true;
+                deletePer=true;
+              }
+              if(deletePer===true){
+                if(this.mensajes[i].state===false){
+                  this.mensajes[i].state=true;
 
-                this.dbMessages.setItem(mensaje.doc.id,{
-                  id:mensaje.doc.id,
-                  ...mensaje.doc.data(),
-                  timestamp:mensaje.doc.data().timestamp.toDate(),
-                  state:true
-                }).catch(error=>console.log(error));
-                break;
+                  this.dbMessages.setItem(mensaje.doc.id,{
+                    id:mensaje.doc.id,
+                    ...mensaje.doc.data(),
+                    timestamp:mensaje.doc.data().timestamp.toDate(),
+                    state:true
+                  }).catch(error=>console.log(error));
+                  break;
+                }else{
+                  deletePer=false;
+                  break;
+                }
               }
             }
           }
         })
-      });
+      }
+
+      if(this.db.messagesSubscriptions){
+        const messages=this.db.messagesSubscriptions[this.idChat] as Subject<DocumentChange<IMessage>[]>
+        this.mensajesSubscribe=messages.subscribe(messagesResp=>{
+          processMessages(messagesResp);
+        })
+      }else{
+        const subscribe=this.db.getMessagesSubscriptions()
+        .subscribe(resp=>{
+          subscribe.unsubscribe();
+          console.log(resp)
+          const messages=resp[this.idChat] as Subject<DocumentChange<IMessage>[]>
+          this.mensajesSubscribe=messages.subscribe(messagesResp=>{
+            processMessages(messagesResp);
+          })
+        })
+      }
 
       this.audioSubscribe=this.mediaRecorderService.audio$
       .subscribe(audio=>{
@@ -174,7 +197,6 @@ export class ChatPage implements OnInit, OnDestroy{
         if(firebase.default.auth().currentUser.uid!==key){
           this.dbUsers.getItem(key)
           .then(user=>{
-            console.log(user)
             this.user=user;
             if(this.user.imageUrlLoc){
               this.imgPath=Capacitor.convertFileSrc(this.user.imageUrlLoc);
@@ -194,12 +216,11 @@ export class ChatPage implements OnInit, OnDestroy{
   ngOnDestroy(){
     this.mensajesSubscribe.unsubscribe();
     this.audioSubscribe.unsubscribe();
-    this.chatService.unsubscribe();
   }
 
   agregarMensaje(){
     const message=this.mensaje.value;
-    this.chatService.addMessageInFirebase(message);
+    this.chatService.addMessageInFirebase(message,this.idChat,this.userName);
     this.mensaje.setValue('');
   }
 

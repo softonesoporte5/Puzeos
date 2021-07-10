@@ -8,7 +8,8 @@ export interface IMessage{
   state?:boolean,
   id?:string,
   localRef?:string,
-  fileName?:string
+  fileName?:string,
+  dateChange?:boolean
 }
 
 export interface IMessageSearch{

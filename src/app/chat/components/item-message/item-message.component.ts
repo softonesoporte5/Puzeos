@@ -1,3 +1,4 @@
+import { ChatService } from './../../pages/chat/chat.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { PopoverController } from '@ionic/angular';
 import { IMessage } from './../../interfaces/message.interface';
@@ -22,14 +23,31 @@ export class ItemMessageComponent implements AfterViewInit, OnInit {
 
   maxScroll:number;
   scrollTop:number;
+  lastDate:Date;
+  showDate=false;
+  stringDate:string;
 
   constructor(
-    private popoverController: PopoverController
+    private popoverController: PopoverController,
+    private chatService:ChatService
   ) {}
+
   ngOnInit() {
+    this.lastDate=this.chatService.lastDate;
+
     if(this.last===true){
       this.maxScroll=this.content.scrollHeight-this.content.offsetHeight;
       this.scrollTop=this.content.scrollTop;
+    }
+    if(this.message.timestamp.toDateString()!==this.lastDate){
+      this.chatService.setLastDate(this.message.timestamp.toDateString());
+      this.showDate=true;
+      const date=new Date();
+      if(this.message.timestamp.toLocaleDateString()===date.toLocaleDateString()){
+        this.stringDate="Hoy";
+      }else{
+        this.stringDate=this.message.timestamp.toLocaleDateString();
+      }
     }
   }
 

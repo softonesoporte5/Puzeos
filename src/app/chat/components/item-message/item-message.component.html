@@ -1,3 +1,9 @@
+<div *ngIf="showDate" class="loc__cont-date">
+  <ion-chip >
+    <ion-label>{{stringDate}}</ion-label>
+  </ion-chip>
+</div>
+
 <ion-card
   [id]="message.id"
   [class]="userName===message.user?'enviado':''"
