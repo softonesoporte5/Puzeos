@@ -1,7 +1,7 @@
 import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IUser } from './../../interfaces/user.interface';
-import { AngularFirestore, DocumentChange } from '@angular/fire/firestore';
+import { AngularFirestore, DocumentChange, DocumentSnapshot } from '@angular/fire/firestore';
 import { Subscription, Subject } from 'rxjs';
 import { AppService } from './../../../app.service';
 import { Component, OnInit } from '@angular/core';
@@ -41,8 +41,53 @@ export class HomePage implements OnInit{
         id:key,
         ...values
       }
+      this.chatsFirebase++;
     }).then(()=>{
       this.orderChats();
+
+      this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
+      .then(user=>{
+        this.user={
+          id:firebase.default.auth().currentUser.uid,
+          data:{...user}
+        };
+        this.db.getUser$()
+        .subscribe(user=>{
+          console.log(user)
+          this.user={
+            id:firebase.default.auth().currentUser.uid,
+            data:{...user}
+          };
+
+          if(this.chatsFirebase<user.chats.length){
+            this.chatsFirebase++;
+            this.firestore.collection("chats").doc(user.chats[user.chats.length-1])
+            .get()
+            .subscribe((resp:DocumentSnapshot<IChat>)=>{
+              //Insertamos/actualizamos en la bd local
+              const data=resp.data() as IChat;
+              const chatData:IChat={
+                id:resp.id,
+                group:data.group,
+                lastMessage:data.lastMessage,
+                members:data.members,
+                userNames:data.userNames,
+                timestamp:data.timestamp.toDate()
+              }
+              this.db.setItemChat(resp.id,chatData)
+
+              /*this.chatsObj[chat]={
+                ...resp,
+                id:chat,
+                timestamp:resp.timestamp.toDate()
+              }*/
+
+              this.orderChats();
+            });
+          }//cierre
+        });
+      }).catch(err=>console.log(err))
+
       //Nos subscribimos a los chats de manera local
       this.db.getItemsChat()
       .subscribe(resp=>{
@@ -54,21 +99,6 @@ export class HomePage implements OnInit{
       });
     })
     .catch(err=>console.log(err));
-
-    this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
-    .then(user=>{
-      this.user={
-        id:firebase.default.auth().currentUser.uid,
-        data:{...user}
-      };
-      this.appService.obtenerUsuario()
-      .subscribe(user=>{
-        this.user={
-          id:firebase.default.auth().currentUser.uid,
-          data:{...user}
-        };
-      });
-    });
   }
 
   openMenu(){
@@ -98,5 +128,6 @@ export class HomePage implements OnInit{
 
     this.chats=chatsArr;
   }
+
 }
 

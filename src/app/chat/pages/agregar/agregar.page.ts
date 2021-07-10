@@ -66,9 +66,7 @@ export class AgregarPage implements OnInit, OnDestroy {
           data:{...user}
         };
 
-        this.dbUsers.setItem(firebase.default.auth().currentUser.uid,{
-          ...user
-        }).catch(err=>console.log(err));
+        this.db.setUser(user,firebase.default.auth().currentUser.uid);
 
         this.buscando=this.user.data.buscando.state;
         sessionStorage.setItem("buscando",JSON.stringify(this.user.data.buscando));
@@ -90,13 +88,14 @@ export class AgregarPage implements OnInit, OnDestroy {
         tagId:tagId
       }
     }).then(()=>{
-      this.dbUsers.setItem(this.user.id,{
+      this.db.setUser({
         ...this.user.data,
         buscando:{
           state:estado,
           tagId:tagId
         }
-      }).catch(err=>console.log(err));
+      },firebase.default.auth().currentUser.uid);
+
     })
     .catch(error=>{
       console.log("Hubo un error",error);
