@@ -1,4 +1,4 @@
-import { IMessage } from './../../interfaces/message.interface';
+import { IMessage, IMessageSearch } from './../../interfaces/message.interface';
 import { DbService } from 'src/app/services/db.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { Component, OnInit } from '@angular/core';
@@ -11,7 +11,7 @@ import { Component, OnInit } from '@angular/core';
 export class SavedMessagesPage implements OnInit {
 
   dbSavedMessage:ILocalForage;
-  messages:IMessage[]=[];
+  messages:IMessageSearch[]=[];
 
   constructor(
     private db:DbService

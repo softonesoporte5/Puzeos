@@ -5,4 +5,5 @@ export interface IChat{
   members:object;
   timestamp:any;
   userNames:string[];
+  newMessages?:number;
 }

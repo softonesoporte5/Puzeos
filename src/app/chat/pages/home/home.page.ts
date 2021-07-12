@@ -41,6 +41,8 @@ export class HomePage implements OnInit{
         id:key,
         ...values
       }
+
+      this.chatsFirebase++;
     }).then(()=>{
       this.orderChats();
       //Nos subscribimos a los chats de manera local
@@ -67,6 +69,28 @@ export class HomePage implements OnInit{
           id:firebase.default.auth().currentUser.uid,
           data:{...user}
         };
+        console.log(this.chatsFirebase,this.user?.data?.chats?.length)
+        if(this.chatsFirebase<this.user?.data?.chats?.length){
+            for(let index=this.chats.length; index<user.chats.length; index++){
+              this.firestore.collection("chats").doc(user.chats[index])
+              .valueChanges()
+              .subscribe((chat:IChat)=>{
+
+                this.dbChats.setItem(user.chats[index],{
+                  ...chat,
+                  timestamp:chat.timestamp.toDate()
+                }).catch(err=>console.log(err));
+
+                this.chatsObj[user.chats[index]]={
+                  ...chat,
+                  id:user.chats[index],
+                  timestamp:chat.timestamp.toDate()
+                }
+                this.orderChats();
+              });
+            }
+            this.chatsFirebase=this.chatsFirebase+1;
+        }
       });
     });
   }

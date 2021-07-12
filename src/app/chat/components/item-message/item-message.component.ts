@@ -13,6 +13,7 @@ import { PopoverChatMessageComponent } from '../popover-chat-message/popover-cha
 export class ItemMessageComponent implements AfterViewInit, OnInit {
 
   @Input("message") message:IMessage;
+  @Input("idChat") idChat:string;
   @Input("last") last?:boolean;
   @Input("content") content:HTMLElement;
   @Input("userName") userName:string;
@@ -87,7 +88,7 @@ export class ItemMessageComponent implements AfterViewInit, OnInit {
     const popover = await this.popoverController.create({
       component: PopoverChatMessageComponent,
       event: ev,
-      componentProps:{"message":message}
+      componentProps:{"message":message,"idChat":this.idChat}
     });
     return await popover.present();
   }

@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-back-button
+      slot="start"
+      defaultHref="/chat"
+      text=""
+      mode="md"
+    ></ion-back-button>
+
+    <ion-title class="ion-no-padding">Configuración</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="loc__main">
+
+  <ion-list>
+    <ion-item lines="full">
+      <ion-icon slot="start" name="moon"></ion-icon>
+      <ion-label>
+        Activar modo oscuro
+      </ion-label>
+      <ion-toggle
+        [(ngModel)]="toogleDarkMode"
+        slot="end"
+        (ionChange)="toogleDark()"
+      ></ion-toggle>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

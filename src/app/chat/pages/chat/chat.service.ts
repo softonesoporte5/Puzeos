@@ -51,7 +51,7 @@ export class ChatService{
         this.db.setItemChat(idChat,{
           ...resp,
           lastMessage:message.message,
-          timestamp:message.timestamp
+          timestamp:message.timestamp,
         });
       }
     })

@@ -86,6 +86,7 @@ export class ChatPage implements OnInit, OnDestroy{
       })
       .catch(error=>console.log(error));
 
+      let newMessages=0;
       const processMessages=(messagesResp:DocumentChange<IMessage>[])=>{
         //Comprobamos si los mensaje fueron visto y no se detectó
         if(messagesResp.length==0){
@@ -166,10 +167,21 @@ export class ChatPage implements OnInit, OnDestroy{
       }
 
       if(this.db.messagesSubscriptions){
-        const messages=this.db.messagesSubscriptions[this.idChat] as Subject<DocumentChange<IMessage>[]>
-        this.mensajesSubscribe=messages.subscribe(messagesResp=>{
-          processMessages(messagesResp);
-        })
+
+        if(this.db.messagesSubscriptions[this.idChat]){
+          const messages=this.db.messagesSubscriptions[this.idChat] as Subject<DocumentChange<IMessage>[]>
+          this.mensajesSubscribe=messages.subscribe(messagesResp=>{
+
+          })
+        }else{
+          const ref=this.firestore.collection("messages")
+          .doc(this.idChat).collection<IMessage>("messages")
+          .ref;
+
+          ref.onSnapshot(resp=>{
+            processMessages(resp.docChanges());
+          });
+        }
       }else{
         const subscribe=this.db.getMessagesSubscriptions()
         .subscribe(resp=>{
@@ -214,8 +226,13 @@ export class ChatPage implements OnInit, OnDestroy{
   }
 
   ngOnDestroy(){
-    this.mensajesSubscribe.unsubscribe();
-    this.audioSubscribe.unsubscribe();
+    if(this.mensajesSubscribe){
+      this.mensajesSubscribe.unsubscribe();
+    }
+
+    if(this.audioSubscribe){
+      this.audioSubscribe.unsubscribe();
+    }
   }
 
   agregarMensaje(){

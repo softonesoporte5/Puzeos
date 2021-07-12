@@ -3,9 +3,22 @@ ion-card{
   width: 85%;
   padding: 6px;
   max-height: 24rem;
-  box-shadow: 0px 0 3px gray;
-  margin: 5px;
+  box-shadow: none;
+  margin: 5px 5px 5px 20px;
   float: left;
+  --background: #ebeaea;
+  overflow: visible;
+
+  &::before{
+    content: "";
+    position: absolute;
+    border: solid 15px transparent;
+    border-right: solid 15px #ebeaea;
+    border-radius: 50%;
+    left: -12px;
+    top: -15px;
+    transform: rotate(135deg);
+  }
 
   ion-card-content{
     font-size: 12px;
@@ -31,8 +44,23 @@ ion-card{
 }
 
 .enviado{
-  --background:#ded1ea;
+  --background: var(--ion-color-primary) !important;
   float: right;
+  --color: #fff;
+  margin: 5px 13px 5px 5px;
+
+  &::before{
+    content: "";
+    left: inherit;
+    right: -12px;
+    top: -15.5px;
+    border-right: #6400be solid 15px;
+    transform: rotate(45deg);
+  }
+
+  ion-text{
+    color:#ccc;
+  }
 }
 
 app-image-message{

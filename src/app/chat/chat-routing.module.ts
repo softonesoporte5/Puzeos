@@ -23,6 +23,10 @@ const routes:Routes=[
     loadChildren: () => import('./pages/blocked-users/blocked-users.module').then( m => m.BlockedUsersPageModule)
   },
   {
+    path: 'setting',
+    loadChildren: () => import('./pages/setting/setting.module').then( m => m.SettingPageModule)
+  },
+  {
     path: 'search-message',
     loadChildren: () => import('./pages/search-message/search-message.module').then( m => m.SearchMessagePageModule)
   },
@@ -30,6 +34,10 @@ const routes:Routes=[
     path:'**',
     pathMatch:'full',
     redirectTo:''
+  },
+  {
+    path: 'setting',
+    loadChildren: () => import('./pages/setting/setting.module').then( m => m.SettingPageModule)
   }
 ]
 

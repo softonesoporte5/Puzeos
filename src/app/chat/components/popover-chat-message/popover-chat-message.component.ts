@@ -14,6 +14,7 @@ export class PopoverChatMessageComponent implements OnInit {
   message:IMessage;
   dbSavedMessages:ILocalForage;
   saved:boolean=true;
+  idChat:string;
 
   constructor(
     private navParams: NavParams,
@@ -24,6 +25,7 @@ export class PopoverChatMessageComponent implements OnInit {
 
   ngOnInit() {
     this.message=this.navParams.data.message;
+    this.idChat=this.navParams.data.idChat;
     this.dbSavedMessages=this.db.loadStore("savedMessages");
     this.dbSavedMessages.getItem(this.message.id)
     .then(resp=>{
@@ -52,7 +54,7 @@ export class PopoverChatMessageComponent implements OnInit {
   }
 
   save(){
-    this.dbSavedMessages.setItem(this.message.id,this.message);
+    this.dbSavedMessages.setItem(this.message.id,{...this.message,idChat:this.idChat});
     this.popoverController.dismiss();
     this.presentToast('Mensaje guardado.');
   }

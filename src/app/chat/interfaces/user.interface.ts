@@ -13,4 +13,5 @@ export class IUserData{
   imageUrl?:string;
   imageUrlLoc?:string;
   blockedUsers:string[];
+  token?:string;
 }

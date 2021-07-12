@@ -14,7 +14,11 @@
 </ion-header>
 
 <ion-content class="loc__main">
-  <ion-card *ngFor="let message of messages">
+  <ion-card
+    *ngFor="let message of messages"
+    [routerLink]="'/chat/id/'+message.idChat"
+    [queryParams]="{ id: message.id, search:message.message}"
+  >
     <ion-card-header class="ion-no-padding">
       <ion-card-subtitle>{{message.user}}</ion-card-subtitle>
     </ion-card-header>
