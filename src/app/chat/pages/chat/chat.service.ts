@@ -32,34 +32,7 @@ export class ChatService{
       }
       return 0;
     });
-
     return mesagges;
-  }
-
-  addMessage(message:IMessage,idChat:string,dbChat:ILocalForage,dbMessages:ILocalForage){
-    if(message.user!==this.userName){
-      this.firestore.collection("messages").doc(this.idChat)
-      .collection("messages").doc(message.id)
-      .delete()
-      .catch(error=>{
-        console.log(error);
-      });
-    }
-
-    dbChat.getItem(idChat)
-    .then((resp:IChat)=>{
-      if(resp){
-
-        this.db.setItemChat(idChat,{
-          ...resp,
-          lastMessage:message.message,
-          timestamp:message.timestamp,
-        });
-      }
-    })
-
-    dbMessages.setItem(message.id,message)
-    .catch(error=>console.log(error));
   }
 
   addMessageInFirebase(message:string,idChat:string,userName:string){

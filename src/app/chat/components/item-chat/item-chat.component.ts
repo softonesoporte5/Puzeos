@@ -23,6 +23,7 @@ export class ItemChatComponent implements OnInit {
   chatName:string;
   dbUsers:ILocalForage;
   urlImg:string="../../../../assets/person.jpg";
+  dateString:string;
 
   constructor(
     private db:DbService,
@@ -37,6 +38,14 @@ export class ItemChatComponent implements OnInit {
     this.chatName=arrUser[0];
 
     this.dbUsers=this.db.loadStore("users");
+
+    const date=new Date();
+    const date2=new Date(this.chat.timestamp);
+    if(date2.toLocaleDateString()===date.toLocaleDateString()){
+      this.dateString="";
+    }else{
+      this.dateString=date2.toLocaleDateString();
+    }
 
     for (const key in this.chat.members) {
       if(key!==firebase.default.auth().currentUser.uid){
@@ -56,8 +65,9 @@ export class ItemChatComponent implements OnInit {
                 });
 
                 if(dataUser.imageUrl){
-                  this.firebaseStorage.getImage(dataUser.imageUrl)
+                  let imageSubscribe=this.firebaseStorage.getImage(dataUser.imageUrl)
                   .subscribe(downloadUrl=>{
+                    imageSubscribe.unsubscribe();
                     let httpSubscribe=this.http.get(downloadUrl,{
                       responseType:'blob',
                       reportProgress:true,

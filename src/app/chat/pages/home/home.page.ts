@@ -24,7 +24,7 @@ export class HomePage implements OnInit{
   dbChats:ILocalForage;
   dbUsers:ILocalForage;
   chatsObj={};
-
+  newMessages=0;
   constructor(
     private menu: MenuController,
     private appService:AppService,
@@ -41,14 +41,9 @@ export class HomePage implements OnInit{
         id:key,
         ...values
       }
-<<<<<<< HEAD
-
-=======
->>>>>>> a0149ea5046618e4eb9509dae22a44e04eda641f
       this.chatsFirebase++;
     }).then(()=>{
       this.orderChats();
-
       this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
       .then(user=>{
         this.user={

@@ -1,3 +1,4 @@
+import { IMessagesResp } from './../../interfaces/messagesResp.interface';
 import { IUserData } from './../../interfaces/user.interface';
 import { PerfilModalComponent } from './../../components/perfil-modal/perfil-modal.component';
 import { Subscription, Subject } from 'rxjs';
@@ -102,31 +103,84 @@ export class ChatPage implements OnInit, OnDestroy{
       //Obtenemos los messages de la DB local
       this.dbMessages.iterate((values:IMessage)=>{
         arrMessages.push(values);
+        if(values.user!==this.userName){
+          if(values.state===false){
+            this.db.deleteMessage(values.id,this.idChat);
+          }
+        }
       }).then(()=>{
         this.mensajes=this.chatService.orderMessages(arrMessages);
+        this.db.setItemChat(this.idChat,{...this.chat,newMessages:0});
       })
       .catch(error=>console.log(error));
 
       if(this.db.messagesSubscriptions){
-        console.log("a")
-        const messages=this.db.messagesSubscriptions[this.idChat] as Subject<IMessage[]>
-        console.log(messages)
+        const messages=this.db.messagesSubscriptions[this.idChat] as Subject<IMessagesResp>
         this.mensajesSubscribe=messages.subscribe(messagesResp=>{
-          Array.prototype.push.apply(this.mensajes,messagesResp);
+
+          if(messagesResp.status===0){
+            for (let i = this.mensajes.length -1; i > 0; i--){
+              const message=this.mensajes[i];
+              if(message.user!==this.userName){
+                console.log(message.state)
+                if(this.mensajes[i].state===false){
+                  this.mensajes[i].state=true;
+                  this.dbMessages.setItem(message.id,{
+                    ...this.mensajes[i],
+                    state:true
+                  }).catch(error=>console.log(error));
+                }else{
+                  break;
+                }
+              }
+            }
+          }else if(messagesResp.status===1){
+
+            messagesResp.resp.forEach(message=>{
+              if(message.user!==this.userName){
+                this.dbChat.getItem(this.idChat)
+                .then(chat=>{
+                  this.db.setItemChat(this.idChat,{...chat,newMessages:0});
+                },err=>console.log(err));
+                this.db.deleteMessage(message.id,this.idChat);
+              }
+            });
+            if(messagesResp.resp.length>1){
+              const orderResp=this.chatService.orderMessages(messagesResp.resp);
+              Array.prototype.push.apply(this.mensajes,orderResp);
+            }else{
+              Array.prototype.push.apply(this.mensajes,messagesResp.resp);
+            }
+          }else{
+            console.log(messagesResp.resp)
+            messagesResp.resp.forEach(message=>{
+              if(message.user===this.userName){
+                let deletePer=false;
+                for (let i = this.mensajes.length -1; i > 0; i--){
+                  if(this.mensajes[i].id===message.id){
+                    deletePer=true;
+                  }
+                  if(deletePer===true){
+                    if(this.mensajes[i].state===false){
+                      this.mensajes[i].state=true;
+                      this.dbMessages.setItem(message.id,{
+                        ...this.mensajes[i],
+                        state:true
+                      }).then(resp=>console.log(resp))
+                      .catch(error=>console.log(error));
+                      break;
+                    }else{
+                      deletePer=false;
+                      break;
+                    }
+                  }
+                }
+              }
+            });
+          }
 
         })
-      }/*else{
-        const subscribe=this.db.getMessagesSubscriptions()
-        .subscribe(resp=>{
-          subscribe.unsubscribe();
-          console.log(resp)
-          const messages=resp[this.idChat] as Subject<DocumentChange<IMessage>[]>
-          this.mensajesSubscribe=messages.subscribe(messagesResp=>{
-            console.log(messagesResp)
-            processMessages(messagesResp);
-          })
-        })
-      }*/
+      }
 
       this.audioSubscribe=this.mediaRecorderService.audio$
       .subscribe(audio=>{
@@ -210,7 +264,7 @@ export class ChatPage implements OnInit, OnDestroy{
     return item.id;
   }
 
-  scrollEvent(e){
+  scrollEvent(e:any){
     if(e.target.scrollHeight-e.target.offsetHeight-e.target.scrollTop>300){
       if(this.showScrollButton!==true) this.showScrollButton=true;
     }else{

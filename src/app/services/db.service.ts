@@ -1,3 +1,4 @@
+import { IMessagesResp } from './../chat/interfaces/messagesResp.interface';
 import { ChatService } from './../chat/pages/chat/chat.service';
 import { AngularFirestore, DocumentChange } from '@angular/fire/firestore';
 import { IUserData } from './../chat/interfaces/user.interface';
@@ -17,7 +18,7 @@ export class DbService{
   private userSubscribe$=new Subject<IUserData>();
   messagesSubscriptions:{};
   private messagesSubscriptionsObject$=new Subject<{}>();
-  private messagesSubscriptions$:Subject<IMessage[] | IMessage>[]=[];
+  private messagesSubscriptions$:Subject<IMessagesResp>[]=[];
   private dbChats$=new Subject<IChat[] | IChat>();
   chats:IChat[]=[];
   private dbChats:ILocalForage;
@@ -25,6 +26,7 @@ export class DbService{
   user:IUserData;
   arrMessages={};
   dbMessages:ILocalForage[]=[];
+  newMessages:{}={};
 
   constructor(
     private firestore:AngularFirestore
@@ -41,7 +43,7 @@ export class DbService{
           this.messagesSubscriptions={}
           this.user.chats.forEach((chatID,index)=>{
             this.dbMessages[chatID]=this.loadStore("messages"+chatID);
-
+            this.newMessages[chatID]=0;
             this.messagesSubscriptions$[chatID]=new Subject<IMessage[] | IMessage>();
             this.arrMessages[chatID]=[];
 
@@ -52,6 +54,9 @@ export class DbService{
             ref.onSnapshot(resp=>{
               let arrMensajes:IMessage[]=[];
               const datos=resp.docChanges();
+              if(datos.length===0){
+                this.messagesSubscriptions$[chatID].next({resp:[],status:0});
+              }
 
               datos.forEach((mensaje,index)=>{
                 if(mensaje.type!=='removed'){
@@ -70,57 +75,33 @@ export class DbService{
                         };
 
                         arrMensajes.push(message);
-                        //Agregamos a la DB Local y lo eliminamos de Firebase si no lo envió el ususario
+                        //Agregamos a la DB Local
                         this.addMessage(message,chatID,this.dbChats, this.dbMessages[chatID]);
                         if(data.user!==this.user.userName){
-                          //this.newMessages++;
+                          this.newMessages[chatID]++;
                         }
                         //Agregamos todos los mensajes cuando se procese el último
                         if(index===datos.length-1){
                           Array.prototype.push.apply(this.arrMessages[chatID],arrMensajes);
-                          console.log(index);
-                          this.messagesSubscriptions$[chatID].next([...arrMensajes]);
+                          this.messagesSubscriptions$[chatID].next({resp:[...arrMensajes],status:1});
                         }
                       }
                     }).catch(err=>console.log(err));
                   }
                 }else{
-                  let deletePer=false;
-                  for (let i = this.arrMessages[chatID].length -1; i > 0; i--){
-                    if(this.arrMessages[chatID][i].id===mensaje.doc.id){
-                      deletePer=true;
-                    }
-                    if(deletePer===true){
-                      if(this.arrMessages[chatID][i].state===false){
-                        this.arrMessages[chatID][i].state=true;
+                  const data=mensaje.doc.data() as IMessage;
+                  this.messagesSubscriptions$[chatID].next({resp:[{...data,id:mensaje.doc.id}],status:2});
 
-                        this.dbMessages[chatID].setItem(mensaje.doc.id,{
-                          id:mensaje.doc.id,
-                          ...mensaje.doc.data(),
-                          timestamp:mensaje.doc.data().timestamp.toDate(),
-                          state:true
-                        }).catch(error=>console.log(error));
-                        break;
-                      }else{
-                        deletePer=false;
-                        break;
-                      }
-                    }
-                  }
+                  this.dbMessages[chatID].getItem(mensaje.doc.id)
+                  .then((resp:IMessage)=>{
+                    this.dbMessages[chatID].setItem(mensaje.doc.id,{
+                      ...resp,
+                      state:true
+                    }).then((resp:any)=>console.log(resp))
+                    .catch((error:any)=>console.log(error));
+                  },(err:any)=>console.log(err))
+
                 }
-                /*if(datos.length-1===index){
-                  this.dbChats.getItem(chatID)
-                  .then(resp=>{
-                    if(resp){
-                      console.log("a")
-                      this.setItemChat(chatID,{
-                        ...resp
-                        //newMessages:this.newMessages
-                      });
-                    }
-                  })
-
-                }*/
               })
             });
             this.messagesSubscriptions[chatID]=this.messagesSubscriptions$[chatID].asObservable();
@@ -140,22 +121,24 @@ export class DbService{
     });
   }
 
-  addMessage(message:IMessage,idChat:string,dbChat:ILocalForage,dbMessages:ILocalForage){
-    if(message.user!==this.user.userName){
-      this.firestore.collection("messages").doc(idChat)
-      .collection("messages").doc(message.id)
+  deleteMessage(messageID:string,idChat:string){
+
+    this.firestore.collection("messages").doc(idChat)
+      .collection("messages").doc(messageID)
       .delete()
       .catch(error=>{
         console.log(error);
       });
-    }
+  }
 
+  addMessage(message:IMessage,idChat:string,dbChat:ILocalForage,dbMessages:ILocalForage){
     dbChat.getItem(idChat)
     .then((resp:IChat)=>{
       if(resp){
 
         this.setItemChat(idChat,{
           ...resp,
+          newMessages:resp.newMessages+1,
           lastMessage:message.message,
           timestamp:message.timestamp,
         });
