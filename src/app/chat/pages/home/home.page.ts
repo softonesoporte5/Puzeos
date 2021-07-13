@@ -103,7 +103,6 @@ export class HomePage implements OnInit{
       });
     })
     .catch(err=>console.log(err));
-<<<<<<< HEAD
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then(user=>{
@@ -141,8 +140,6 @@ export class HomePage implements OnInit{
         }
       });
     });
-=======
->>>>>>> a0149ea5046618e4eb9509dae22a44e04eda641f
   }
 
   openMenu(){
