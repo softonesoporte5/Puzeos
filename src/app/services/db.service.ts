@@ -14,7 +14,8 @@ import * as firebase from 'firebase';
 })
 export class DbService{
 
-  messagesSubscriptions;
+  private userSubscribe$=new Subject<IUserData>();
+  messagesSubscriptions:{};
   private messagesSubscriptionsObject$=new Subject<{}>();
   private messagesSubscriptions$:Subject<IMessage[] | IMessage>[]=[];
   private dbChats$=new Subject<IChat[] | IChat>();
@@ -107,7 +108,6 @@ export class DbService{
                     }
                   }
                 }
-
                 /*if(datos.length-1===index){
                   this.dbChats.getItem(chatID)
                   .then(resp=>{
@@ -187,5 +187,18 @@ export class DbService{
       this.chats.push(chat);
     }).then(()=>this.dbChats$.next(this.chats))
     .catch(err=>console.log(err));
+  }
+
+  setUser(user:IUserData,id:string){
+    this.dbUsers.setItem(id,{
+      ...user,
+    }).then(user=>{
+      this.userSubscribe$.next(user);
+    })
+    .catch(err=>console.log(err));
+  }
+
+  getUser$(){
+    return this.userSubscribe$.asObservable() ;
   }
 }
