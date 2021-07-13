@@ -1,3 +1,4 @@
+import { IChat } from './../../interfaces/chat.interface';
 import { DbService } from 'src/app/services/db.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IMessage } from './../../interfaces/message.interface';
@@ -46,8 +47,9 @@ export class ChatService{
     }
 
     dbChat.getItem(idChat)
-    .then(resp=>{
+    .then((resp:IChat)=>{
       if(resp){
+
         this.db.setItemChat(idChat,{
           ...resp,
           lastMessage:message.message,

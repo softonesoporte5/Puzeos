@@ -42,6 +42,7 @@ export class ChatPage implements OnInit, OnDestroy{
   routeQuery:Params;
   user:IUserData;
   imgPath:string;
+  reference=0;
   @ViewChild('content') content: HTMLElement;
   @ViewChild('sliding', { static: false }) sliding: IonItemSliding;
 
@@ -74,137 +75,11 @@ export class ChatPage implements OnInit, OnDestroy{
       this.routeQuery=params;
     });
 
-    this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
-    .then(user=>{
-      this.userName=user.userName;
-      let arrMessages=[];
-      //Obtenemos los messages de la DB local
-      this.dbMessages.iterate((values:IMessage)=>{
-        arrMessages.push(values);
-      }).then(()=>{
-        this.mensajes=this.chatService.orderMessages(arrMessages);
-      })
-      .catch(error=>console.log(error));
-
-      let newMessages=0;
-      const processMessages=(messagesResp:DocumentChange<IMessage>[])=>{
-        //Comprobamos si los mensaje fueron visto y no se detectó
-        if(messagesResp.length==0){
-          for (let index = this.mensajes.length-1; index > 0; index--){
-            const mensaje = this.mensajes[index];
-            if(mensaje.user===this.userName){
-              if(mensaje.state===false){
-                this.dbMessages.setItem(mensaje.id,{
-                  ...mensaje,
-                  state:true
-                })
-                .then(resp=>{
-                  this.mensajes[index]=resp;
-                })
-                .catch(error=>console.log(error));
-              }else{
-                break;
-              }
-            }else{
-              continue;
-            }
-          }
-        }
-
-        let arrMensajes:IMessage[]=[];
-        messagesResp.forEach((mensaje,index)=>{
-          arrMensajes=[];
-          if(mensaje.type!=='removed'){
-            if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
-              this.dbMessages.getItem(mensaje.doc.id)
-              .then(resp=>{
-                if(!resp){
-                  const data=mensaje.doc.data() as IMessage;
-
-                  const message={
-                    ...data,
-                    id:mensaje.doc.id,
-                    download:false,
-                    timestamp:data.timestamp.toDate(),
-                    state:false
-                  };
-
-                  arrMensajes.push(message);
-                  //Agregamos a la DB Local y lo eliminamos de Firebase si no lo envió el ususario
-                  this.chatService.addMessage(message,this.idChat,this.dbChat, this.dbMessages);
-                  //Agregamos todos los mensajes cuando se procese el último
-                  if(index===messagesResp.length-1){
-                    Array.prototype.push.apply(this.mensajes,arrMensajes)
-                  }
-                }
-              }).catch(err=>console.log(err));
-            }
-          }else{
-            let deletePer=false;
-            for (let i = this.mensajes.length -1; i > 0; i--){
-              if(this.mensajes[i].id===mensaje.doc.id){
-                deletePer=true;
-              }
-              if(deletePer===true){
-                if(this.mensajes[i].state===false){
-                  this.mensajes[i].state=true;
-
-                  this.dbMessages.setItem(mensaje.doc.id,{
-                    id:mensaje.doc.id,
-                    ...mensaje.doc.data(),
-                    timestamp:mensaje.doc.data().timestamp.toDate(),
-                    state:true
-                  }).catch(error=>console.log(error));
-                  break;
-                }else{
-                  deletePer=false;
-                  break;
-                }
-              }
-            }
-          }
-        })
-      }
-
-      if(this.db.messagesSubscriptions){
-
-        if(this.db.messagesSubscriptions[this.idChat]){
-          const messages=this.db.messagesSubscriptions[this.idChat] as Subject<DocumentChange<IMessage>[]>
-          this.mensajesSubscribe=messages.subscribe(messagesResp=>{
-
-          })
-        }else{
-          const ref=this.firestore.collection("messages")
-          .doc(this.idChat).collection<IMessage>("messages")
-          .ref;
-
-          ref.onSnapshot(resp=>{
-            processMessages(resp.docChanges());
-          });
-        }
-      }else{
-        const subscribe=this.db.getMessagesSubscriptions()
-        .subscribe(resp=>{
-          subscribe.unsubscribe();
-          console.log(resp)
-          const messages=resp[this.idChat] as Subject<DocumentChange<IMessage>[]>
-          this.mensajesSubscribe=messages.subscribe(messagesResp=>{
-            processMessages(messagesResp);
-          })
-        })
-      }
-
-      this.audioSubscribe=this.mediaRecorderService.audio$
-      .subscribe(audio=>{
-        if(!this.cancelar){
-          this.firebaseStorageService.uploadAudio(audio,this.userName,this.idChat);
-        }
-      });
-    }).catch(err=>console.log(err));
 
     this.dbChat.getItem(this.idChat)
     .then((chat:IChat)=>{
       this.chat=chat;
+
       for (const key in chat.members) {
         if(firebase.default.auth().currentUser.uid!==key){
           this.dbUsers.getItem(key)
@@ -218,6 +93,47 @@ export class ChatPage implements OnInit, OnDestroy{
           });
         }
       }
+    }).catch(err=>console.log(err));
+
+    this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
+    .then(user=>{
+      this.userName=user.userName;
+      let arrMessages=[];
+      //Obtenemos los messages de la DB local
+      this.dbMessages.iterate((values:IMessage)=>{
+        arrMessages.push(values);
+      }).then(()=>{
+        this.mensajes=this.chatService.orderMessages(arrMessages);
+      })
+      .catch(error=>console.log(error));
+
+      if(this.db.messagesSubscriptions){
+        console.log("a")
+        const messages=this.db.messagesSubscriptions[this.idChat] as Subject<IMessage[]>
+        console.log(messages)
+        this.mensajesSubscribe=messages.subscribe(messagesResp=>{
+          Array.prototype.push.apply(this.mensajes,messagesResp);
+
+        })
+      }/*else{
+        const subscribe=this.db.getMessagesSubscriptions()
+        .subscribe(resp=>{
+          subscribe.unsubscribe();
+          console.log(resp)
+          const messages=resp[this.idChat] as Subject<DocumentChange<IMessage>[]>
+          this.mensajesSubscribe=messages.subscribe(messagesResp=>{
+            console.log(messagesResp)
+            processMessages(messagesResp);
+          })
+        })
+      }*/
+
+      this.audioSubscribe=this.mediaRecorderService.audio$
+      .subscribe(audio=>{
+        if(!this.cancelar){
+          this.firebaseStorageService.uploadAudio(audio,this.userName,this.idChat);
+        }
+      });
     }).catch(err=>console.log(err));
 
     const ref=this.firestore.collection("messages")
