@@ -24,10 +24,6 @@ export class ImageModalComponent implements OnInit {
     this.path=this.navParams.get("path")
   }
 
-  zoom(zoomIn){
-
-  }
-
   close(){
     this.modalController.dismiss();
   }

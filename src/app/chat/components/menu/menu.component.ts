@@ -1,3 +1,4 @@
+import { ImageCropperModalComponent } from './../image-cropper-modal/image-cropper.component';
 import { DbService } from './../../../services/db.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { CameraService } from './../../../services/camera.service';
@@ -5,7 +6,7 @@ import { IUser, IUserData } from './../../interfaces/user.interface';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { ActionSheetController } from '@ionic/angular';
+import { ActionSheetController, ModalController } from '@ionic/angular';
 import { Capacitor, CameraSource } from '@capacitor/core';
 import * as firebase from 'firebase';
 
@@ -25,7 +26,8 @@ export class MenuComponent implements OnInit {
     private auth:AngularFireAuth,
     private actionSheetController: ActionSheetController,
     private camara:CameraService,
-    private db:DbService
+    private db:DbService,
+    private modal:ModalController
   ) { }
 
   ngOnInit() {
@@ -42,6 +44,16 @@ export class MenuComponent implements OnInit {
         this.imgPath=Capacitor.convertFileSrc(resp.imageUrlLoc);
       }
     }).catch(err=>console.log(err));
+
+    this.camara.getImageData()
+    .subscribe(resp=>{
+      this.modal.create({
+        component:ImageCropperModalComponent,
+        componentProps:{
+          base64:resp
+        }
+      }).then(modal=>modal.present());
+    })
   }
 
   logout(){
@@ -56,7 +68,7 @@ export class MenuComponent implements OnInit {
   private selectImage(source:CameraSource){
     this.camara.takePicture(this.user,source).then(resp=>{
 
-      this.dbUsers.setItem(this.user.id,{
+     this.dbUsers.setItem(this.user.id,{
         ...this.user.data,
         imageUrl:resp.firebasePath,
         imageUrlLoc:resp.filepath
