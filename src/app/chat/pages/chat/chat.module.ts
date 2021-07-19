@@ -6,7 +6,6 @@ import { FileSelectorComponent } from './../../components/file-selector/file-sel
 import { ItemMessageComponent } from './../../components/item-message/item-message.component';
 import { PopoverChatMessageComponent } from './../../components/popover-chat-message/popover-chat-message.component';
 import { AudioComponent } from './../../components/audio/audio.component';
-import { SafePipe } from './../../../pipes/safe.pipe';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -32,7 +31,6 @@ import { HttpClientModule } from '@angular/common/http';
   ],
   declarations: [
     ChatPage,
-    SafePipe,
     AudioComponent,
     PopoverChatComponent,
     PopoverChatMessageComponent,

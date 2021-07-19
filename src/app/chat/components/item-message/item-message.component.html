@@ -26,13 +26,30 @@
   </ion-card-content>
 
   <ion-card-content *ngIf="message.type==='voice'">
-    <app-audio [audio]="message" [dbMessages]="dbMessage"></app-audio>
-    <ion-text color="tertiary">{{message.timestamp | date: 'shortTime'}}</ion-text>
+    <app-audio
+      [audio]="message"
+      [dbMessages]="dbMessage"
+      [send]="userName===message.user"
+    ></app-audio>
+    <ion-text color="tertiary">
+      {{message.timestamp | date: 'shortTime'}}
+      <span *ngIf="userName===message.user" style="display: contents;">
+        <ion-icon name="checkmark-outline" *ngIf="message.state===false"></ion-icon>
+        <ion-icon name="checkmark-done-outline" *ngIf="message.state===true"></ion-icon>
+      </span>
+    </ion-text>
+
   </ion-card-content>
 
   <ion-card-content *ngIf="message.type==='image'">
     <app-image-message [image]="message" [userName]="userName" [dbMessages]="dbMessage"></app-image-message>
-    <ion-text color="tertiary">{{message.timestamp | date: 'shortTime'}}</ion-text>
+    <ion-text color="tertiary">
+      {{message.timestamp | date: 'shortTime'}}
+      <span *ngIf="userName===message.user" style="display: contents;">
+        <ion-icon name="checkmark-outline" *ngIf="message.state===false"></ion-icon>
+        <ion-icon name="checkmark-done-outline" *ngIf="message.state===true"></ion-icon>
+      </span>
+    </ion-text>
   </ion-card-content>
 
 </ion-card>

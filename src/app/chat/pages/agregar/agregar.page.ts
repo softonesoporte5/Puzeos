@@ -22,6 +22,7 @@ export class AgregarPage implements OnInit, OnDestroy {
   userSubscription:Subscription;
   dbUsers:ILocalForage;
 
+
   constructor(
     private fireStore:AngularFirestore,
     private appService:AppService,
@@ -38,7 +39,13 @@ export class AgregarPage implements OnInit, OnDestroy {
     }else{
       this.fireStore.collection("tags").ref.get()
       .then(items=>{
-        items.forEach(item=>this.items=[...this.items,{id:item.id,data:item.data()}]);
+        items.forEach(item=>{
+          this.items.push({
+            id:item.id,
+            data:item.data(),
+            color:this.colorRGB()
+          });
+        });
         sessionStorage.setItem("tags",JSON.stringify(this.items));
       }).catch(error=>{
         console.log(error);
@@ -51,6 +58,7 @@ export class AgregarPage implements OnInit, OnDestroy {
     }
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then(user=>{
+      console.log(user);
       this.user={
         id:firebase.default.auth().currentUser.uid,
         data:{...user}
@@ -82,6 +90,14 @@ export class AgregarPage implements OnInit, OnDestroy {
     this.userSubscription.unsubscribe();
   }
 
+  colorRGB(){
+    function generarNumero(numero:number){
+      return (Math.random()*numero).toFixed(0);
+    }
+    var coolor = "("+generarNumero(255)+"," + generarNumero(255) + "," + generarNumero(190) +")";
+    return "rgb" + coolor;
+  }
+
   actualizarEstadoBusquedaUser(estado:boolean, tagId:string=''){
     this.buscando=estado;
     sessionStorage.setItem("buscando",JSON.stringify({state:estado,tagId:tagId}));
@@ -92,13 +108,13 @@ export class AgregarPage implements OnInit, OnDestroy {
         tagId:tagId
       }
     }).then(()=>{
-      this.db.setUser({
+      /*this.db.setUser({
         ...this.user.data,
         buscando:{
           state:estado,
           tagId:tagId
         }
-      },firebase.default.auth().currentUser.uid);
+      },firebase.default.auth().currentUser.uid);*/
 
     })
     .catch(error=>{
@@ -106,42 +122,49 @@ export class AgregarPage implements OnInit, OnDestroy {
     });
   }
 
-  buscarCompa(tagId:string){//Añade al usuario en la coleccion de busquedas
+   buscarCompa(tagId:string){//Añade al usuario en la coleccion de busquedas
     this.buscando=true;
 
-    this.fireStore.collection("searchs").doc(tagId).get()
+    let searchSubscribe=this.fireStore.collection("searchs").doc(tagId).get()
     .subscribe((resp:DocumentSnapshot<searchsUser>)=>{
-      let values:any[]=[];
-      const data=resp.data();
-      console.log(this.user.data);
-      for(const key in data.users) {
-        if(!this.user.data.blockedUsers.includes(data.users[key])){
-          values.unshift({id:key,userName:data.users[key]});
-        }
-      }
-
-      if(values.length<1){//Comprobamos si no hay nadie buscando, en ese caso se inserta el usuario a la coleccion de busqueda
-        this.actualizarEstadoBusquedaUser(true,tagId);
-        this.fireStore.collection("searchs").doc(tagId).update({
+      searchSubscribe.unsubscribe();
+      console.log(resp);
+      if(!resp){
+        this.fireStore.collection("searchs").doc(tagId).set({
           [`users.${this.user.id}`]:this.user.data.userName
-        }).catch(error=>{
-          console.log(error);
-        });
-
+        }).catch(error=>console.log(error));
       }else{
-        this.generarChat({//Creamos el chat
-          [this.user.id]:true,
-          [values[0].id]:true
-        },
-        values[0].id,
-        [
-          this.user.data.userName,
-          values[0].userName
-        ]
-        );
-        this.fireStore.collection("searchs").doc(tagId).update({//Eliminamos al usuario de la tabla de busquedas
-          [`users.${values[0].id}`]:firebase.default.firestore.FieldValue.delete()
-        })
+        let values:any[]=[];
+        const data=resp.data();
+
+        for(const key in data.users) {
+          if(!this.user.data.blockedUsers.includes(data.users[key])){
+            values.unshift({id:key,userName:data.users[key]});
+          }
+        }
+
+        if(values.length<1){//Comprobamos si no hay nadie buscando, en ese caso se inserta el usuario a la coleccion de busqueda
+          this.actualizarEstadoBusquedaUser(true,tagId);
+          this.fireStore.collection("searchs").doc(tagId).update({
+            [`users.${this.user.id}`]:this.user.data.userName
+          }).catch(error=>{
+            console.log(error);
+          });
+
+        }else{
+          this.generarChat({//Creamos el chat
+            [this.user.id]:true,
+            [values[0].id]:true
+          },
+          values[0].id,
+          [
+            this.user.data.userName,
+            values[0].userName
+          ]);
+          this.fireStore.collection("searchs").doc(tagId).update({//Eliminamos al usuario de la tabla de busquedas
+            [`users.${values[0].id}`]:firebase.default.firestore.FieldValue.delete()
+          })
+        }
       }
     });
   }
@@ -182,7 +205,7 @@ export class AgregarPage implements OnInit, OnDestroy {
               state:false
             },
             chats:firebase.default.firestore.FieldValue.arrayUnion(chat.id)
-          }).then((resp)=>{//Redireccionamos al home
+          }).then(()=>{//Redireccionamos al home
             this.router.navigate(['chat']);
           }).catch(error=>{
             console.log(error);

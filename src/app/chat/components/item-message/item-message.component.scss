@@ -1,10 +1,10 @@
 ion-card{
   --color:black;
-  width: 85%;
+  max-width: 85%;
   padding: 6px;
   max-height: 24rem;
   box-shadow: none;
-  margin: 5px 5px 5px 20px;
+  margin: 5px 5px 5px 13px;
   float: left;
   --background: #ebeaea;
   overflow: visible;
@@ -12,11 +12,11 @@ ion-card{
   &::before{
     content: "";
     position: absolute;
-    border: solid 15px transparent;
-    border-right: solid 15px #ebeaea;
+    border: solid 10px transparent;
+    border-right: solid 10px #ebeaea;
     border-radius: 50%;
-    left: -12px;
-    top: -15px;
+    left: -9px;
+    top: -3px;
     transform: rotate(135deg);
   }
 
@@ -40,6 +40,8 @@ ion-card{
         margin-left: 5px;
       }
     }
+
+
   }
 }
 
@@ -47,14 +49,14 @@ ion-card{
   --background: var(--ion-color-primary) !important;
   float: right;
   --color: #fff;
-  margin: 5px 13px 5px 5px;
+  margin: 5px 10px 5px 5px;
 
   &::before{
     content: "";
     left: inherit;
-    right: -12px;
-    top: -15.5px;
-    border-right: #6400be solid 15px;
+    right: -7px;
+    top: -3px;
+    border-right: #6400be solid 10px;
     transform: rotate(45deg);
   }
 

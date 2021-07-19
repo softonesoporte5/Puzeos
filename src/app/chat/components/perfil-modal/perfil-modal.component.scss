@@ -20,19 +20,17 @@ ion-button{
   img{
     width: 100%;
   }
-
-  h3{
-    margin: -3rem 0 0 1rem;
-    font-weight: 600;
-    color: #fff;
-    text-shadow: 0 0 0.1rem black;
-  }
 }
 
 .loc__cont-des{
   background-color: #fff;
+  margin-top: 6px;
+  padding:0.8rem;
+  padding-bottom: 0;
+
   h6{
-    margin-left: 0.5rem;
+    margin:0;
+    margin-bottom: 6px;
     color:var(--ion-color-primary);
   }
 
@@ -41,3 +39,9 @@ ion-button{
   }
 }
 
+.loc__btn-block{
+  margin-top:6px;
+  ion-icon{
+    margin-right: 6px;
+  }
+}

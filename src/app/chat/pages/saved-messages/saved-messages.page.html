@@ -14,18 +14,21 @@
 </ion-header>
 
 <ion-content class="loc__main">
-  <ion-card
+  <ion-item
     *ngFor="let message of messages"
+    detail="false"
     [routerLink]="'/chat/id/'+message.idChat"
     [queryParams]="{ id: message.id, search:message.message}"
   >
-    <ion-card-header class="ion-no-padding">
-      <ion-card-subtitle>{{message.user}}</ion-card-subtitle>
-    </ion-card-header>
+    <ion-label>
+      <span class="agrupar">
+        {{message.user}}
+        <ion-text color="tertiary">{{message.timestamp | date: 'shortTime'}}</ion-text>
+      </span>
 
-    <ion-card-content>
-      {{message.message}}
-      <ion-text color="tertiary">{{message.timestamp | date: 'shortTime'}}</ion-text>
-    </ion-card-content>
-  </ion-card>
+      <ion-text color="tertiary" class="agrupar">
+        {{message.message}}
+      </ion-text>
+    </ion-label>
+  </ion-item>
 </ion-content>

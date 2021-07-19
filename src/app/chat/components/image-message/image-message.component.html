@@ -1,14 +1,14 @@
 <div *ngIf="image.user===userName">
-  <img [src]="imageUrl" alt="Imágen" (click)="openModal()">
+  <ion-img [src]="imageUrl" alt="Imágen" (click)="openModal()"></ion-img>
 </div>
 
 <div *ngIf="image.user!==userName">
-  <img
+  <ion-img
     [src]="imageUrl"
     alt="Imágen"
     *ngIf="image.download===true"
     (click)="openModal()"
-  >
+  ></ion-img>
 
   <ion-button
     *ngIf="image.download===false"

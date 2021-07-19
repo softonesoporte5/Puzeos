@@ -6,4 +6,5 @@ export interface IChat{
   timestamp:any;
   userNames:string[];
   newMessages?:number;
+  deleted?:boolean;
 }

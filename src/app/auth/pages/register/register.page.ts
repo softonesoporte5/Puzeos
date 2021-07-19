@@ -1,13 +1,14 @@
+import { NotificationServiceService } from './../../../services/notification-service.service';
 import { ILocalForage } from './../../../chat/interfaces/localForage.interface';
 import { DbService } from './../../../services/db.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { LoadingService } from './../../../services/loading.service';
-import { AppService } from './../../../app.service';
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { Router } from '@angular/router';
+import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-register',
@@ -46,7 +47,8 @@ export class RegisterPage implements OnInit {
     private router:Router,
     private loadingService:LoadingService,
     private fireStore:AngularFirestore,
-    private db:DbService
+    private db:DbService,
+    private notificationService:NotificationServiceService
   ) { }
 
   ngOnInit() {}
@@ -97,11 +99,15 @@ export class RegisterPage implements OnInit {
        .then(userInfo=>{
          userInfo.user.sendEmailVerification()//Enviamos email de verificación
            .then(()=>{
+            if(!this.notificationService.token){
+              this.notificationService.token='';
+            }
             this.loadingService.dismiss();
-
             this.fireStore.collection("users").doc(userInfo.user.uid).set({//Agregamos el usuario a FireStorage
               userName:this.name.value,
               chats:[],
+              token:this.notificationService.token,
+              createDate:firebase.default.firestore.FieldValue.serverTimestamp(),
               buscando:{
                 state:false,
                 tagId:''
@@ -113,6 +119,7 @@ export class RegisterPage implements OnInit {
             this.dbUsers.setItem(userInfo.user.uid,{
               userName:this.name.value,
               chats:[],
+              token:this.notificationService.token,
               buscando:{
                 state:false,
                 tagId:''

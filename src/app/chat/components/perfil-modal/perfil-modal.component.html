@@ -7,14 +7,31 @@
 
   <div class="loc__cont-info">
     <img [src]="imgPath" alt="">
-    <h3>{{user.userName}}</h3>
     <div class="loc__cont-des">
-      <h6>Información</h6>
-      <ion-item>Aquí va la descripción</ion-item>
+      <h6>Nombre de usuario y descripción</h6>
       <ion-item>
-        Se unió a Puzeos el 24 de febreo del 2008
+        <p>{{user.data.userName}}</p>
+      </ion-item>
+      <ion-item>
+        <p>Aquí va la descripción</p>
+      </ion-item>
+      <ion-item>
+        Se unió a Puzeos el {{user.data.createDate | date}}
       </ion-item>
     </div>
+
+    <div class="loc__cont-des">
+      <h6>Tema de conversación</h6>
+      <ion-item>
+        <p>Desarrollo web</p>
+      </ion-item>
+    </div>
+
+    <ion-item class="loc__btn-block" (click)="blockUser()">
+      <ion-icon name="remove-circle-outline" color="danger"></ion-icon>
+      <p>Bloquear usuario</p>
+    </ion-item>
   </div>
+
 
 </ion-content>

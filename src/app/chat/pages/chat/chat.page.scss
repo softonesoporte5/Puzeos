@@ -5,11 +5,12 @@
 }
 
 .loc_toolbar{
-  padding:0 0.5rem;
+  padding-left:0.5rem;
 }
 
 .loc_icon-footer{
   font-size: 25px;
+  margin-right: 0.5rem;
 }
 
 .loc__btns-footer{
@@ -29,11 +30,23 @@
     --inner-padding-end:0;
     --inner-padding-start:0;
     --inner-padding-top:0;
+    margin:0;
+  }
+}
+
+ion-footer{
+  background-color: #ffffff;
+  ion-text{
+    padding:0.5rem;
+    width: 100%;
+    float: left;
   }
 }
 
 .footer-grabando{
   width: 10rem;
+  margin-bottom: -6px;
+  margin-right: 0;
 }
 
 ion-item-option{
@@ -150,6 +163,7 @@ ion-back-button {
   display: flex;
   flex: 1;
   align-items: center;
+  width: 150%;
 
   p{
     margin:0;
@@ -164,4 +178,9 @@ ion-back-button {
 .loc__icon-grabando{
   color: rgb(255, 1, 1);
   margin-right: 5px;
+}
+
+app-item-message{
+  width: 100%;
+  float: right;
 }

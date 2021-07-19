@@ -1,9 +1,7 @@
 import { Subject, Subscription } from 'rxjs';
-import { CropperjsService } from './cropperjs.service';
 import { FirebaseStorageService } from './firebase-storage.service';
 import { Injectable } from '@angular/core';
 import { Plugins, CameraResultType, CameraPhoto, FilesystemDirectory, FilesystemEncoding, Capacitor, CameraSource } from '@capacitor/core';
-//import { CropResult } from '@triplesense/capacitor-image-cropx';
 import { IUser } from '../chat/interfaces/user.interface';
 
 const { Camera, Filesystem } = Plugins;
@@ -20,9 +18,7 @@ export class CameraService {
 
   constructor(
     private firebaseStorage:FirebaseStorageService,
-  ) {
-
-  }
+  ) {}
 
   takePicture = async(user:IUser,source:CameraSource)=>{
     if(this.cropperSubscribe){

@@ -1,8 +1,12 @@
 .loc__controls{
   display: flex;
   align-items: center;
+
   ion-range{
     flex: 1;
+    --bar-background:#4d4d4d;
+    --bar-background-active:var(--audio-controls-color);
+    --knob-background:var(--audio-controls-color);
     padding-top: 0;
     padding-bottom: 0;
   }
@@ -10,10 +14,30 @@
   ion-button{
     --background: transparent;
     --box-shadow:none;
-    --color:var(--ion-color-secondary);
+    --color:var(--audio-controls-color);
   }
 }
 
- ion-range.disabled{
-   --knob-size:0px;
- }
+ion-range.disabled{
+  --knob-size:0px;
+}
+
+.duration{
+float: right;
+font-size: 11px;
+margin: 0;
+padding: 0;
+margin-top: -16px;
+margin-right: 13px;
+}
+
+div.recive{
+  ion-range{
+    --bar-background-active:var(--ion-color-primary);
+    --knob-background:var(--ion-color-primary);
+  }
+
+  ion-button{
+    --color:var(--ion-color-primary);
+  }
+}

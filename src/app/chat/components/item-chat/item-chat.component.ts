@@ -61,7 +61,8 @@ export class ItemChatComponent implements OnInit {
                 let dataUser=resp.data() as IUserData;
                 console.log(resp.data())
                 this.dbUsers.setItem(key,{
-                  ...dataUser
+                  ...dataUser,
+                  createDate:dataUser.createDate.toDate()
                 });
 
                 if(dataUser.imageUrl){

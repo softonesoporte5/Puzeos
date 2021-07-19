@@ -34,7 +34,7 @@
 <ion-content color="light" id="content">
 
   <app-item-chat
-    *ngFor="let chat of chats"
+    *ngFor="let chat of chats; trackBy:trackItems"
     [chat]="chat"
     [chatUser]="user?.data.userName"
   ></app-item-chat>

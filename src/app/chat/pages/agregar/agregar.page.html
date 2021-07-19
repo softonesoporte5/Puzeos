@@ -12,7 +12,14 @@
 </ion-header>
 
 <ion-content *ngIf="!buscando; else contBuscando" class="ion-padding">
-  <ion-chip *ngFor="let item of items" (click)="buscarCompa(item.id)">
+
+  <ion-input placeholder="¿Sobre qué quieres chatear?" maxlength="50"></ion-input>
+
+  <ion-chip
+    *ngFor="let item of items"
+    (click)="buscarCompa(item.id)"
+    [style]="'--background:'+item.color+';'"
+  >
     <ion-label>{{item.data.title}}</ion-label>
   </ion-chip>
 </ion-content>

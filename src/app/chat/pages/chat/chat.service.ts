@@ -1,4 +1,4 @@
-import { IChat } from './../../interfaces/chat.interface';
+import { IUser } from './../../interfaces/user.interface';
 import { DbService } from 'src/app/services/db.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IMessage } from './../../interfaces/message.interface';
@@ -35,12 +35,14 @@ export class ChatService{
     return mesagges;
   }
 
-  addMessageInFirebase(message:string,idChat:string,userName:string){
+  addMessageInFirebase(message:string,idChat:string,userName:string,sendUser:IUser){
     const timestamp=firebase.default.firestore.FieldValue.serverTimestamp();
     this.firestore.collection("messages").doc(idChat).collection("messages").add({
       message:message,
       user:userName,
       type:"text",
+      sendToToken:sendUser.data.token,
+      toUserId:sendUser.id,
       timestamp:timestamp
     }).catch(error=>{
       console.log(error);

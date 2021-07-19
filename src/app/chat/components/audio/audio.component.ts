@@ -20,6 +20,7 @@ const FILE_KEY='files';
 export class AudioComponent implements OnInit {
 
   @Input() audio:IMessage;
+  @Input() send:boolean;
   @Input() dbMessages:ILocalForage;
   progress=0;
   player:Howl;
@@ -29,7 +30,7 @@ export class AudioComponent implements OnInit {
   descargar:number=1;
   downloadProgress=0;
   downloadUrl:string;
-  messageDB:IMessage;
+
   constructor(
     private http:HttpClient,
     private firebaseService:FirebaseStorageService,
@@ -40,15 +41,13 @@ export class AudioComponent implements OnInit {
     this.dbMessages.getItem(this.audio.id)
     .then((message:IMessage)=>{
       if(message){
-        this.messageDB=message;
         if(message.download===false){
           this.descargar=1;
         }else{
           this.descargar=3;
-
           Filesystem.readFile({
-            path:this.audio.ref,
-            directory:FilesystemDirectory.Documents
+            path:this.audio.localRef,
+            directory:FilesystemDirectory.Data
           }).then(resp=>{
             this.controls(resp.data);
           }).catch(err=>console.log(err));
@@ -86,16 +85,16 @@ export class AudioComponent implements OnInit {
           .then((result:string | ArrayBuffer)=>{
             base64=result;
             Filesystem.writeFile({
-              path:'audio/'+name,
+              path:'audios/'+name,
               data:base64,
-              directory:FilesystemDirectory.Documents,
+              directory:FilesystemDirectory.Data,
               encoding: FilesystemEncoding.UTF8
             }).then(()=>{
               this.descargar=3;
 
               Filesystem.readFile({
-                path:'audio/'+name,
-                directory:FilesystemDirectory.Documents
+                path:'audios/'+name,
+                directory:FilesystemDirectory.Data
               }).then(resp=>{
                 this.controls(resp.data);
               }).catch(err=>console.log(err));
@@ -103,7 +102,7 @@ export class AudioComponent implements OnInit {
               this.dbMessages.setItem(this.audio.id,{
                 ...this.audio,
                 download:true,
-                ref:'audio/'+name
+                localRef:'audios/'+name
               }).catch(err=>console.log(err));
 
               storageSubscribe.unsubscribe();

@@ -9,7 +9,9 @@ export interface IMessage{
   id?:string,
   localRef?:string,
   fileName?:string,
-  dateChange?:boolean
+  dateChange?:boolean,
+  sendToToken?:string,
+  duration?:number
 }
 
 export interface IMessageSearch{

@@ -1,5 +1,5 @@
-import { IMessagesResp } from './../../interfaces/messagesResp.interface';
 import { IUserData } from './../../interfaces/user.interface';
+import { IMessagesResp } from './../../interfaces/messagesResp.interface';
 import { PerfilModalComponent } from './../../components/perfil-modal/perfil-modal.component';
 import { Subscription, Subject } from 'rxjs';
 import { ChatService } from './chat.service';
@@ -7,7 +7,6 @@ import { IMessage } from './../../interfaces/message.interface';
 import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
-import { FirebaseStorageService } from './../../../services/firebase-storage.service';
 import { MediaRecorderService } from './../../../services/media-recorder.service';
 import { AngularFirestore, DocumentChange } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
@@ -17,6 +16,7 @@ import * as firebase from 'firebase';
 import { IonItemSliding, PopoverController, ModalController } from '@ionic/angular';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
 import { Capacitor } from '@capacitor/core';
+import { IUser } from '../../interfaces/user.interface';
 
 @Component({
   selector: 'app-chat',
@@ -35,15 +35,17 @@ export class ChatPage implements OnInit, OnDestroy{
   dbMessages:ILocalForage;
   dbUsers:ILocalForage;
   mensajesSubscribe:Subscription;
-  audioSubscribe:Subscription;
   tiempoGrabacion:string='00:00';
   bucleTime:NodeJS.Timeout;
   cancelar:boolean=false;
   showScrollButton=false;
   routeQuery:Params;
-  user:IUserData;
+  user:IUser;
   imgPath:string;
-  reference=0;
+  showEmojiPickerCont:number=0;
+  blockChat:boolean=false;
+  posEmoji:number=0;
+  resetPosEmoji:boolean=true;
   @ViewChild('content') content: HTMLElement;
   @ViewChild('sliding', { static: false }) sliding: IonItemSliding;
 
@@ -59,7 +61,6 @@ export class ChatPage implements OnInit, OnDestroy{
     private firestore:AngularFirestore,
     private popoverController: PopoverController,
     private mediaRecorderService:MediaRecorderService,
-    private firebaseStorageService:FirebaseStorageService,
     private db:DbService,
     private chatService:ChatService,
     private modal:ModalController
@@ -80,14 +81,17 @@ export class ChatPage implements OnInit, OnDestroy{
     this.dbChat.getItem(this.idChat)
     .then((chat:IChat)=>{
       this.chat=chat;
+      if(chat.deleted){
+        this.blockChat=true;
+      }
 
       for (const key in chat.members) {
         if(firebase.default.auth().currentUser.uid!==key){
           this.dbUsers.getItem(key)
-          .then(user=>{
-            this.user=user;
-            if(this.user.imageUrlLoc){
-              this.imgPath=Capacitor.convertFileSrc(this.user.imageUrlLoc);
+          .then((user:IUserData)=>{
+            this.user={id:key,data:user};
+            if(this.user.data.imageUrlLoc){
+              this.imgPath=Capacitor.convertFileSrc(this.user.data.imageUrlLoc);
             }else{
               this.imgPath="assets/person.jpg";
             }
@@ -119,6 +123,7 @@ export class ChatPage implements OnInit, OnDestroy{
         this.mensajesSubscribe=messages.subscribe(messagesResp=>{
 
           if(messagesResp.status===0){
+            console.log("f")
             for (let i = this.mensajes.length -1; i > 0; i--){
               const message=this.mensajes[i];
               if(message.user!==this.userName){
@@ -135,7 +140,6 @@ export class ChatPage implements OnInit, OnDestroy{
               }
             }
           }else if(messagesResp.status===1){
-
             messagesResp.resp.forEach(message=>{
               if(message.user!==this.userName){
                 this.dbChat.getItem(this.idChat)
@@ -143,6 +147,9 @@ export class ChatPage implements OnInit, OnDestroy{
                   this.db.setItemChat(this.idChat,{...chat,newMessages:0});
                 },err=>console.log(err));
                 this.db.deleteMessage(message.id,this.idChat);
+              }else{
+                const audio=document.querySelector(".sendMessageSound") as HTMLMediaElement;
+                audio.play();
               }
             });
             if(messagesResp.resp.length>1){
@@ -151,6 +158,8 @@ export class ChatPage implements OnInit, OnDestroy{
             }else{
               Array.prototype.push.apply(this.mensajes,messagesResp.resp);
             }
+          }else if(messagesResp.status===1){
+            this.blockChat=true;
           }else{
             console.log(messagesResp.resp)
             messagesResp.resp.forEach(message=>{
@@ -181,13 +190,6 @@ export class ChatPage implements OnInit, OnDestroy{
 
         })
       }
-
-      this.audioSubscribe=this.mediaRecorderService.audio$
-      .subscribe(audio=>{
-        if(!this.cancelar){
-          this.firebaseStorageService.uploadAudio(audio,this.userName,this.idChat);
-        }
-      });
     }).catch(err=>console.log(err));
 
     const ref=this.firestore.collection("messages")
@@ -199,15 +201,11 @@ export class ChatPage implements OnInit, OnDestroy{
     if(this.mensajesSubscribe){
       this.mensajesSubscribe.unsubscribe();
     }
-
-    if(this.audioSubscribe){
-      this.audioSubscribe.unsubscribe();
-    }
   }
 
   agregarMensaje(){
     const message=this.mensaje.value;
-    this.chatService.addMessageInFirebase(message,this.idChat,this.userName);
+    this.chatService.addMessageInFirebase(message,this.idChat,this.userName,this.user);
     this.mensaje.setValue('');
   }
 
@@ -216,8 +214,7 @@ export class ChatPage implements OnInit, OnDestroy{
       component: PopoverChatComponent,
       componentProps:{
         "id":this.idChat,
-        "idUser":firebase.default.auth().currentUser.uid,
-        "contactName":this.user.userName
+        "contactName":this.user.data.userName
       },
       event: ev
     });
@@ -225,7 +222,21 @@ export class ChatPage implements OnInit, OnDestroy{
   }
 
   addEmoji(event:any) {
-    this.mensaje.setValue(this.mensaje.value+event.data);
+    const textArea=document.querySelector(".native-textarea") as HTMLInputElement;
+    let end = textArea.selectionEnd;
+    if(this.resetPosEmoji){
+      this.posEmoji=end;
+    }else{
+      this.posEmoji+=2;
+      end=this.posEmoji;
+    }
+    this.resetPosEmoji=false;
+    this.mensaje.setValue(this.mensaje.value.substr(0,end)+event.data+this.mensaje.value.substr(end));
+  }
+
+  toogleEmojiPicker(){
+    this.showEmojiPicker=!this.showEmojiPicker;
+    this.showEmojiPickerCont++;
   }
 
   recorder(){
@@ -248,19 +259,19 @@ export class ChatPage implements OnInit, OnDestroy{
   stop(){
     this.tooglePress=false;
     this.sliding.close();
-    this.mediaRecorderService.stop();
+    this.mediaRecorderService.stop(this.tiempoGrabacion,this.userName,this.idChat,this.cancelar);
     this.tiempoGrabacion='00:00';
     clearInterval(this.bucleTime);
   }
 
   public handleSlide(event: any): void {
     if(event.detail.ratio>=1 && this.tooglePress || event.detail.ratio==1){
-      this.stop();
       this.cancelar=true;
+      this.stop();
     }
   }
 
-  trackByFn(index:number, item:IMessage):string{
+  trackByFn(index:number, item:IMessage){
     return item.id;
   }
 
@@ -276,7 +287,8 @@ export class ChatPage implements OnInit, OnDestroy{
     this.modal.create({
       component:PerfilModalComponent,
       componentProps:{
-        user:this.user
+        user:this.user,
+        idChat:this.idChat
       }
     }).then(modal=>modal.present());
   }
