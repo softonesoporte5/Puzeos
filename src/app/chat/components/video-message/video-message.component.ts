@@ -1,24 +1,23 @@
-import { ImageModalComponent } from './../image-modal/image-modal.component';
+import { IMessage } from './../../interfaces/message.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
+import { Component, OnInit, Input } from '@angular/core';
+import { ImageModalComponent } from './../image-modal/image-modal.component';
 import { AppService } from './../../../app.service';
 import { HttpClient, HttpEventType } from '@angular/common/http';
-import { IMessage } from './../../interfaces/message.interface';
-import { Component, Input, OnInit } from '@angular/core';
 import { FirebaseStorageService } from 'src/app/services/firebase-storage.service';
 import { ModalController } from '@ionic/angular';
 import {Plugins, FilesystemDirectory} from '@capacitor/core';
-const {Filesystem} = Plugins;
 import { Capacitor } from '@capacitor/core';
-
+const {CapacitorVideoPlayer, Filesystem} = Plugins;
 
 @Component({
-  selector: 'app-image-message',
-  templateUrl: './image-message.component.html',
-  styleUrls: ['./image-message.component.scss'],
+  selector: 'app-video-message',
+  templateUrl: './video-message.component.html',
+  styleUrls: ['./video-message.component.scss'],
 })
-export class ImageMessageComponent implements OnInit {
+export class VideoMessageComponent implements OnInit {
 
-  @Input() image:IMessage;
+  @Input() video:IMessage;
   @Input() userName:string;
   @Input() dbMessages:ILocalForage;
   imageUrl:string;
@@ -35,21 +34,21 @@ export class ImageMessageComponent implements OnInit {
 
   ngOnInit(){
 
-    if(this.image.user===this.userName){
+    if(this.video.user===this.userName){
       //Obtener la URL del archivo
-      this.imageUrl=Capacitor.convertFileSrc(this.image.localRef);
+      this.imageUrl=Capacitor.convertFileSrc(this.video.localRef)+"#t=0.5";
     }else{
-      if(this.image.download===false){
-        this.size=this.niceBytes(this.image.size);
+      if(this.video.download===false){
+        this.size=this.niceBytes(this.video.size);
       }else{
-        this.imageUrl=Capacitor.convertFileSrc(this.image.localRef);
+        this.imageUrl=Capacitor.convertFileSrc(this.video.localRef)+"#t=0.5";
       }
     }
   }
 
-  downloadImage(){
+  downloadVideo(){
     this.downloaded=true;
-    let storageSubscribe=this.storageService.getImage(this.image.ref)
+    let storageSubscribe=this.storageService.getImage(this.video.ref)
     .subscribe(downloadUrl=>{
       let httpSubscribe=this.http.get(downloadUrl,{
         responseType:'blob',
@@ -71,16 +70,16 @@ export class ImageMessageComponent implements OnInit {
           .then((result:string | ArrayBuffer)=>{
             base64=result;
             Filesystem.writeFile({
-              path:randomId+'.jpeg',
+              path:randomId+'.mp4',
               data:base64,
               directory:FilesystemDirectory.Data
             }).then(resp=>{
-              this.dbMessages.setItem(this.image.id,{
-                ...this.image,
+              this.dbMessages.setItem(this.video.id,{
+                ...this.video,
                 localRef:resp.uri,
                 download:true
               }).then(()=>{
-                this.image.download=true
+                this.video.download=true
                 this.imageUrl=Capacitor.convertFileSrc(resp.uri);
 
                 storageSubscribe.unsubscribe();
@@ -98,7 +97,7 @@ export class ImageMessageComponent implements OnInit {
       component:ImageModalComponent,
       componentProps:{
         path:this.imageUrl,
-        type:this.image.type
+        type:this.video.type
       }
     }).then(modal=>modal.present());
   }
@@ -110,4 +109,5 @@ export class ImageMessageComponent implements OnInit {
     }
     return(n.toFixed(n < 10 && l > 0 ? 1 : 0) + ' ' + this.units[l]);
   }
+
 }

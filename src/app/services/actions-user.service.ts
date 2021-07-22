@@ -1,3 +1,4 @@
+import { IUserData } from './../chat/interfaces/user.interface';
 import { ILocalForage } from './../chat/interfaces/localForage.interface';
 import { LoadingService } from './loading.service';
 import { Injectable } from '@angular/core';
@@ -31,15 +32,14 @@ export class ActionsUserService {
     private popoverController: PopoverController
   ) { }
 
-  deleteChatInDevice(){
+  deleteChatInDevice(blocked?:boolean){
     this.loadingService.present("Eliminando chat");
     this.dbChats=this.db.loadStore("chats");
     this.dbUser=this.db.loadStore("users");
 
     this.dbUser.getItem(this.idUser)
-    .then(resp=>{
+    .then((resp:IUserData)=>{
       if(resp){
-        console.log("a")
         let chats=resp.chats.filter(chat=>chat!==this.idChat);
 
         this.fireStore.collection("users").doc(this.idUser)
@@ -62,7 +62,11 @@ export class ActionsUserService {
 
                 this.loadingService.dismiss();
                 this.popoverController.dismiss();
-                this.router.navigate(['chat'], { queryParams: { deleteChat:this.idChat}});
+                if(blocked){
+                  this.router.navigate(['chat'], { queryParams: { deleteChat:this.idChat,blockUser:resp.userName}});
+                }else{
+                  this.router.navigate(['chat'], { queryParams: { deleteChat:this.idChat}});
+                }
               }).catch(err=>console.log(err));
 
             }).catch(err=>console.log(err));
@@ -94,7 +98,7 @@ export class ActionsUserService {
             blockedUsers:blockedUsers
           }).then(()=>{
             this.loadingService.dismiss();
-            this.deleteChatInDevice()
+            this.deleteChatInDevice(true)
           }).catch(err=>console.log(err));
         }).catch(err=>console.log(err));
       }
@@ -113,7 +117,7 @@ export class ActionsUserService {
     }
     else{
       message='¿Seguro de que desea bloquear este usuario? Al hacerlo también se eliminará el chat';
-      actionText='BLoquear'
+      actionText='Bloquear'
     }
 
     const alert = await this.alertController.create({

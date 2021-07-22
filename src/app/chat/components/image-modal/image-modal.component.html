@@ -8,7 +8,8 @@
   <ion-slides [options]="sliderOpts">
     <ion-slide>
       <div class="swiper-zoom-container">
-        <img [src]="path" alt="Imágen">
+        <img [src]="path" alt="Imágen" *ngIf="type==='image'">
+        <video [src]="path" alt="Video no encontrado" *ngIf="type==='video'" preload="auto" controls autoplay></video>
       </div>
     </ion-slide>
   </ion-slides>

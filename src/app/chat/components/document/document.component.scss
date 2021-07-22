@@ -1,38 +1,9 @@
-
-
 ion-icon{
   font-size: 36px;
 }
 
-img{
-  max-width: 100%;
-  display: block;
-  position: relative;
-  min-width: 100%;
-  font-size: 14px;
-  border: 0;
-  min-height: 5rem;
-}
-
-
-img:before {
-  /*Solo se muestra en imágenes rotas*/
-  content: "\0026A0  Imagen no disponible";
-  white-space: pre-wrap;
-  position: absolute;
-  color:#333;
-  top:0;
-  left:0;
-  right:0;
-  height:100%;
-  border-bottom:0;
-  border-radius: 5px;
-  background-color:#fff;
-  font-weight:bold;
-  font-size:18px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+p{
+  font-size: 12px;
 }
 
 svg{
@@ -40,6 +11,7 @@ svg{
   width: 50px;
   height: 50px;
   transform: rotate(-85deg)!important;
+  margin-right: 5px;
 }
 
 svg circle{
@@ -58,7 +30,6 @@ svg circle:nth-child(2){
   stroke-dashoffset: 120;
 }
 
-
 svg circle:nth-child(2){
   stroke-dashoffset: calc(120 - (120 * 1)/100);
   stroke: var(--ion-color-primary);
@@ -66,13 +37,30 @@ svg circle:nth-child(2){
 
 .loc__btn-download{
   display: flex;
-  border: solid 1px gray;
-  border-radius: 1rem;
+  border-radius: 5px;
   padding: 0.25rem 0.5rem;
   align-items: center;
-  background: #00000045;
+  background: #ffffff78;
 
   ion-icon{
     margin-right: 5px;
+  }
+
+}
+
+.max{
+  max-width: calc(100% - 47.5px);
+}
+
+.max-100{
+  max-width: 100%;
+}
+
+.loc__flex{
+  display: flex;
+  .loc__expandir{
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow: ellipsis;
   }
 }

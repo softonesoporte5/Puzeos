@@ -12,6 +12,8 @@ export interface IMessage{
   dateChange?:boolean,
   sendToToken?:string,
   duration?:number
+  size?:number;
+  mimeType?:string;
 }
 
 export interface IMessageSearch{

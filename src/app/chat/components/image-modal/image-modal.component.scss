@@ -1,3 +1,4 @@
+
 .close-fake{
   --background:transparent;
   z-index: 9;
@@ -20,8 +21,11 @@ ion-slides{
   left: 0;
 }
 
-.swiper-slide img{
+.swiper-slide img, .swiper-slide video{
   height: 100%;
+  width: 100%;
+  max-width: 100vw;
+  max-height: 100vh;
 }
 
 ion-button{

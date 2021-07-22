@@ -2,9 +2,7 @@ import { ActivatedRoute } from '@angular/router';
 import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IUser } from './../../interfaces/user.interface';
-import { AngularFirestore, DocumentChange, DocumentSnapshot } from '@angular/fire/firestore';
-import { Subscription, Subject } from 'rxjs';
-import { AppService } from './../../../app.service';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { Component, OnInit } from '@angular/core';
 import { MenuController } from '@ionic/angular';
 import * as firebase from 'firebase';
@@ -18,16 +16,14 @@ import { DbService } from 'src/app/services/db.service';
 export class HomePage implements OnInit{
 
   user:IUser;
-  userSubscription:Subscription;
   chats:IChat[]=[];
   chatsFirebase:number=0;
   dbChats:ILocalForage;
   dbUsers:ILocalForage;
   chatsObj={};
-  newMessages=0;
+
   constructor(
     private menu: MenuController,
-    private appService:AppService,
     private firestore:AngularFirestore,
     private db:DbService,
     private route:ActivatedRoute
@@ -68,7 +64,7 @@ export class HomePage implements OnInit{
           id:firebase.default.auth().currentUser.uid,
           data:{...user}
         };
-        this.appService.obtenerUsuario()
+        this.db.obtenerUsuario()
         .subscribe(user=>{
           this.user={
             id:firebase.default.auth().currentUser.uid,
@@ -99,11 +95,20 @@ export class HomePage implements OnInit{
       if(params.deleteChat && this.chatsObj[params.deleteChat]){
         this.chatsFirebase--;
         delete this.chatsObj[params.deleteChat];
+        let message;
+        if(params.blockUser){
+          message={
+            type:"deleteAndBlock",
+            user:params.blockUser
+          }
+        }else{
+          message={type:"delete"}
+        }
         this.firestore
         .collection("messages")
         .doc(params.deleteChat)
         .collection("messages")
-        .add({type:"delete"});
+        .add(message);
 
         this.orderChats();
       }

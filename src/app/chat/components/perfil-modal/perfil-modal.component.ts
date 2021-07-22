@@ -42,42 +42,51 @@ export class PerfilModalComponent implements OnInit {
     .get()
     .subscribe(resp=>{
       const userData=resp.data() as IUserData;
-      if(userData.imageUrl!==this.user.data.imageUrl){
+      if(!userData.imageUrl){
+        const date=new Date(userData.createDate.toDate());
+        this.dbUsers.setItem(this.user.id,{
+          ...userData,
+          createDate:date.valueOf()
+        });
+        this.imgPath="assets/person.jpg";
+      }else{
+        if(userData.imageUrl!==this.user.data.imageUrl){
 
-        let storageSubscribe=this.firebaseStorageService.getImage(userData.imageUrl)
-        .subscribe(downloadUrl=>{
-          let httpSubscribe=this.http.get(downloadUrl,{
-            responseType:'blob',
-            observe:'events'
-          }).subscribe(async event=>{
-            if(event.type===HttpEventType.Response){
-              let base64;
-              const date=new Date().valueOf();
-              const randomId=Math.round(Math.random()*1000)+date;
-              const reader=new FileReader;
+          let storageSubscribe=this.firebaseStorageService.getImage(userData.imageUrl)
+          .subscribe(downloadUrl=>{
+            let httpSubscribe=this.http.get(downloadUrl,{
+              responseType:'blob',
+              observe:'events'
+            }).subscribe(async event=>{
+              if(event.type===HttpEventType.Response){
+                let base64;
+                const date=new Date().valueOf();
+                const randomId=Math.round(Math.random()*1000)+date;
+                const reader=new FileReader;
 
-              this.appService.convertBlobToBase64(event.body)
-              .then((result:string | ArrayBuffer)=>{
-                base64=result;
-                Filesystem.writeFile({
-                  path:randomId+'.jpeg',
-                  data:base64,
-                  directory:FilesystemDirectory.Data
-                }).then(resp=>{
-                  this.dbUsers.setItem(this.user.id,{
-                    ...userData,
-                    imageUrlLoc:resp.uri
-                  }).then(()=>{
-                    this.imgPath=Capacitor.convertFileSrc(resp.uri);
+                this.appService.convertBlobToBase64(event.body)
+                .then((result:string | ArrayBuffer)=>{
+                  base64=result;
+                  Filesystem.writeFile({
+                    path:randomId+'.jpeg',
+                    data:base64,
+                    directory:FilesystemDirectory.Data
+                  }).then(resp=>{
+                    this.dbUsers.setItem(this.user.id,{
+                      ...userData,
+                      imageUrlLoc:resp.uri
+                    }).then(()=>{
+                      this.imgPath=Capacitor.convertFileSrc(resp.uri);
 
-                    storageSubscribe.unsubscribe();
-                    httpSubscribe.unsubscribe();
-                  })
+                      storageSubscribe.unsubscribe();
+                      httpSubscribe.unsubscribe();
+                    })
+                  }).catch(err=>console.log(err));
                 }).catch(err=>console.log(err));
-              }).catch(err=>console.log(err));
-            }
-          });
-        })
+              }
+            });
+          })
+        }
       }
     })
 

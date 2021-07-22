@@ -52,4 +52,25 @@
     </ion-text>
   </ion-card-content>
 
+  <ion-card-content *ngIf="message.type==='video'">
+    <app-video-message [video]="message" [userName]="userName" [dbMessages]="dbMessage"></app-video-message>
+    <ion-text color="tertiary">
+      {{message.timestamp | date: 'shortTime'}}
+      <span *ngIf="userName===message.user" style="display: contents;">
+        <ion-icon name="checkmark-outline" *ngIf="message.state===false"></ion-icon>
+        <ion-icon name="checkmark-done-outline" *ngIf="message.state===true"></ion-icon>
+      </span>
+    </ion-text>
+  </ion-card-content>
+
+  <ion-card-content *ngIf="message.type==='document'">
+    <app-document [document]="message" [userName]="userName" [dbMessages]="dbMessage"></app-document>
+    <ion-text color="tertiary">
+      {{message.timestamp | date: 'shortTime'}}
+      <span *ngIf="userName===message.user" style="display: contents;">
+        <ion-icon name="checkmark-outline" *ngIf="message.state===false"></ion-icon>
+        <ion-icon name="checkmark-done-outline" *ngIf="message.state===true"></ion-icon>
+      </span>
+    </ion-text>
+  </ion-card-content>
 </ion-card>

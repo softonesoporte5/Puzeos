@@ -3,7 +3,7 @@ import { AngularFirestore, DocumentChange } from '@angular/fire/firestore';
 import { IUserData } from './../chat/interfaces/user.interface';
 import { IMessage } from './../chat/interfaces/message.interface';
 import { IChat } from './../chat/interfaces/chat.interface';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { ILocalForage } from './../chat/interfaces/localForage.interface';
 import { Injectable } from '@angular/core';
 const localForage = require("localforage") as ILocalForage;
@@ -31,6 +31,7 @@ export class DbService{
     this.dbChats=this.loadStore("chats");
     this.dbUsers=this.loadStore("users");
     if(firebase.default.auth().currentUser?.uid){
+      console.log("a")
       this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
       .then((user:IUserData)=>{
         if(user){
@@ -43,6 +44,21 @@ export class DbService{
           });
         }
       },err=>console.log(err));
+
+      this.obtenerUsuario()
+      .subscribe(user=>{
+        if(user.imageUrl){
+          this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
+          .then((userData:IUserData)=>{
+            this.dbUsers.setItem(firebase.default.auth().currentUser.uid,{
+              ...user,
+              imageUrlLoc:userData.imageUrlLoc
+            });
+          });
+        }else{
+          this.dbUsers.setItem(firebase.default.auth().currentUser.uid,user);
+        }
+      });
     }
   }
 
@@ -64,12 +80,11 @@ export class DbService{
       datos.forEach((mensaje,index)=>{
         if(mensaje.type!=='removed'){
           if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
-            //console.log(mensaje.type)
             this.dbMessages[chatID].getItem(mensaje.doc.id)
             .then(resp=>{
               if(!resp){
                 const data=mensaje.doc.data() as IMessage;
-                if(data.type==="delete"){
+                if(data.type==="delete" || data.type==="deleteAndBlock"){
                   console.log(data);
                   this.dbChats.getItem(chatID)
                   .then(chat=>{
@@ -78,8 +93,16 @@ export class DbService{
                       ...chat,
                       deleted:true
                     }).then(()=>{
-                      console.log("df")
                       this.messagesSubscriptions$[chatID].next({resp:[],status:4});
+                      if(data.type==="deleteAndBlock"){
+                        this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
+                        .then((resp:IUserData)=>{
+                          if(!resp.notAddUsers) resp.notAddUsers=[];
+                          this.firestore.collection("users").doc(firebase.default.auth().currentUser.uid).update({
+                            notAddUsers:[...resp.notAddUsers,data.user]
+                          }).then(resp=>console.log("Enviado")).catch(error=> console.log(error));
+                        });
+                      }
                     })
                   })
                 }else{
@@ -146,6 +169,10 @@ export class DbService{
       .catch(error=>{
         console.log(error);
       });
+  }
+
+  obtenerUsuario(){
+    return this.firestore.collection("users").doc(firebase.default.auth().currentUser.uid).valueChanges() as Observable<IUserData>;
   }
 
   addMessage(message:IMessage,idChat:string,dbChat:ILocalForage,dbMessages:ILocalForage){

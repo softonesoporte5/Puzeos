@@ -19,9 +19,7 @@ export class AppService {
     this.dbUsers=this.db.loadStore("users");
   }
 
-  obtenerUsuario(){
-    return this.firestore.collection("users").doc(firebase.default.auth().currentUser.uid).valueChanges() as Observable<IUserData>;
-  }
+
 
   private getFileReader(): FileReader {
     const fileReader = new FileReader();

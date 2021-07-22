@@ -1,10 +1,8 @@
-
-
 ion-icon{
   font-size: 36px;
 }
 
-img{
+video{
   max-width: 100%;
   display: block;
   position: relative;
@@ -14,10 +12,9 @@ img{
   min-height: 5rem;
 }
 
-
-img:before {
+video:before {
   /*Solo se muestra en imágenes rotas*/
-  content: "\0026A0  Imagen no disponible";
+  content: "\0026A0  Video no disponible";
   white-space: pre-wrap;
   position: absolute;
   color:#333;
@@ -75,4 +72,18 @@ svg circle:nth-child(2){
   ion-icon{
     margin-right: 5px;
   }
+}
+
+.loc__play{
+  position: absolute;
+  border: solid 1px gray;
+  border-radius: 1rem;
+  align-items: center;
+  z-index: 2;
+  right: calc(50% - 29px);
+  background: #00000045;
+  top: calc(50% - 24px);
+  width: 56px;
+  height: 46px;
+  box-sizing: border-box;
 }

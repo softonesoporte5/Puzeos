@@ -1,13 +1,21 @@
+import { FormGroup, Validators, FormBuilder, AbstractControl } from '@angular/forms';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from './../../../services/db.service';
 import { Subscription } from 'rxjs';
-import { IUser, IUserData } from './../../interfaces/user.interface';
+import { IUser } from './../../interfaces/user.interface';
 import { Router } from '@angular/router';
 import { searchsUser } from './../../interfaces/searchsUser.interface';
-import { AppService } from './../../../app.service';
-import { AngularFirestore, DocumentSnapshot, QuerySnapshot } from '@angular/fire/firestore';
+import { AngularFirestore, DocumentSnapshot } from '@angular/fire/firestore';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as firebase from 'firebase';
+
+interface IItem{
+  id:string,
+  data:{
+    title:string
+  },
+  color:string
+}
 
 @Component({
   selector: 'app-agregar',
@@ -16,18 +24,22 @@ import * as firebase from 'firebase';
 })
 export class AgregarPage implements OnInit, OnDestroy {
 
-  items:any=[];
+  miFormulario:FormGroup=this.fb.group({
+    searchTxt:['', [Validators.required, Validators.minLength(1)]]
+  });
+  items:IItem[]=[];
   user:IUser;
   buscando:boolean=false;
   userSubscription:Subscription;
   dbUsers:ILocalForage;
-
+  searchTxt:AbstractControl=this.miFormulario.get("searchTxt");
+  search:string;
 
   constructor(
     private fireStore:AngularFirestore,
-    private appService:AppService,
     private router:Router,
-    private db:DbService
+    private db:DbService,
+    private fb:FormBuilder
   ) { }
 
   ngOnInit() {
@@ -40,9 +52,12 @@ export class AgregarPage implements OnInit, OnDestroy {
       this.fireStore.collection("tags").ref.get()
       .then(items=>{
         items.forEach(item=>{
+          const title=item.data() as any;
           this.items.push({
             id:item.id,
-            data:item.data(),
+            data:{
+              title:title.title
+            },
             color:this.colorRGB()
           });
         });
@@ -51,6 +66,27 @@ export class AgregarPage implements OnInit, OnDestroy {
         console.log(error);
       });
     }
+
+    let search='';
+
+    this.searchTxt.statusChanges.subscribe(()=>{
+      this.items=JSON.parse(sessionStorage.getItem("tags"));
+      search=this.searchTxt.value.normalize('NFD').replace(/[\u0300-\u036f]/g,"");
+      search=search.toLocaleLowerCase();
+      this.search=search;
+
+      if(this.searchTxt.value.trim()!==''){
+        let items=[];
+        this.items.forEach((item:IItem) => {
+          let itemTxt=item.data.title.normalize('NFD').replace(/[\u0300-\u036f]/g,"");
+          itemTxt=itemTxt.toLocaleLowerCase();
+          if(itemTxt.indexOf(search)!==-1){
+            items.push(item);
+          }
+        });
+        this.items=items;
+      }
+    })
 
     //Comprobamos si existe el sessionStorage de buscando
     if(JSON.parse(sessionStorage.getItem("buscando"))){
@@ -67,7 +103,7 @@ export class AgregarPage implements OnInit, OnDestroy {
       this.buscando=this.user.data.buscando.state;
       sessionStorage.setItem("buscando",JSON.stringify(this.user.data.buscando));
 
-      this.userSubscription=this.appService.obtenerUsuario()
+      this.userSubscription=this.db.obtenerUsuario()
       .subscribe(user=>{
         this.user={
           id:firebase.default.auth().currentUser.uid,
@@ -107,17 +143,7 @@ export class AgregarPage implements OnInit, OnDestroy {
         state:estado,
         tagId:tagId
       }
-    }).then(()=>{
-      /*this.db.setUser({
-        ...this.user.data,
-        buscando:{
-          state:estado,
-          tagId:tagId
-        }
-      },firebase.default.auth().currentUser.uid);*/
-
-    })
-    .catch(error=>{
+    }).catch(error=>{
       console.log("Hubo un error",error);
     });
   }
@@ -137,10 +163,14 @@ export class AgregarPage implements OnInit, OnDestroy {
         let values:any[]=[];
         const data=resp.data();
 
+        if(!this.user.data.notAddUsers){
+          this.user.data.notAddUsers=[];
+        }
         for(const key in data.users) {
-          if(!this.user.data.blockedUsers.includes(data.users[key])){
+          if(!this.user.data.blockedUsers.includes(data.users[key]) && !this.user.data.notAddUsers.includes(data.users[key])){
             values.unshift({id:key,userName:data.users[key]});
           }
+
         }
 
         if(values.length<1){//Comprobamos si no hay nadie buscando, en ese caso se inserta el usuario a la coleccion de busqueda
@@ -228,5 +258,10 @@ export class AgregarPage implements OnInit, OnDestroy {
     }).then(()=>{
       this.actualizarEstadoBusquedaUser(false);
     })
+  }
+
+
+  trackItems(index: number, item: IItem) {
+    return item.id;
   }
 }

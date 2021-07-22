@@ -1,3 +1,4 @@
+import { AngularFirestore } from '@angular/fire/firestore';
 import { ImageCropperModalComponent } from './../image-cropper-modal/image-cropper.component';
 import { DbService } from './../../../services/db.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
@@ -6,7 +7,7 @@ import { IUser, IUserData } from './../../interfaces/user.interface';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { ActionSheetController, ModalController } from '@ionic/angular';
+import { ActionSheetController, ModalController, AlertController } from '@ionic/angular';
 import { Capacitor, CameraSource } from '@capacitor/core';
 import * as firebase from 'firebase';
 
@@ -27,7 +28,9 @@ export class MenuComponent implements OnInit {
     private actionSheetController: ActionSheetController,
     private camara:CameraService,
     private db:DbService,
-    private modal:ModalController
+    private modal:ModalController,
+    private alertController: AlertController,
+    private firestore:AngularFirestore
   ) { }
 
   ngOnInit() {
@@ -39,7 +42,7 @@ export class MenuComponent implements OnInit {
         data:{...resp},
         id:firebase.default.auth().currentUser.uid
       }
-
+      console.log(resp)
       if(resp.imageUrlLoc){
         this.imgPath=Capacitor.convertFileSrc(resp.imageUrlLoc);
       }
@@ -68,6 +71,7 @@ export class MenuComponent implements OnInit {
   private selectImage(source:CameraSource){
     this.camara.takePicture(this.user,source).then(resp=>{
 
+      console.log(resp.filepath)
      this.dbUsers.setItem(this.user.id,{
         ...this.user.data,
         imageUrl:resp.firebasePath,
@@ -100,7 +104,7 @@ export class MenuComponent implements OnInit {
           role: 'destructive',
           icon: 'trash',
           handler: () => {
-            console.log('Delete clicked');
+            this.presentAlertConfirm();
           }
         }
       ]
@@ -110,6 +114,32 @@ export class MenuComponent implements OnInit {
 
   opcImg(){
     this.presentActionSheet();
+  }
+
+    async presentAlertConfirm() {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      message: "¿Seguro de que quieres quitar tu foto de perfil?",
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        }, {
+          text: 'Quitar',
+          handler: () => {
+            this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
+            .then((resp:IUserData)=>{
+              this.firestore.collection("users").doc(firebase.default.auth().currentUser.uid)
+              .update({
+                imageUrl:firebase.default.firestore.FieldValue.delete()
+              }).then(()=>this.imgPath="../../../../assets/person.jpg")
+              .catch(err=>console.log(err));
+            });
+          }
+        }
+      ]
+    });
+    await alert.present();
   }
 
 }

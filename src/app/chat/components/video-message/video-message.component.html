@@ -1,0 +1,45 @@
+<div *ngIf="video.user===userName">
+  <ion-icon
+    name="play"
+    slot="icon-only"
+    class="loc__play"
+    (click)="openModal()"
+  ></ion-icon>
+
+  <video
+    alt="Imágen"
+    *ngIf="video.download===true"
+    preload="metadata"
+    (click)="openModal()"
+  >
+    <source [src]="imageUrl" type="video/mp4">
+  </video>
+</div>
+
+<div *ngIf="video.user!==userName">
+  <video
+    alt="Imágen"
+    *ngIf="video.download===true"
+    preload="metadata"
+  >
+    <source [src]="imageUrl" type="video/mp4">
+  </video>
+
+  <svg *ngIf="video.download===false && downloaded==true">
+    <circle cx="20" cy="20" r="20"/>
+    <circle cx="20" cy="20" r="20"/>
+  </svg>
+
+  <span
+    *ngIf="video.download===false && downloaded===false"
+    class="loc__btn-download"
+    (click)="downloadVideo()"
+  >
+    <ion-icon
+      name="play"
+      slot="icon-only"
+    ></ion-icon>
+    <p>{{size}}</p>
+  </span>
+</div>
+

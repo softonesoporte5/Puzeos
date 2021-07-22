@@ -1,0 +1,54 @@
+<div *ngIf="document.user===userName">
+  <span
+    class="loc__btn-download"
+    (click)="openDocument()"
+  >
+    <span class="max-100">
+      <span class="loc__flex">
+        <span class="loc__expandir">{{document.fileName?.slice(0,document.fileName.lastIndexOf("."))}}</span>
+        <span>{{document.fileName?.slice(document.fileName.lastIndexOf("."))}}</span>
+      </span>
+      <p>{{size}}</p>
+    </span>
+  </span>
+</div>
+
+<div *ngIf="document.user!==userName">
+
+  <span
+    class="loc__btn-download"
+    (click)="downloadDocument()"
+    *ngIf="document.download===false"
+  >
+    <svg *ngIf="document.download===false && downloaded==true">
+      <circle cx="20" cy="20" r="20"/>
+      <circle cx="20" cy="20" r="20"/>
+    </svg>
+    <ion-icon
+      name="arrow-down-circle-outline"
+      slot="icon-only"
+      *ngIf="document.download===false && downloaded===false"
+    ></ion-icon>
+    <span>
+      <span class="loc__flex">
+        <span class="loc__expandir">{{document.fileName?.slice(0,document.fileName.lastIndexOf("."))}}</span>
+        <span>{{document.fileName?.slice(document.fileName.lastIndexOf("."))}}</span>
+      </span>
+      <p>{{size}}</p>
+    </span>
+  </span>
+
+  <span
+    class="loc__btn-download"
+    (click)="openDocument()"
+    *ngIf="document.download===true"
+  >
+    <span class="max">
+      <span class="loc__flex">
+        <span class="loc__expandir">{{document.fileName?.slice(0,document.fileName.lastIndexOf("."))}}</span>
+        <span>{{document.fileName?.slice(document.fileName.lastIndexOf("."))}}</span>
+      </span>
+      <p>{{size}}</p>
+    </span>
+  </span>
+</div>

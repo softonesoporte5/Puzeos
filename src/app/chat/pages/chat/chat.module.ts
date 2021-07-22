@@ -1,3 +1,5 @@
+import { DocumentComponent } from './../../components/document/document.component';
+import { VideoMessageComponent } from './../../components/video-message/video-message.component';
 import { PerfilModalComponent } from './../../components/perfil-modal/perfil-modal.component';
 import { ScrollBottomComponent } from './../../components/scroll-bottom/scroll-bottom.component';
 import { ImageModalComponent } from './../../components/image-modal/image-modal.component';
@@ -39,7 +41,9 @@ import { HttpClientModule } from '@angular/common/http';
     ImageMessageComponent,
     ImageModalComponent,
     ScrollBottomComponent,
-    PerfilModalComponent
+    PerfilModalComponent,
+    VideoMessageComponent,
+    DocumentComponent
   ]
 })
 export class ChatPageModule {}

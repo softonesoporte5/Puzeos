@@ -17,6 +17,4 @@ export class AppComponent {
       document.body.classList.add("dark");
     }
   }
-
-
 }

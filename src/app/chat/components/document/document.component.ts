@@ -1,4 +1,3 @@
-import { ImageModalComponent } from './../image-modal/image-modal.component';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { AppService } from './../../../app.service';
 import { HttpClient, HttpEventType } from '@angular/common/http';
@@ -9,19 +8,19 @@ import { ModalController } from '@ionic/angular';
 import {Plugins, FilesystemDirectory} from '@capacitor/core';
 const {Filesystem} = Plugins;
 import { Capacitor } from '@capacitor/core';
-
+import { FileOpener } from '@ionic-native/file-opener/ngx';
 
 @Component({
-  selector: 'app-image-message',
-  templateUrl: './image-message.component.html',
-  styleUrls: ['./image-message.component.scss'],
+  selector: 'app-document',
+  templateUrl: './document.component.html',
+  styleUrls: ['./document.component.scss'],
 })
-export class ImageMessageComponent implements OnInit {
+export class DocumentComponent implements OnInit {
 
-  @Input() image:IMessage;
+  @Input() document:IMessage;
   @Input() userName:string;
   @Input() dbMessages:ILocalForage;
-  imageUrl:string;
+  documentUrl:string;
   downloaded:boolean=false;
   units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   size:string;
@@ -30,26 +29,27 @@ export class ImageMessageComponent implements OnInit {
     private storageService:FirebaseStorageService,
     private http:HttpClient,
     private appService:AppService,
-    private modal:ModalController
+    private fileOpener: FileOpener
   ) { }
 
   ngOnInit(){
-
-    if(this.image.user===this.userName){
+    if(this.document.user===this.userName){
       //Obtener la URL del archivo
-      this.imageUrl=Capacitor.convertFileSrc(this.image.localRef);
+      this.size=this.niceBytes(this.document.size);
+      this.documentUrl=Capacitor.convertFileSrc(this.document.localRef);
+      console.log( this.documentUrl)
     }else{
-      if(this.image.download===false){
-        this.size=this.niceBytes(this.image.size);
+      if(this.document.download===false){
+        this.size=this.niceBytes(this.document.size);
       }else{
-        this.imageUrl=Capacitor.convertFileSrc(this.image.localRef);
+        this.documentUrl=Capacitor.convertFileSrc(this.document.localRef);
       }
     }
   }
 
-  downloadImage(){
+  downloadDocument(){
     this.downloaded=true;
-    let storageSubscribe=this.storageService.getImage(this.image.ref)
+    let storageSubscribe=this.storageService.getImage(this.document.ref)
     .subscribe(downloadUrl=>{
       let httpSubscribe=this.http.get(downloadUrl,{
         responseType:'blob',
@@ -75,13 +75,13 @@ export class ImageMessageComponent implements OnInit {
               data:base64,
               directory:FilesystemDirectory.Data
             }).then(resp=>{
-              this.dbMessages.setItem(this.image.id,{
-                ...this.image,
+              this.dbMessages.setItem(this.document.id,{
+                ...this.document,
                 localRef:resp.uri,
                 download:true
               }).then(()=>{
-                this.image.download=true
-                this.imageUrl=Capacitor.convertFileSrc(resp.uri);
+                this.document.download=true
+                this.documentUrl=Capacitor.convertFileSrc(resp.uri);
 
                 storageSubscribe.unsubscribe();
                 httpSubscribe.unsubscribe();
@@ -93,14 +93,11 @@ export class ImageMessageComponent implements OnInit {
     })
   }
 
-  openModal(){
-    this.modal.create({
-      component:ImageModalComponent,
-      componentProps:{
-        path:this.imageUrl,
-        type:this.image.type
-      }
-    }).then(modal=>modal.present());
+  openDocument(){
+    console.log(this.document.mimeType)
+    this.fileOpener.open(this.document.localRef, this.document.mimeType)
+    .then(() => console.log('File is opened'))
+    .catch(e => console.log('Error opening file', e));
   }
 
   niceBytes(x:number){
