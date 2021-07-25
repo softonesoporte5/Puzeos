@@ -42,10 +42,6 @@ export class MediaRecorderService {
       this.audioData.push(e.data);
       this.audioBlob =new Blob([...this.audioData], { 'type' : 'audio/ogg; codecs=opus' });
 
-      const audioFile:IAudioBlob={
-        data:this.audioBlob,
-        duration:this.duration
-      };
       if(!this.cancel){
         this.appService.convertBlobToBase64(this.audioBlob)
         .then((resp:string)=>{
@@ -56,8 +52,16 @@ export class MediaRecorderService {
             directory:FilesystemDirectory.Data,
             encoding: FilesystemEncoding.UTF8
           }).then(()=>{
-            this.firebaseStorageService.uploadAudio(audioFile,this.userName,this.idChat,'audios/'+name);
-
+            Filesystem.readFile({
+              path:'audios/'+name,
+              directory:FilesystemDirectory.Data,
+            }).then(resp=>{
+              const audioFile:IAudioBlob={
+                data:resp.data,
+                duration:this.duration
+              };
+              this.firebaseStorageService.uploadAudio(audioFile,this.userName,this.idChat,'audios/'+name);
+            })
           })
         },err=>console.log(err));
       }

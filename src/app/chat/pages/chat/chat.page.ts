@@ -46,6 +46,7 @@ export class ChatPage implements OnInit, OnDestroy{
   blockChat:boolean=false;
   posEmoji:number=0;
   resetPosEmoji:boolean=true;
+  notSendMessages:{}={};
   @ViewChild('content') content: HTMLElement;
   @ViewChild('sliding', { static: false }) sliding: IonItemSliding;
 
@@ -77,7 +78,6 @@ export class ChatPage implements OnInit, OnDestroy{
       this.routeQuery=params;
     });
 
-
     this.dbChat.getItem(this.idChat)
     .then((chat:IChat)=>{
       this.chat=chat;
@@ -108,7 +108,7 @@ export class ChatPage implements OnInit, OnDestroy{
       this.dbMessages.iterate((values:IMessage)=>{
         arrMessages.push(values);
         if(values.user!==this.userName){
-          if(values.state===false){
+          if(values.state===1){
             this.db.deleteMessage(values.id,this.idChat);
           }
         }
@@ -121,18 +121,16 @@ export class ChatPage implements OnInit, OnDestroy{
       if(this.db.messagesSubscriptions){
         const messages=this.db.messagesSubscriptions[this.idChat] as Subject<IMessagesResp>
         this.mensajesSubscribe=messages.subscribe(messagesResp=>{
-
-          if(messagesResp.status===0){
-            console.log("f")
+          console.log(messagesResp.status);
+          if(messagesResp.status===0){//Si no llega ningun mensaje
             for (let i = this.mensajes.length -1; i > 0; i--){
               const message=this.mensajes[i];
               if(message.user!==this.userName){
-                console.log(message.state)
-                if(this.mensajes[i].state===false){
-                  this.mensajes[i].state=true;
+                if(this.mensajes[i].state===1){
+                  this.mensajes[i].state=2;
                   this.dbMessages.setItem(message.id,{
                     ...this.mensajes[i],
-                    state:true
+                    state:2
                   }).catch(error=>console.log(error));
                 }else{
                   break;
@@ -158,7 +156,31 @@ export class ChatPage implements OnInit, OnDestroy{
             }else{
               Array.prototype.push.apply(this.mensajes,messagesResp.resp);
             }
-          }else if(messagesResp.status===1){
+          }else if(messagesResp.status===5){//Cuando se agrega un mensaje nuevo
+            messagesResp.resp.forEach(message=>{
+              if(message.idChat && message.user===this.userName){
+                let index=this.mensajes.findIndex(mensaje=>mensaje.id===message.id);
+                this.mensajes.splice(index, 1);
+              }else{
+                if(message.user!==this.userName){
+                  this.dbChat.getItem(this.idChat)
+                  .then(chat=>{
+                    this.db.setItemChat(this.idChat,{...chat,newMessages:0});
+                  },err=>console.log(err));
+                  this.db.deleteMessage(message.id,this.idChat);
+                }else{
+                  const audio=document.querySelector(".sendMessageSound") as HTMLMediaElement;
+                  audio.play();
+                }
+              }
+            });
+            if(messagesResp.resp.length>1){
+              const orderResp=this.chatService.orderMessages(messagesResp.resp);
+              Array.prototype.push.apply(this.mensajes,orderResp);
+            }else{
+              Array.prototype.push.apply(this.mensajes,messagesResp.resp);
+            }
+          }else if(messagesResp.status===4){
             this.blockChat=true;
           }else{
             console.log(messagesResp.resp)
@@ -170,11 +192,11 @@ export class ChatPage implements OnInit, OnDestroy{
                     deletePer=true;
                   }
                   if(deletePer===true){
-                    if(this.mensajes[i].state===false){
-                      this.mensajes[i].state=true;
+                    if(this.mensajes[i].state===1){
+                      this.mensajes[i].state=2;
                       this.dbMessages.setItem(message.id,{
                         ...this.mensajes[i],
-                        state:true
+                        state:2
                       }).then(resp=>console.log(resp))
                       .catch(error=>console.log(error));
                       break;
@@ -187,7 +209,6 @@ export class ChatPage implements OnInit, OnDestroy{
               }
             });
           }
-
         })
       }
     }).catch(err=>console.log(err));

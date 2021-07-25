@@ -10,15 +10,25 @@
 </ngx-snackbar>
 
 <ion-content class="ion-padding">
-  <ion-row class="mb-10 ion-justify-content-center ion-padding-top">
+
+  <h1 class="ion-text-center mb-10">
     <img
       src="../../../../assets/logo.png"
       alt="Logo"
       class="auth__logo"
     >
+    Puzeos
+  </h1>
+  <ion-row class="mb-10 ion-justify-content-center ion-padding-top ion-align-items-center auth__cont-img-options">
+    <span class="cont-img">
+      <img
+        [src]="imgPath"
+        alt="Profile"
+        class="auth__img-profile"
+      >
+      <ion-icon name="camera" (click)="presentActionSheet()"></ion-icon>
+    </span>
   </ion-row>
-
-  <h1 class="ion-text-center mb-10">Registrarse</h1>
   <form
     [formGroup]="miFormulario"
     action=""
@@ -29,10 +39,9 @@
       color="primary"
       class="ion-padding-vertical sombra ion-padding auth__cont mb-10"
     >
-      <ion-row>
-        <ion-label for="name" class="label">Nombre de usuario:</ion-label>
-      </ion-row>
-      <ion-row>
+      <ion-item>
+        <ion-icon name="person" slot="start"></ion-icon>
+        <ion-label position="floating">Nombre de usuario</ion-label>
         <ion-input
           type="text"
           id="name"
@@ -40,12 +49,11 @@
           placeholder="Ingrese su nombre de usuario"
           formControlName="name"
         ></ion-input>
-      </ion-row>
+      </ion-item>
 
-      <ion-row>
-        <ion-label for="email" class="label">Correo electrónico:</ion-label>
-      </ion-row>
-      <ion-row>
+      <ion-item>
+        <ion-icon name="mail" slot="start"></ion-icon>
+        <ion-label position="floating">Correo electrónico</ion-label>
         <ion-input
           type="email"
           id="email"
@@ -53,35 +61,47 @@
           placeholder="Ingrese su email"
           formControlName="email"
         ></ion-input>
-      </ion-row>
+      </ion-item>
+
 
       <span formGroupName="passwords">
-        <ion-row>
-          <ion-label for="password" class="label">Contraseña:</ion-label>
-        </ion-row>
-        <ion-row>
+        <ion-item>
+          <ion-icon name="key" slot="start"></ion-icon>
+          <ion-label position="floating">Contraseña</ion-label>
           <ion-input
-            type="password"
-            id="password"
-            class="auth__input"
-            placeholder="Ingrese su contraseña"
-            formControlName="password"
-          ></ion-input>
-        </ion-row>
+              type="password"
+              id="password"
+              class="auth__input"
+              placeholder="Ingrese su contraseña"
+              formControlName="password"
+            ></ion-input>
+        </ion-item>
 
-        <ion-row>
-          <ion-label for="password2" class="label">Confirmar Contraseña:</ion-label>
-        </ion-row>
-        <ion-row>
+        <ion-item>
+          <ion-icon name="key" slot="start"></ion-icon>
+          <ion-label position="floating">Confirmar contraseña</ion-label>
           <ion-input
-            type="password"
-            id="password2"
-            class="auth__input"
-            placeholder="Confirme su contraseña"
-            formControlName="password2"
-          ></ion-input>
-        </ion-row>
+              type="password"
+              id="password2"
+              class="auth__input"
+              placeholder="Confirme su contraseña"
+              formControlName="password2"
+            ></ion-input>
+        </ion-item>
       </span>
+
+      <ion-item>
+        <ion-icon name="information-circle" slot="start"></ion-icon>
+        <ion-label position="floating">Descripción (Opcional)</ion-label>
+        <ion-input
+          type="text"
+          id="email"
+          class="auth__input"
+          placeholder="Agrega un descripción corta"
+          maxlength="80"
+          formControlName="descripcion"
+        ></ion-input>
+      </ion-item>
 
     </div>
 

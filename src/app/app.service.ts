@@ -1,25 +1,32 @@
-import { ILocalForage } from './chat/interfaces/localForage.interface';
-import { DbService } from './services/db.service';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFireStorage } from '@angular/fire/storage';
+import { IMessage } from './chat/interfaces/message.interface';
+import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { Plugins, FilesystemDirectory } from '@capacitor/core';
+const { Network, Filesystem } = Plugins;
 import * as firebase from 'firebase';
-import { Observable } from 'rxjs';
-import { IUserData } from './chat/interfaces/user.interface';
 
+const {  } = Plugins;
 @Injectable({
   providedIn: 'root'
 })
 export class AppService {
-  dbUsers:ILocalForage;
+  private network$=new Subject<boolean>();
 
   constructor(
-    private firestore:AngularFirestore,
-    private db:DbService
+    private storage:AngularFireStorage,
+    private firestore:AngularFirestore
   ){
-    this.dbUsers=this.db.loadStore("users");
+    Network.addListener('networkStatusChange',status=>{
+      this.network$.next(status.connected);
+    });
+
+    Network.getStatus()
+    .then(resp=>{
+      this.network$.next(resp.connected);
+    });
   }
-
-
 
   private getFileReader(): FileReader {
     const fileReader = new FileReader();
@@ -33,5 +40,34 @@ export class AppService {
     reader.onload=()=>resolve(reader.result);
     reader.readAsDataURL(blob);
   });
+
+  getNetworkStatus(){
+    return this.network$.asObservable();
+  }
+
+  async reUloadAudio(message:IMessage){
+    const resp=await Filesystem.readFile({
+      path:message.localRef,
+      directory:FilesystemDirectory.Data
+    });
+
+    const ref = this.storage.ref(message.ref);
+
+    await ref.putString(resp.data, 'data_url');
+
+    await this.firestore.collection("messages").doc(message.idChat).collection("messages").add({
+      ref:message.ref,
+      user:message.user,
+      type:"voice",
+      id:message.id,
+      idChat:message.idChat,
+      duration:message.duration,
+      message:"Nota de voz: "+message.duration,
+      localRef:message.localRef,
+      timestamp:firebase.default.firestore.FieldValue.serverTimestamp()
+    });
+
+    return;
+  }
 
 }

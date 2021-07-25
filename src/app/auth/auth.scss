@@ -1,5 +1,6 @@
 .auth__logo{
-  width: 38px;
+  width: 40px;
+  margin-right: 7px;
 }
 
 .mb-10{
@@ -7,8 +8,11 @@
 }
 
 h1{
-  font-size: 20px;
-  font-weight:600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ion-color-primary);
+  font-weight: 700;
 }
 
 ion-content{
@@ -19,17 +23,18 @@ ion-content{
   overflow: hidden;
   border-radius: 9px;
   background-color: var(--ion-color-primary);
-  color:white;
+  color: white;
+  padding-top: 3rem;
 }
 
 .auth__input{
-  color:black;
-  width: 100%;
-  background-color:white;
-  border-radius: 9px;
-  padding:2px 7px !important;
+  //color:black;
+  //width: 100%;
+  --background-color:transparent;
+  //border-radius: 9px;
+  //padding:2px 7px !important;
   margin-bottom: 16px;
-  font-size: 14px;
+  //font-size: 14px;
 }
 
 
@@ -39,4 +44,49 @@ h4{
 
 .auth__enlace{
   display:block;
+}
+
+ion-item{
+  --background:transparent;
+  align-items: center;
+  color:white;
+}
+
+ion-icon{
+  margin: 0 0.5rem 13px 0;
+  color:#ffffff;
+}
+
+ion-label{
+  color:#ffffff !important;
+}
+
+.cont-img{
+  border-radius: 50%;
+  margin-top: 1rem;
+  position: relative;
+  margin-bottom: -3.3rem;
+  background: white;
+  width: 85px;
+  height: 85px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  ion-icon{
+    position: absolute;
+    margin: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    color: var(--ion-color-secondary);
+    color: gray;
+  }
+}
+
+ion-button{
+  height: 3rem;
+}
+
+.auth__cont-img-options{
+  margin-top: -1rem;
 }

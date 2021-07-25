@@ -1,3 +1,5 @@
+import { AuthService } from './../../../auth/auth.service';
+import { RegisterPage } from './../../../auth/pages/register/register.page';
 import { ModalController, NavParams } from '@ionic/angular';
 import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
 import { CameraService } from './../../../services/camera.service';
@@ -11,17 +13,22 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 export class ImageCropperModalComponent implements OnInit {
 
   croppedImage: any = '';
+  imageRegister:boolean=false;
   base64Image:string;
   @ViewChild(ImageCropperComponent, {static: false}) angularCropper:ImageCropperComponent;
 
   constructor(
     private camara:CameraService,
     private navParams:NavParams,
-    private modalController:ModalController
+    private modalController:ModalController,
+    private authService:AuthService
   ) { }
 
   ngOnInit() {
     this.base64Image=this.navParams.get("base64")
+    if(this.navParams.get("register")){
+      this.imageRegister=true;
+    }
   }
 
   imageCropped(event: ImageCroppedEvent) {
@@ -34,7 +41,11 @@ export class ImageCropperModalComponent implements OnInit {
 
   save(){
     this.angularCropper.crop();
-    this.camara.cropperImage$.next(this.croppedImage);
+    if(this.imageRegister){
+      this.authService.cropperImage$.next(this.croppedImage);
+    }else{
+      this.camara.cropperImage$.next(this.croppedImage);
+    }
     this.modalController.dismiss();
   }
 

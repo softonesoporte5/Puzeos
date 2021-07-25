@@ -71,7 +71,7 @@ export class MenuComponent implements OnInit {
   private selectImage(source:CameraSource){
     this.camara.takePicture(this.user,source).then(resp=>{
 
-      console.log(resp.filepath)
+    console.log(resp.filepath)
      this.dbUsers.setItem(this.user.id,{
         ...this.user.data,
         imageUrl:resp.firebasePath,
@@ -116,7 +116,7 @@ export class MenuComponent implements OnInit {
     this.presentActionSheet();
   }
 
-    async presentAlertConfirm() {
+  async presentAlertConfirm() {
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
       message: "¿Seguro de que quieres quitar tu foto de perfil?",
@@ -131,7 +131,8 @@ export class MenuComponent implements OnInit {
             .then((resp:IUserData)=>{
               this.firestore.collection("users").doc(firebase.default.auth().currentUser.uid)
               .update({
-                imageUrl:firebase.default.firestore.FieldValue.delete()
+                imageUrl:firebase.default.firestore.FieldValue.delete(),
+                imageUrlLoc:firebase.default.firestore.FieldValue.delete()
               }).then(()=>this.imgPath="../../../../assets/person.jpg")
               .catch(err=>console.log(err));
             });

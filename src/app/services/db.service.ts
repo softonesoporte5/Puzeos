@@ -1,3 +1,4 @@
+import { AppService } from './../app.service';
 import { IMessagesResp } from './../chat/interfaces/messagesResp.interface';
 import { AngularFirestore, DocumentChange } from '@angular/fire/firestore';
 import { IUserData } from './../chat/interfaces/user.interface';
@@ -14,9 +15,9 @@ import * as firebase from 'firebase';
 })
 export class DbService{
 
-  messagesSubscriptions:{};
+  messagesSubscriptions:{}={};
   private messagesSubscriptionsObject$=new Subject<{}>();
-  private messagesSubscriptions$:Subject<IMessagesResp>[]=[];
+  messagesSubscriptions$:Subject<IMessagesResp>[]=[];
   private dbChats$=new Subject<IChat[] | IChat>();
   chats:IChat[]=[];
   private dbChats:ILocalForage;
@@ -24,14 +25,16 @@ export class DbService{
   user:IUserData;
   arrMessages={};
   dbMessages:ILocalForage[]=[];
+  dbNotSendMessages:ILocalForage;
 
   constructor(
-    private firestore:AngularFirestore
+    private firestore:AngularFirestore,
+    private appService:AppService
   ) {
     this.dbChats=this.loadStore("chats");
     this.dbUsers=this.loadStore("users");
+    this.dbNotSendMessages=this.loadStore("notSendMessage");
     if(firebase.default.auth().currentUser?.uid){
-      console.log("a")
       this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
       .then((user:IUserData)=>{
         if(user){
@@ -60,6 +63,34 @@ export class DbService{
         }
       });
     }
+
+    this.appService.getNetworkStatus()
+    .subscribe(resp=>{
+      console.log(resp)
+      this.dbNotSendMessages.iterate((message:IMessage,key:string)=>{
+        if(message.type==="text"){
+          const timestamp=firebase.default.firestore.FieldValue.serverTimestamp();
+          this.firestore.collection("messages").doc(message.idChat)
+          .collection("messages")
+          .doc(key)
+          .set({
+            ...message,
+            timestamp:timestamp,
+            state:1
+          }).then(()=>{
+            this.dbNotSendMessages.removeItem(key);
+          }).catch(error=>{
+            console.log(error);
+          });
+        }else{
+          this.appService.reUloadAudio(message)
+          .then(()=>{
+            console.log(key);
+            this.dbNotSendMessages.removeItem(key);
+          })
+        }
+      });
+    });
   }
 
   addNewConecction(chatID:string,index:number){
@@ -67,91 +98,139 @@ export class DbService{
     this.messagesSubscriptions$[chatID]=new Subject<IMessage[] | IMessage>();
     this.arrMessages[chatID]=[];
 
-    const ref=this.firestore.collection("messages")
-    .doc(chatID).collection<IMessage>("messages")
-    .ref;
-    ref.onSnapshot(resp=>{
-      let arrMensajes:IMessage[]=[];
-      const datos=resp.docChanges();
-      if(datos.length===0){
-        this.messagesSubscriptions$[chatID].next({resp:[],status:0});
-      }
+    const actions=()=>{
+      const ref=this.firestore.collection("messages")
+      .doc(chatID).collection<IMessage>("messages")
+      .ref;
+      ref.onSnapshot(resp=>{
+        let arrMensajes:IMessage[]=[];
+        const datos=resp.docChanges();
+        console.log(datos,datos.length);
+        if(datos.length===0){
+          this.messagesSubscriptions$[chatID].next({resp:[],status:0});
+        }
 
-      datos.forEach((mensaje,index)=>{
-        if(mensaje.type!=='removed'){
-          if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
-            this.dbMessages[chatID].getItem(mensaje.doc.id)
-            .then(resp=>{
-              if(!resp){
-                const data=mensaje.doc.data() as IMessage;
-                if(data.type==="delete" || data.type==="deleteAndBlock"){
-                  console.log(data);
-                  this.dbChats.getItem(chatID)
-                  .then(chat=>{
-                    console.log(chat)
-                    this.dbChats.setItem(chatID,{
-                      ...chat,
-                      deleted:true
-                    }).then(()=>{
-                      this.messagesSubscriptions$[chatID].next({resp:[],status:4});
-                      if(data.type==="deleteAndBlock"){
-                        this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
-                        .then((resp:IUserData)=>{
-                          if(!resp.notAddUsers) resp.notAddUsers=[];
-                          this.firestore.collection("users").doc(firebase.default.auth().currentUser.uid).update({
-                            notAddUsers:[...resp.notAddUsers,data.user]
-                          }).then(resp=>console.log("Enviado")).catch(error=> console.log(error));
-                        });
-                      }
+        datos.forEach((mensaje,index)=>{
+          if(mensaje.type!=='removed'){
+            if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
+              const data=mensaje.doc.data() as IMessage;
+              this.dbMessages[chatID].getItem(mensaje.doc.id)
+              .then((resp:IMessage)=>{
+                if(!resp){
+                  if(data.type==="delete" || data.type==="deleteAndBlock"){
+                    console.log(data);
+                    this.dbChats.getItem(chatID)
+                    .then(chat=>{
+                      console.log(chat)
+                      this.dbChats.setItem(chatID,{
+                        ...chat,
+                        deleted:true
+                      }).then(()=>{
+                        this.messagesSubscriptions$[chatID].next({resp:[],status:4});
+                        if(data.type==="deleteAndBlock"){
+                          this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
+                          .then((resp:IUserData)=>{
+                            if(!resp.notAddUsers) resp.notAddUsers=[];
+                            this.firestore.collection("users").doc(firebase.default.auth().currentUser.uid).update({
+                              notAddUsers:[...resp.notAddUsers,data.user]
+                            }).then(resp=>console.log("Enviado")).catch(error=> console.log(error));
+                          });
+                        }
+                      })
                     })
-                  })
+                  }else{
+                    const message={
+                      ...data,
+                      id:mensaje.doc.id,
+                      download:false,
+                      timestamp:data.timestamp.toDate(),
+                      state:1
+                    };
+
+                    if(data.user===this.user.userName){
+                      message.download=true;
+                    }
+
+                    arrMensajes.push(message);
+                    //Agregamos a la DB Local
+                    this.addMessage(message,chatID,this.dbChats, this.dbMessages[chatID]);
+                    if(data.user!==this.user.userName){
+                    }
+                    //Agregamos todos los mensajes cuando se procese el último
+                    if(index===datos.length-1){
+                      Array.prototype.push.apply(this.arrMessages[chatID],arrMensajes);
+                      this.messagesSubscriptions$[chatID].next({resp:[...arrMensajes],status:5});
+                    }
+                  }
                 }else{
-                  const message={
-                    ...data,
-                    id:mensaje.doc.id,
-                    download:false,
-                    timestamp:data.timestamp.toDate(),
-                    state:false
-                  };
+                  if(data.idChat){
+                    const messageResp={
+                      ...data,
+                      id:mensaje.doc.id,
+                      download:false,
+                      timestamp:data.timestamp.toDate(),
+                      state:1
+                    };
+                    delete data.idChat;
+                    const message={
+                      ...data,
+                      id:mensaje.doc.id,
+                      download:false,
+                      timestamp:data.timestamp.toDate(),
+                      state:1
+                    };
 
-                  if(data.user===this.user.userName){
-                    message.download=true;
-                  }
+                    if(data.user===this.user.userName){
+                      message.download=true;
+                    }
 
-                  arrMensajes.push(message);
-                  //Agregamos a la DB Local
-                  this.addMessage(message,chatID,this.dbChats, this.dbMessages[chatID]);
-                  if(data.user!==this.user.userName){
-                  }
-                  //Agregamos todos los mensajes cuando se procese el último
-                  if(index===datos.length-1){
-                    Array.prototype.push.apply(this.arrMessages[chatID],arrMensajes);
-                    this.messagesSubscriptions$[chatID].next({resp:[...arrMensajes],status:1});
+                    arrMensajes.push(messageResp);
+                    this.addMessage({...message},chatID,this.dbChats, this.dbMessages[chatID]);
+                    //Agregamos todos los mensajes cuando se procese el último
+                    if(index===datos.length-1){
+                      Array.prototype.push.apply(this.arrMessages[chatID],arrMensajes);
+                      this.messagesSubscriptions$[chatID].next({resp:[...arrMensajes],status:5});
+                    }
                   }
                 }
-              }
-            }).catch(err=>console.log(err));
+              }).catch(err=>console.log(err));
+            }
+          }else{
+            const data=mensaje.doc.data() as IMessage;
+            this.messagesSubscriptions$[chatID].next({resp:[{...data,id:mensaje.doc.id}],status:2});
+
+            this.dbMessages[chatID].getItem(mensaje.doc.id)
+            .then((resp:IMessage)=>{
+              this.dbMessages[chatID].setItem(mensaje.doc.id,{
+                ...resp,
+                state:2
+              }).then((resp:any)=>console.log(resp))
+              .catch((error:any)=>console.log(error));
+            },(err:any)=>console.log(err))
+
           }
-        }else{
-          const data=mensaje.doc.data() as IMessage;
-          this.messagesSubscriptions$[chatID].next({resp:[{...data,id:mensaje.doc.id}],status:2});
-
-          this.dbMessages[chatID].getItem(mensaje.doc.id)
-          .then((resp:IMessage)=>{
-            this.dbMessages[chatID].setItem(mensaje.doc.id,{
-              ...resp,
-              state:true
-            }).then((resp:any)=>console.log(resp))
-            .catch((error:any)=>console.log(error));
-          },(err:any)=>console.log(err))
-
-        }
-      })
-    });
-    this.messagesSubscriptions[chatID]=this.messagesSubscriptions$[chatID].asObservable();
-    if(index+1===this.user.chats.length){
-      this.messagesSubscriptionsObject$.next(this.messagesSubscriptions);
+        })
+      });
+      console.log(this.messagesSubscriptions,this.messagesSubscriptions$);
+      console.log( this.messagesSubscriptions[chatID],this.messagesSubscriptions$[chatID])
+      this.messagesSubscriptions[chatID]=this.messagesSubscriptions$[chatID].asObservable();
+      if(index+1===this.user.chats.length){
+        this.messagesSubscriptionsObject$.next(this.messagesSubscriptions);
+      }
     }
+
+    if(!this.user){
+      this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
+      .then((user:IUserData)=>{
+        if(user){
+          this.user=user;
+          actions();
+        }
+      });
+    }else{
+      actions();
+    }
+
   }
 
   loadStore(name: string){
@@ -162,7 +241,6 @@ export class DbService{
   }
 
   deleteMessage(messageID:string,idChat:string){
-
     this.firestore.collection("messages").doc(idChat)
       .collection("messages").doc(messageID)
       .delete()

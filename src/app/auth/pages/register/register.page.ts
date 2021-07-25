@@ -1,3 +1,8 @@
+import { FirebaseStorageService } from './../../../services/firebase-storage.service';
+import { AuthService } from './../../auth.service';
+import { ImageCropperModalComponent } from './../../../chat/components/image-cropper-modal/image-cropper.component';
+import { Subject, Subscription } from 'rxjs';
+import { CameraService } from './../../../services/camera.service';
 import { NotificationServiceService } from './../../../services/notification-service.service';
 import { ILocalForage } from './../../../chat/interfaces/localForage.interface';
 import { DbService } from './../../../services/db.service';
@@ -6,9 +11,13 @@ import { LoadingService } from './../../../services/loading.service';
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ToastController } from '@ionic/angular';
+import { ToastController, ActionSheetController, ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import * as firebase from 'firebase';
+import { Plugins, CameraResultType, CameraPhoto, FilesystemDirectory, FilesystemEncoding, Capacitor, CameraSource } from '@capacitor/core';
+import { IUser } from 'src/app/chat/interfaces/user.interface';
+
+const { Camera, Filesystem } = Plugins;
 
 @Component({
   selector: 'app-register',
@@ -21,8 +30,9 @@ export class RegisterPage implements OnInit {
   dbUsers:ILocalForage;
 
   miFormulario:FormGroup=this.fb.group({
-    name:['',[Validators.required,Validators.minLength(10)]],
+    name:['',[Validators.required,Validators.minLength(8)]],
     email:['',[Validators.pattern(this._emailPattern),Validators.required,Validators.minLength(6)]],
+    descripcion:['',[Validators.maxLength(80)]],
     passwords:this.fb.group({
       password:['', [Validators.required,Validators.minLength(9)]],
       password2:['',[Validators.required]],
@@ -31,9 +41,11 @@ export class RegisterPage implements OnInit {
 
   get name(){ return this.miFormulario.get('name'); }
   get email(){ return this.miFormulario.get('email'); }
+  get descripcion(){ return this.miFormulario.get('descripcion'); }
   get password(){ return this.miFormulario.get('passwords.password'); }
   get password2(){ return this.miFormulario.get('passwords.password2'); }
 
+  imgPath='../../../../assets/person.jpg';
 
   passwordMatchValidator(control: AbstractControl) {
     return control.get('password')?.value === control.get('password2')?.value
@@ -48,7 +60,10 @@ export class RegisterPage implements OnInit {
     private loadingService:LoadingService,
     private fireStore:AngularFirestore,
     private db:DbService,
-    private notificationService:NotificationServiceService
+    private notificationService:NotificationServiceService,
+    private actionSheetController: ActionSheetController,
+    private authService:AuthService,
+    private firebaseStorage:FirebaseStorageService
   ) { }
 
   ngOnInit() {}
@@ -73,17 +88,16 @@ export class RegisterPage implements OnInit {
 
     if(this.miFormulario.invalid){
       let mensaje:string='';
-
       //Alertar sobre errores
-      if(this.name?.errors?.required){mensaje='El campo "Nombre Completo" es requerido';}
-      if(this.name?.errors?.minlength){mensaje='El nombre completo debe tener al menos 10 caracteres';}
-      if(this.email?.errors?.required){mensaje='El correo es requerido';}
-      if(this.email?.errors?.pattern){mensaje='Introduzca una dirección de correo válida';}
-      if(this.email?.errors?.minlength){mensaje='El correo debe tener al menos 6 caracteres';}
-      if(this.password?.errors?.required){mensaje='La contraseña es requerida';}
-      if(this.password?.errors?.minlength){mensaje='La contraseña debe tener al menos 9 caracteres';}
-      if(this.password2?.errors?.required){mensaje='El campo "Confirmar contraseña" es requerido';}
       if(this.miFormulario.get('passwords')?.errors?.mismatch){mensaje='Las constraseñas no coinciden';}
+      if(this.password2?.errors?.required){mensaje='El campo "Confirmar contraseña" es requerido';}
+      if(this.password?.errors?.minlength){mensaje='La contraseña debe tener al menos 9 caracteres';}
+      if(this.email?.errors?.minlength){mensaje='El correo debe tener al menos 6 caracteres';}
+      if(this.email?.errors?.pattern){mensaje='Introduzca una dirección de correo válida';}
+      if(this.name?.errors?.minlength){mensaje='El nombre de usuario debe tener al menos 8 caracteres';}
+      if(this.email?.errors?.required){mensaje='El correo es requerido';}
+      if(this.password?.errors?.required){mensaje='La contraseña es requerida';}
+      if(this.name?.errors?.required){mensaje='El campo "Nombre de usuario" es requerido';}
 
       this.presentToastWithOptions(mensaje);
 
@@ -93,45 +107,119 @@ export class RegisterPage implements OnInit {
     //Mostrar sniper de carga
     this.loadingService.present();
 
-
     //Crear usuario en Firebase
      this.auth.createUserWithEmailAndPassword(this.email.value,this.password.value)
        .then(userInfo=>{
          userInfo.user.sendEmailVerification()//Enviamos email de verificación
-           .then(()=>{
+          .then(()=>{
             if(!this.notificationService.token){
               this.notificationService.token='';
             }
-            this.loadingService.dismiss();
-            this.fireStore.collection("users").doc(userInfo.user.uid).set({//Agregamos el usuario a FireStorage
-              userName:this.name.value,
-              chats:[],
-              token:this.notificationService.token,
-              createDate:firebase.default.firestore.FieldValue.serverTimestamp(),
-              buscando:{
-                state:false,
-                tagId:''
-              },
-              blockedUsers:[]
-            });
-
             this.dbUsers=this.db.loadStore("users");
-            this.dbUsers.setItem(userInfo.user.uid,{
-              userName:this.name.value,
-              chats:[],
-              token:this.notificationService.token,
-              buscando:{
-                state:false,
-                tagId:''
-              },
-              blockedUsers:[]
-            }).then(()=>{
-              this.router.navigate(['chat']);
-            }).catch(err=>{
-              console.log(err);
-              this.router.navigate(['chat']);
-            })
-           })
+
+            //Agregar a firebaseStorage
+            if(this.imgPath!=='../../../../assets/person.jpg'){
+              const user={
+                id:userInfo.user.uid,
+                data:{
+                  userName:this.name.value,
+                }
+              };
+              this.firebaseStorage.uploadPhoto(this.imgPath, user as IUser,true)
+              .then(urlImage=>{
+                // Guardamos la imagen de manera local
+                const fileName = new Date().getTime() + '.jpeg';
+
+                Filesystem.writeFile({
+                  path:fileName,
+                  data:this.imgPath,
+                  directory:FilesystemDirectory.Data
+                }).then(respUser=>{
+                  this.fireStore.collection("users").doc(userInfo.user.uid).set({//Agregamos el usuario a FireStorage
+                    userName:this.name.value,
+                    chats:[],
+                    token:this.notificationService.token,
+                    createDate:firebase.default.firestore.FieldValue.serverTimestamp(),
+                    buscando:{
+                      state:false,
+                      tagId:''
+                    },
+                    descripcion:this.descripcion.value,
+                    blockedUsers:[],
+                    imageUrl:urlImage,
+                    imageUrlLoc:respUser.uri
+                  }).then(resp=>{
+                    this.dbUsers.setItem(userInfo.user.uid,{
+                      userName:this.name.value,
+                      chats:[],
+                      token:this.notificationService.token,
+                      descripcion:this.descripcion.value,
+                      buscando:{
+                        state:false,
+                        tagId:''
+                      },
+                      blockedUsers:[],
+                      imageUrl:urlImage,
+                      imageUrlLoc:respUser.uri
+                    }).then(()=>{
+                      this.loadingService.dismiss();
+                      this.router.navigate(['chat']);
+                    }).catch(err=>{
+                      console.log(err);
+                      this.loadingService.dismiss();
+                      this.router.navigate(['chat']);
+                    });
+                  }).catch(err=>{
+                    this.loadingService.dismiss();
+                    this.presentToastWithOptions("No se pudo registrar al usuario");
+                  })
+
+                },err=>{
+                  this.loadingService.dismiss();
+                  console.log(err)
+                });
+              }).catch(err=>{
+                this.loadingService.dismiss();
+                this.presentToastWithOptions("Ha ocurrido un error al tratar de guarda la imágen");
+                console.log(err);
+              })
+            }else{
+              this.fireStore.collection("users").doc(userInfo.user.uid).set({//Agregamos el usuario a FireStorage
+                userName:this.name.value,
+                chats:[],
+                token:this.notificationService.token,
+                createDate:firebase.default.firestore.FieldValue.serverTimestamp(),
+                buscando:{
+                  state:false,
+                  tagId:''
+                },
+                descripcion:this.descripcion.value,
+                blockedUsers:[]
+              }).then(resp=>{
+                this.dbUsers.setItem(userInfo.user.uid,{
+                  userName:this.name.value,
+                  chats:[],
+                  token:this.notificationService.token,
+                  descripcion:this.descripcion.value,
+                  buscando:{
+                    state:false,
+                    tagId:''
+                  },
+                  blockedUsers:[]
+                }).then(()=>{
+                  this.loadingService.dismiss();
+                  this.router.navigate(['chat']);
+                }).catch(err=>{
+                  console.log(err);
+                  this.loadingService.dismiss();
+                  this.router.navigate(['chat']);
+                });
+              }).catch(err=>{
+                this.loadingService.dismiss();
+                this.presentToastWithOptions("No se pudo registrar al usuario");
+              })
+            }
+          })
           .catch(error=>{
             console.log(error);
           });
@@ -143,6 +231,38 @@ export class RegisterPage implements OnInit {
           this.presentToastWithOptions("El correo electrónico ya está en uso");
         }
        });
+  }
+
+  async presentActionSheet() {
+    const actionSheet = await this.actionSheetController.create({
+      cssClass: 'my-custom-class',
+      buttons: [
+        {
+          text: 'Camara',
+          icon: 'camera-sharp',
+          handler: () => {
+            this.authService.selectImage(CameraSource.Camera)
+            .then(resp=>this.imgPath=resp);
+          }
+        },
+        {
+          text: 'Galería',
+          icon: 'image-sharp',
+          handler: () => {
+            this.authService.selectImage(CameraSource.Photos)
+          }
+        },
+        {
+          text: 'Quitar foto de perfil',
+          role: 'destructive',
+          icon: 'trash',
+          handler: () => {
+            this.imgPath='../../../../assets/person.jpg';
+          }
+        }
+      ]
+    });
+    await actionSheet.present();
   }
 
 }

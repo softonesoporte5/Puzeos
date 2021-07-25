@@ -1,4 +1,4 @@
 export interface IAudioBlob{
-  data:Blob,
+  data:string,
   duration:string
 }

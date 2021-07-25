@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { AppService } from './../../../app.service';
 import { HttpClient, HttpEventType } from '@angular/common/http';
@@ -24,6 +25,8 @@ export class DocumentComponent implements OnInit {
   downloaded:boolean=false;
   units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   size:string;
+  storageSubscribe:Subscription;
+  httpSubscribe:Subscription;
 
   constructor(
     private storageService:FirebaseStorageService,
@@ -37,7 +40,6 @@ export class DocumentComponent implements OnInit {
       //Obtener la URL del archivo
       this.size=this.niceBytes(this.document.size);
       this.documentUrl=Capacitor.convertFileSrc(this.document.localRef);
-      console.log( this.documentUrl)
     }else{
       if(this.document.download===false){
         this.size=this.niceBytes(this.document.size);
@@ -49,9 +51,9 @@ export class DocumentComponent implements OnInit {
 
   downloadDocument(){
     this.downloaded=true;
-    let storageSubscribe=this.storageService.getImage(this.document.ref)
+    this.storageSubscribe=this.storageService.getImage(this.document.ref)
     .subscribe(downloadUrl=>{
-      let httpSubscribe=this.http.get(downloadUrl,{
+      this.httpSubscribe=this.http.get(downloadUrl,{
         responseType:'blob',
         reportProgress:true,
         observe:'events'
@@ -83,14 +85,24 @@ export class DocumentComponent implements OnInit {
                 this.document.download=true
                 this.documentUrl=Capacitor.convertFileSrc(resp.uri);
 
-                storageSubscribe.unsubscribe();
-                httpSubscribe.unsubscribe();
+                this.storageSubscribe.unsubscribe();
+                this.httpSubscribe.unsubscribe();
               }).catch(err=>console.log(err));
             }).catch(err=>console.log(err));
           }).catch(err=>console.log(err));
         }
       });
     })
+  }
+
+  cancelDownload(){
+    this.downloaded=false;
+    if(this.storageSubscribe){
+      this.storageSubscribe.unsubscribe();
+    }
+    if(this.httpSubscribe){
+      this.httpSubscribe.unsubscribe();
+    }
   }
 
   openDocument(){

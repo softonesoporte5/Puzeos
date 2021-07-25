@@ -15,5 +15,6 @@ export class IUserData{
   blockedUsers:string[];
   token:string;
   createDate:any;
+  descripcion?:string;
   notAddUsers?:string[];
 }

@@ -19,8 +19,9 @@
     <ion-text color="tertiary" >
       {{message.timestamp | date: 'shortTime'}}
       <span *ngIf="userName===message.user" style="display: contents;">
-        <ion-icon name="checkmark-outline" *ngIf="message.state===false"></ion-icon>
-        <ion-icon name="checkmark-done-outline" *ngIf="message.state===true"></ion-icon>
+        <ion-icon name="time-outline"  *ngIf="message.state===0"></ion-icon>
+        <ion-icon name="checkmark-outline" *ngIf="message.state===1"></ion-icon>
+        <ion-icon name="checkmark-done-outline" *ngIf="message.state===2"></ion-icon>
       </span>
     </ion-text>
   </ion-card-content>
@@ -34,8 +35,9 @@
     <ion-text color="tertiary">
       {{message.timestamp | date: 'shortTime'}}
       <span *ngIf="userName===message.user" style="display: contents;">
-        <ion-icon name="checkmark-outline" *ngIf="message.state===false"></ion-icon>
-        <ion-icon name="checkmark-done-outline" *ngIf="message.state===true"></ion-icon>
+        <ion-icon name="time-outline"  *ngIf="message.state===0"></ion-icon>
+        <ion-icon name="checkmark-outline" *ngIf="message.state===1"></ion-icon>
+        <ion-icon name="checkmark-done-outline" *ngIf="message.state===2"></ion-icon>
       </span>
     </ion-text>
 
@@ -46,8 +48,9 @@
     <ion-text color="tertiary">
       {{message.timestamp | date: 'shortTime'}}
       <span *ngIf="userName===message.user" style="display: contents;">
-        <ion-icon name="checkmark-outline" *ngIf="message.state===false"></ion-icon>
-        <ion-icon name="checkmark-done-outline" *ngIf="message.state===true"></ion-icon>
+        <ion-icon name="time-outline"  *ngIf="message.state===0"></ion-icon>
+        <ion-icon name="checkmark-outline" *ngIf="message.state===1"></ion-icon>
+        <ion-icon name="checkmark-done-outline" *ngIf="message.state===2"></ion-icon>
       </span>
     </ion-text>
   </ion-card-content>
@@ -57,8 +60,9 @@
     <ion-text color="tertiary">
       {{message.timestamp | date: 'shortTime'}}
       <span *ngIf="userName===message.user" style="display: contents;">
-        <ion-icon name="checkmark-outline" *ngIf="message.state===false"></ion-icon>
-        <ion-icon name="checkmark-done-outline" *ngIf="message.state===true"></ion-icon>
+        <ion-icon name="time-outline"  *ngIf="message.state===0"></ion-icon>
+        <ion-icon name="checkmark-outline" *ngIf="message.state===1"></ion-icon>
+        <ion-icon name="checkmark-done-outline" *ngIf="message.state===2"></ion-icon>
       </span>
     </ion-text>
   </ion-card-content>
@@ -68,8 +72,9 @@
     <ion-text color="tertiary">
       {{message.timestamp | date: 'shortTime'}}
       <span *ngIf="userName===message.user" style="display: contents;">
-        <ion-icon name="checkmark-outline" *ngIf="message.state===false"></ion-icon>
-        <ion-icon name="checkmark-done-outline" *ngIf="message.state===true"></ion-icon>
+        <ion-icon name="time-outline"  *ngIf="message.state===0"></ion-icon>
+        <ion-icon name="checkmark-outline" *ngIf="message.state===1"></ion-icon>
+        <ion-icon name="checkmark-done-outline" *ngIf="message.state===2"></ion-icon>
       </span>
     </ion-text>
   </ion-card-content>

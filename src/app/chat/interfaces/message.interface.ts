@@ -5,7 +5,7 @@ export interface IMessage{
   timestamp:any,
   ref?:string,
   download:boolean,
-  state?:boolean,
+  state?:number,
   id?:string,
   localRef?:string,
   fileName?:string,
@@ -14,6 +14,7 @@ export interface IMessage{
   duration?:number
   size?:number;
   mimeType?:string;
+  idChat?:string;
 }
 
 export interface IMessageSearch{

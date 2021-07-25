@@ -1,5 +1,6 @@
-import { IUser } from './../../interfaces/user.interface';
 import { DbService } from 'src/app/services/db.service';
+import { AppService } from './../../../app.service';
+import { IUser } from './../../interfaces/user.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IMessage } from './../../interfaces/message.interface';
 import { Injectable } from '@angular/core';
@@ -13,13 +14,23 @@ export class ChatService{
 
   userName:string;
   idChat:string;
-  dbChat:ILocalForage;
+  dbNotSendMessages:ILocalForage;
+
   lastDate:Date;
+  networkStatus:boolean=true;
 
   constructor(
-    private db:DbService,
-    private firestore:AngularFirestore
-  ) { }
+    private appService:AppService,
+    private firestore:AngularFirestore,
+    private db:DbService
+  ) {
+    this.appService.getNetworkStatus()
+    .subscribe(resp=>{
+      this.networkStatus=resp;
+    });
+
+    this.dbNotSendMessages=this.db.loadStore("notSendMessage");
+   }
 
   orderMessages(mesagges:IMessage[]){
 
@@ -36,17 +47,65 @@ export class ChatService{
   }
 
   addMessageInFirebase(message:string,idChat:string,userName:string,sendUser:IUser){
-    const timestamp=firebase.default.firestore.FieldValue.serverTimestamp();
-    this.firestore.collection("messages").doc(idChat).collection("messages").add({
-      message:message,
-      user:userName,
-      type:"text",
-      sendToToken:sendUser.data.token,
-      toUserId:sendUser.id,
-      timestamp:timestamp
-    }).catch(error=>{
-      console.log(error);
-    });
+    if(this.networkStatus){
+      const dbMessage=this.db.loadStore("messages"+idChat);
+      const id=new Date().getTime()+''+Math.round(Math.random()*10000);
+
+      const newMessage={
+        message:message,
+        user:userName,
+        type:"text",
+        sendToToken:sendUser.data.token,
+        toUserId:sendUser.id,
+        timestamp:new Date(),
+        state:0,
+        id:id,
+        idChat:idChat,
+        download:true
+      };
+
+      dbMessage.setItem(id,newMessage);
+
+      this.dbNotSendMessages.setItem(id,newMessage).then(resp=>{
+        Array.prototype.push.apply(this.db.arrMessages[idChat],[resp]);
+        this.db.messagesSubscriptions$[idChat].next({resp:[...[resp]],status:1});
+      });
+
+      const timestamp=firebase.default.firestore.FieldValue.serverTimestamp();
+      this.firestore.collection("messages").doc(idChat).collection("messages").doc(id).set({
+        ...newMessage,
+        state:1,
+        timestamp:timestamp
+      })
+      .then(()=>{
+        this.dbNotSendMessages.removeItem(id);
+      }).catch(error=>{
+        console.log(error);
+      });
+    }else{
+      const dbMessage=this.db.loadStore("messages"+idChat);
+      const id=new Date().getTime()+''+Math.round(Math.random()*10000);
+
+      const newMessage={
+        message:message,
+        user:userName,
+        type:"text",
+        sendToToken:sendUser.data.token,
+        toUserId:sendUser.id,
+        timestamp:new Date(),
+        state:0,
+        id:id,
+        idChat:idChat,
+        download:true
+      };
+
+      dbMessage.setItem(id,newMessage);
+
+      this.dbNotSendMessages.setItem(id,newMessage).then(resp=>{
+        Array.prototype.push.apply(this.db.arrMessages[idChat],[resp]);
+        this.db.messagesSubscriptions$[idChat].next({resp:[...[resp]],status:1});
+      });
+    }
   }
 
   setLastDate(date:Date){

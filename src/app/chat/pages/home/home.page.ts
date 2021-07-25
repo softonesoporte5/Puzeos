@@ -72,6 +72,7 @@ export class HomePage implements OnInit{
           };
           if(this.chatsFirebase<this.user?.data?.chats?.length){
             for(let index=this.chats.length; index<user.chats.length; index++){
+              console.log(user.chats[user.chats.length-1],user.chats.length-1);
               this.db.addNewConecction(user.chats[user.chats.length-1],user.chats.length-1);
 
               this.firestore.collection("chats").doc(user.chats[index])
