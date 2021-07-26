@@ -45,8 +45,9 @@ export class BlockedUsersPage implements OnInit {
       this.dbUsers.setItem(firebase.default.auth().currentUser.uid,{
         ...this.user,
         blockedUsers:this.blockedUsers
-      }).then(()=>this.loadingService.dismiss())
-      .catch(err=>console.log(err));
+      }).then(()=>{
+        this.loadingService.dismiss()
+      }).catch(err=>console.log(err));
     }).catch(err=>console.log(err));
   }
 

@@ -31,6 +31,10 @@ const routes:Routes=[
     loadChildren: () => import('./pages/search-message/search-message.module').then( m => m.SearchMessagePageModule)
   },
   {
+    path: 'profile',
+    loadChildren: () => import('./pages/profile/profile.module').then( m => m.ProfilePageModule)
+  },
+  {
     path:'**',
     pathMatch:'full',
     redirectTo:''

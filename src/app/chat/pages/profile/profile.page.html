@@ -1,9 +1,53 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>profile</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content fullscreen color="light">
+  <ion-item class="close-fake" lines="none" text-center>
+    <ion-back-button
+      slot="start"
+      defaultHref="/chat"
+      text=""
+      mode="md"
+    ></ion-back-button>
+  </ion-item>
 
-<ion-content>
+  <div class="loc__cont-info">
+    <img
+      [src]="imgPath"
+      alt="Imágen de perfil"
+      (click)="openModal()"
+    >
+    <ion-button
+      class="loc__btn-img"
+      color="secondary"
+      (click)="changePhoto()"
+    >
+      <ion-icon name="camera-sharp" slot="icon-only"></ion-icon>
+    </ion-button>
+    <div class="loc__cont-des">
+      <h6>Nombre de usuario</h6>
+      <ion-item>
+        <p>{{user?.data.userName}}</p>
+      </ion-item>
+      <ion-item>
+        Se unió a Puzeos el {{user?.data.createDate | date}}
+      </ion-item>
+    </div>
+
+    <div class="loc__cont-des">
+      <h6>Descripción</h6>
+      <ion-item (click)="changeDescription()" detail="true">
+        <p>{{user?.data.descripcion}}</p>
+      </ion-item>
+    </div>
+    <div class="loc__cont-des">
+      <h6>Otra información</h6>
+      <ion-item>
+        <p>{{user?.data.blockedUsers.length}} usuarios bloqueados</p>
+      </ion-item>
+      <ion-item>
+        <p>{{user?.data.chats.length}} chats activos</p>
+      </ion-item>
+    </div>
+
+  </div>
+
 
 </ion-content>
