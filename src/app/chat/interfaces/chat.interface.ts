@@ -7,4 +7,6 @@ export interface IChat{
   userNames:string[];
   newMessages?:number;
   deleted?:boolean;
+  tokens:string[];
+  tema:string;
 }

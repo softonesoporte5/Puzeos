@@ -13,6 +13,7 @@ const {  } = Plugins;
 })
 export class AppService {
   private network$=new Subject<boolean>();
+  uploads={};
 
   constructor(
     private storage:AngularFireStorage,
@@ -56,15 +57,26 @@ export class AppService {
     await ref.putString(resp.data, 'data_url');
 
     await this.firestore.collection("messages").doc(message.idChat).collection("messages").add({
-      ref:message.ref,
-      user:message.user,
-      type:"voice",
-      id:message.id,
-      idChat:message.idChat,
-      duration:message.duration,
-      message:"Nota de voz: "+message.duration,
-      localRef:message.localRef,
+      ...message,
+      state:1,
       timestamp:firebase.default.firestore.FieldValue.serverTimestamp()
+    });
+
+    return;
+  }
+
+  async reUploadFile(data:string, message:IMessage){
+    const ref = this.storage.ref(message.ref);
+    let upload=ref.putString(data, 'base64');
+    this.uploads[message.id]=upload;
+
+
+    await upload.then(()=>{
+      this.firestore.collection("messages").doc(message.idChat).collection("messages").add({
+        ...message,
+        state:1,
+        timestamp:firebase.default.firestore.FieldValue.serverTimestamp()
+      });
     });
 
     return;

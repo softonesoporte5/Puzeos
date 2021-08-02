@@ -1,7 +1,6 @@
 import { LoadingService } from './../../../services/loading.service';
-import { LoadingController, ToastController } from '@ionic/angular';
+import { ToastController } from '@ionic/angular';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { AppService } from './../../../app.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';

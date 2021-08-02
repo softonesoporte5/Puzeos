@@ -153,6 +153,6 @@
 
 <audio src="../../../../assets/sounds/soundMessage.mp3" class="sendMessageSound"></audio>
 
-<ion-footer class="emojiContainer" [style.height]="showEmojiPicker?'300px':'0px'"> <!--Show/Hide emoji picker. Don't use *ngIf because the component will be created again and again and cause performance issue-->
+<ion-footer class="emojiContainer" [style.minHeight]="showEmojiPicker?'300px':'0px'"> <!--Show/Hide emoji picker. Don't use *ngIf because the component will be created again and again and cause performance issue-->
   <emoji-picker (onEmojiSelect)="addEmoji($event)" *ngIf="showEmojiPicker || showEmojiPickerCont!==0"></emoji-picker>
 </ion-footer>

@@ -1,3 +1,4 @@
+import { FileSystemService } from './../../../services/file-system.service';
 import { AppService } from './../../../app.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
@@ -7,10 +8,8 @@ import {Howl} from 'howler';
 import { IonRange } from '@ionic/angular';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 
-import {Plugins, FilesystemDirectory, FilesystemEncoding} from '@capacitor/core';
+import {Plugins, FilesystemDirectory } from '@capacitor/core';
 const {Filesystem} = Plugins;
-
-const FILE_KEY='files';
 
 @Component({
   selector: 'app-audio',
@@ -34,7 +33,8 @@ export class AudioComponent implements OnInit {
   constructor(
     private http:HttpClient,
     private firebaseService:FirebaseStorageService,
-    private appService:AppService
+    private appService:AppService,
+    private fileSystemService:FileSystemService
   ) { }
 
   ngOnInit() {
@@ -47,7 +47,7 @@ export class AudioComponent implements OnInit {
           this.descargar=3;
           Filesystem.readFile({
             path:this.audio.localRef,
-            directory:FilesystemDirectory.Data
+            directory:FilesystemDirectory.ExternalStorage
           }).then(resp=>{
             this.controls(resp.data);
           }).catch(err=>console.log(err));
@@ -64,7 +64,7 @@ export class AudioComponent implements OnInit {
   downloadFile(){
     this.descargar=2;
 
-    let storageSubscribe=this.firebaseService.getAudio(this.audio.ref).
+    let storageSubscribe=this.firebaseService.getUrlFile(this.audio.ref).
     subscribe(resul=>{
       this.downloadUrl=resul;
 
@@ -84,34 +84,35 @@ export class AudioComponent implements OnInit {
           this.appService.convertBlobToBase64(event.body)
           .then((result:string | ArrayBuffer)=>{
             base64=result;
-            Filesystem.writeFile({
-              path:'audios/'+name,
-              data:base64,
-              directory:FilesystemDirectory.Data,
-              encoding: FilesystemEncoding.UTF8
-            }).then(()=>{
-              this.descargar=3;
-
-              Filesystem.readFile({
-                path:'audios/'+name,
-                directory:FilesystemDirectory.Data
-              }).then(resp=>{
-                this.controls(resp.data);
-              }).catch(err=>console.log(err));
-
-              this.dbMessages.setItem(this.audio.id,{
-                ...this.audio,
-                download:true,
-                localRef:'audios/'+name
-              }).catch(err=>console.log(err));
-
-              storageSubscribe.unsubscribe();
-              httpSubscribe.unsubscribe();
-            }).catch(err=>console.log(err));
+            this.fileSystemService.writeFile(base64,name, "VoiceNotes/")
+            .then(respUrl=>{
+              if(respUrl){
+                this.readFile(name);
+                storageSubscribe.unsubscribe();
+                httpSubscribe.unsubscribe();
+              }
+            })
           }).catch(err=>console.log(err));
         }
       });
     });
+  }
+
+  async readFile(name:string){
+    this.descargar=3;
+
+    await Filesystem.readFile({
+      path:'VoiceNotes/'+name,
+      directory:FilesystemDirectory.ExternalStorage
+    }).then(resp=>{
+      this.controls(resp.data);
+    }).catch(err=>console.log(err));
+
+    this.dbMessages.setItem(this.audio.id,{
+      ...this.audio,
+      download:true,
+      localRef:'audios/'+name
+    }).catch(err=>console.log(err));
   }
 
   controls(src:string):Howl{

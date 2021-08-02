@@ -6,32 +6,35 @@
       text=""
       mode="md"
     ></ion-back-button>
-    <ion-title class="ion-no-padding">Agrega un compañero</ion-title>
+    <ion-title class="ion-no-padding">Agrega un chat</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content *ngIf="!buscando; else contBuscando" class="ion-padding">
-  <form
-    [formGroup]="miFormulario"
-    autocomplete="off"
-    class="loc__form"
-  >
-    <ion-input
-      placeholder="¿Sobre qué quieres chatear?"
-      maxlength="50"
-      formControlName="searchTxt"
-    ></ion-input>
-  </form>
+  <span *ngIf="user?.data.chats.length<5">
+    <form
+      [formGroup]="miFormulario"
+      autocomplete="off"
+      class="loc__form"
+    >
+      <ion-icon name="search-sharp"></ion-icon>
+      <ion-input
+        placeholder="¿Sobre qué quieres chatear?"
+        maxlength="50"
+        formControlName="searchTxt"
+      ></ion-input>
+    </form>
 
-  <ion-chip
-    *ngFor="let item of items; trackBy:trackItems"
-    (click)="buscarCompa(item.id)"
-    [style]="'--background:'+item.color+';'"
-  >
-    <ion-label>{{item.data.title}}</ion-label>
-  </ion-chip>
+    <ion-chip
+      *ngFor="let item of items; trackBy:trackItems"
+      (click)="buscarCompa(item.id, item.data.title)"
+      [style]="'--background:'+item.color+';'"
+    >
+      <ion-label>{{item.data.title}}</ion-label>
+    </ion-chip>
 
-  <p *ngIf="items.length===0">Etiqueta no encontrada</p>
+    <p *ngIf="items.length===0">Etiqueta no encontrada</p>
+  </span>
 </ion-content>
 
 <ng-template #contBuscando>

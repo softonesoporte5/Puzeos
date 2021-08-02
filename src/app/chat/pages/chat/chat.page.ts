@@ -8,12 +8,12 @@ import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
 import { MediaRecorderService } from './../../../services/media-recorder.service';
-import { AngularFirestore, DocumentChange } from '@angular/fire/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import * as firebase from 'firebase';
-import { IonItemSliding, PopoverController, ModalController } from '@ionic/angular';
+import { IonItemSliding, PopoverController, ModalController, AlertController } from '@ionic/angular';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
 import { Capacitor } from '@capacitor/core';
 import { IUser } from '../../interfaces/user.interface';
@@ -64,7 +64,8 @@ export class ChatPage implements OnInit, OnDestroy{
     private mediaRecorderService:MediaRecorderService,
     private db:DbService,
     private chatService:ChatService,
-    private modal:ModalController
+    private modal:ModalController,
+    public alertController: AlertController
   ) { }
 
   ngOnInit(){
@@ -235,7 +236,8 @@ export class ChatPage implements OnInit, OnDestroy{
       component: PopoverChatComponent,
       componentProps:{
         "id":this.idChat,
-        "contactName":this.user.data.userName
+        "contactName":this.user.data.userName,
+        "contactID":this.user.id
       },
       event: ev
     });
@@ -261,20 +263,29 @@ export class ChatPage implements OnInit, OnDestroy{
   }
 
   recorder(){
-    this.tooglePress=true;
-    this.cancelar=false;
-    this.mediaRecorderService.recorder();
-    let seconds=0;
+    if(this.mediaRecorderService.permiso){
+      this.tooglePress=true;
+      this.cancelar=false;
+      this.mediaRecorderService.recorder();
+      let seconds=0;
 
-    this.bucleTime=setInterval(()=>{
-      seconds++;
-      let minute:string | number = Math.floor((seconds / 60) % 60);
-      minute = (minute < 10)? '0' + minute : minute;
-      let second:string | number = seconds % 60;
-      second = (second < 10)? '0' + second : second;
-      this.tiempoGrabacion=minute + ':' + second;
+      this.bucleTime=setInterval(()=>{
+        seconds++;
+        let minute:string | number = Math.floor((seconds / 60) % 60);
+        minute = (minute < 10)? '0' + minute : minute;
+        let second:string | number = seconds % 60;
+        second = (second < 10)? '0' + second : second;
+        this.tiempoGrabacion=minute + ':' + second;
+      }
+      ,1000);
+    }else{
+      this.presentAlert(`
+        Necesitamos permiso para poder usar el micrófono,
+        si lo rechazaste, debes activarlo. <br> <br>Si necesitas ayuda, presiona
+        <a target="_blank" href="https://support.google.com/googleplay/answer/6270602?hl=es-419#">aquí</a>
+        y dirígete a la sección de "Cómo activar o desactivar permisos".
+      `)
     }
-    ,1000);
   }
 
   stop(){
@@ -309,8 +320,20 @@ export class ChatPage implements OnInit, OnDestroy{
       component:PerfilModalComponent,
       componentProps:{
         user:this.user,
-        idChat:this.idChat
+        chat:this.chat
       }
     }).then(modal=>modal.present());
+  }
+
+  async presentAlert(message:string) {
+    const alert = await this.alertController.create({
+      message: message,
+      buttons: [
+        {
+          text: 'Aceptar',
+        }
+      ]
+    });
+    await alert.present();
   }
 }

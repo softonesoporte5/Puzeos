@@ -1,5 +1,4 @@
 import { AuthService } from './../../../auth/auth.service';
-import { RegisterPage } from './../../../auth/pages/register/register.page';
 import { ModalController, NavParams } from '@ionic/angular';
 import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
 import { CameraService } from './../../../services/camera.service';

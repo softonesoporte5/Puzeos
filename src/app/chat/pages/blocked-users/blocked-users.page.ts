@@ -1,10 +1,10 @@
+import { IUserData } from './../../interfaces/user.interface';
 import { LoadingService } from './../../../services/loading.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { DbService } from './../../../services/db.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { Component, OnInit } from '@angular/core';
 import * as firebase from 'firebase';
-import { IUserData } from '../../interfaces/user.interface';
 
 @Component({
   selector: 'app-blocked-users',
@@ -27,9 +27,12 @@ export class BlockedUsersPage implements OnInit {
     this.dbUsers=this.db.loadStore("users");
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
-    .then(resp=>{
+    .then((resp:IUserData)=>{
       this.user=resp;
-      this.blockedUsers=resp.blockedUsers;
+      for (const key in resp.blockedUsers) {
+        const element = resp.blockedUsers[key];
+        this.blockedUsers.push(resp.blockedUsers[key]);
+      }
     }).catch(err=>console.log(err));
   }
 

@@ -15,6 +15,7 @@ export interface IMessage{
   size?:number;
   mimeType?:string;
   idChat?:string;
+  specialData?:any
 }
 
 export interface IMessageSearch{

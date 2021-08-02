@@ -45,7 +45,6 @@ svg circle:nth-child(2){
   ion-icon{
     margin-right: 5px;
   }
-
 }
 
 .max{
@@ -62,6 +61,7 @@ svg circle:nth-child(2){
     overflow:hidden;
     white-space:nowrap;
     text-overflow: ellipsis;
+    min-width: auto;
   }
 }
 
@@ -74,4 +74,8 @@ svg circle:nth-child(2){
     position: absolute;
     z-index: 2;
   }
+}
+
+.btn-upload-file{
+  padding: 10px;
 }

@@ -17,24 +17,20 @@ h1{
 
 ion-content{
   --background: transparent;
+  max-width: 640px;
 }
 
 .auth__cont{
   overflow: hidden;
   border-radius: 9px;
-  background-color: var(--ion-color-primary);
+  background-color: #733db0;
   color: white;
   padding-top: 3rem;
 }
 
 .auth__input{
-  //color:black;
-  //width: 100%;
   --background-color:transparent;
-  //border-radius: 9px;
-  //padding:2px 7px !important;
   margin-bottom: 16px;
-  //font-size: 14px;
 }
 
 
@@ -89,4 +85,8 @@ ion-button{
 
 .auth__cont-img-options{
   margin-top: -1rem;
+}
+
+.ion-page{
+  align-items: center;
 }

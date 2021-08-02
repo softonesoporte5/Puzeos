@@ -1,10 +1,11 @@
+import { FileSystemService } from './file-system.service';
 import { AppService } from './../app.service';
 import { FirebaseStorageService } from 'src/app/services/firebase-storage.service';
 import { IAudioBlob } from './../chat/interfaces/audioBlob.interface';
 import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { IMediaRecorder, MediaRecorder } from 'extendable-media-recorder';
-import { Plugins, FilesystemDirectory, FilesystemEncoding } from '@capacitor/core';
+import { Plugins, FilesystemDirectory } from '@capacitor/core';
 
 const { Filesystem } = Plugins;
 
@@ -23,14 +24,21 @@ export class MediaRecorderService {
   userName:string;
   idChat:string;
   cancel:boolean;
+  permiso=false;
 
   constructor(
     private firebaseStorageService:FirebaseStorageService,
     private appService:AppService,
+    private fileSystemService: FileSystemService
   ) {
     const loadMedia=async ()=> {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      this.mediaRecorder=new MediaRecorder(stream);
+      try{
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        this.mediaRecorder=new MediaRecorder(stream);
+        this.permiso=true;
+      }catch(e){
+        this.permiso=false;
+      }
     };
     loadMedia();
    }
@@ -46,23 +54,22 @@ export class MediaRecorderService {
         this.appService.convertBlobToBase64(this.audioBlob)
         .then((resp:string)=>{
           const name='audio'+new Date().valueOf()+'.ogg';
-          Filesystem.writeFile({
-            path:'audios/'+name,
-            data:resp,
-            directory:FilesystemDirectory.Data,
-            encoding: FilesystemEncoding.UTF8
-          }).then(()=>{
-            Filesystem.readFile({
-              path:'audios/'+name,
-              directory:FilesystemDirectory.Data,
-            }).then(resp=>{
-              const audioFile:IAudioBlob={
-                data:resp.data,
-                duration:this.duration
-              };
-              this.firebaseStorageService.uploadAudio(audioFile,this.userName,this.idChat,'audios/'+name);
-            })
-          })
+          this.fileSystemService.writeFile(resp, name, "VoiceNotes/")
+          .then(respUrl=>{
+            if(respUrl){
+              console.log(respUrl)
+              Filesystem.readFile({
+                path:'Puzeos/VoiceNotes/'+name,
+                directory:FilesystemDirectory.ExternalStorage
+              }).then(resp=>{
+                const audioFile:IAudioBlob={
+                  data:resp.data,
+                  duration:this.duration
+                };
+                this.firebaseStorageService.uploadAudio(audioFile,this.userName,this.idChat,'Puzeos/VoiceNotes/'+name);
+              }).catch(e=>console.log(e))
+            }
+          });
         },err=>console.log(err));
       }
       this.audioData=[];

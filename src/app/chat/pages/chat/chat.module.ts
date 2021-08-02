@@ -29,7 +29,7 @@ import { HttpClientModule } from '@angular/common/http';
     ChatPageRoutingModule,
     ReactiveFormsModule,
     Ionic4EmojiPickerModule,
-    HttpClientModule
+    HttpClientModule,
   ],
   declarations: [
     ChatPage,

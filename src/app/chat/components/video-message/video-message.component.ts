@@ -1,3 +1,4 @@
+import { FileSystemService } from './../../../services/file-system.service';
 import { IMessage } from './../../interfaces/message.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { Component, OnInit, Input } from '@angular/core';
@@ -24,16 +25,17 @@ export class VideoMessageComponent implements OnInit {
   downloaded:boolean=false;
   units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   size:string;
+  uploaded=false;
 
   constructor(
     private storageService:FirebaseStorageService,
     private http:HttpClient,
     private appService:AppService,
-    private modal:ModalController
+    private modal:ModalController,
+    private fileSystemService:FileSystemService
   ) { }
 
   ngOnInit(){
-
     if(this.video.user===this.userName){
       //Obtener la URL del archivo
       this.imageUrl=Capacitor.convertFileSrc(this.video.localRef)+"#t=0.5";
@@ -44,11 +46,20 @@ export class VideoMessageComponent implements OnInit {
         this.imageUrl=Capacitor.convertFileSrc(this.video.localRef)+"#t=0.5";
       }
     }
+
+    if(this.storageService.uploads[this.video.id]){
+      this.uploaded=true;
+      this.storageService.uploads[this.video.id].percentageChanges()
+      .subscribe(resp=>{
+        const progressBar=document.querySelector("svg.upload circle:nth-child(2)") as HTMLElement;
+        progressBar.style.strokeDashoffset=`calc(60 - (60 * ${resp})/100)`;
+      });
+    }
   }
 
   downloadVideo(){
     this.downloaded=true;
-    let storageSubscribe=this.storageService.getImage(this.video.ref)
+    let storageSubscribe=this.storageService.getUrlFile(this.video.ref)
     .subscribe(downloadUrl=>{
       let httpSubscribe=this.http.get(downloadUrl,{
         responseType:'blob',
@@ -69,26 +80,49 @@ export class VideoMessageComponent implements OnInit {
           this.appService.convertBlobToBase64(event.body)
           .then((result:string | ArrayBuffer)=>{
             base64=result;
-            Filesystem.writeFile({
-              path:randomId+'.mp4',
-              data:base64,
-              directory:FilesystemDirectory.Data
-            }).then(resp=>{
-              this.dbMessages.setItem(this.video.id,{
-                ...this.video,
-                localRef:resp.uri,
-                download:true
-              }).then(()=>{
-                this.video.download=true
-                this.imageUrl=Capacitor.convertFileSrc(resp.uri);
 
-                storageSubscribe.unsubscribe();
-                httpSubscribe.unsubscribe();
-              }).catch(err=>console.log(err));
-            }).catch(err=>console.log(err));
+            this.fileSystemService.writeFile(base64,randomId+".mp4", "Puzeos Videos/")
+            .then(respUrl=>{
+              if(respUrl){
+                this.dbMessages.setItem(this.video.id,{
+                  ...this.video,
+                  localRef:respUrl,
+                  download:true
+                }).then(()=>{
+                  this.video.download=true
+                  this.imageUrl=Capacitor.convertFileSrc(respUrl);
+
+                  storageSubscribe.unsubscribe();
+                  httpSubscribe.unsubscribe();
+                }).catch(err=>console.log(err));
+              }
+            });
           }).catch(err=>console.log(err));
         }
       });
+    })
+  }
+
+  cancelUpload(){
+    if(this.storageService.uploads[this.video.id]){
+      this.uploaded=false;
+      this.storageService.uploads[this.video.id].cancel();
+    }
+  }
+
+  reUpload(){
+    this.uploaded=true;
+    Filesystem.readFile({
+      path:this.video.localRef
+    }).then(resp=>{
+      this.appService.reUploadFile(resp.data,this.video);
+      if(this.storageService.uploads[this.video.id]){
+        this.storageService.uploads[this.video.id].percentageChanges()
+        .subscribe(resp=>{
+          const progressBar=document.querySelector("svg.upload circle:nth-child(2)") as HTMLElement;
+          progressBar.style.strokeDashoffset=`calc(60 - (60 * ${resp})/100)`;
+        });
+      }
     })
   }
 

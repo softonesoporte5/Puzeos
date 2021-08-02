@@ -30,11 +30,10 @@
 <app-menu></app-menu>
 
 <ion-content color="light" id="content">
-
   <app-item-chat
     *ngFor="let chat of chats; trackBy:trackItems"
     [chat]="chat"
-    [chatUser]="user?.data.userName"
+    [chatUser]="user.data.userName"
   ></app-item-chat>
 
   <ion-fab
@@ -43,10 +42,17 @@
     slot="fixed"
     color="secondary"
   >
-    <ion-fab-button routerLink="/chat/agregar">
+    <ion-fab-button (click)="agregarRoute()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 
+  <small>{{user?.data.chats.length}}/5 chats activos</small>
 </ion-content>
 
+<div class="loc__guia" *ngIf="welcome && chatsFirebase===0">
+  <h1>Bienvenido a Puzeos :D</h1>
+  <p>Pulsa en el botón de + para conversar con otra persona sobre un tema.</p>
+  <img src="../../../../assets/img-welcome.png" alt="Imágen">
+  <ion-button color="primary" routerLink="chat/" (click)="welcome=false">Omitir</ion-button>
+</div>

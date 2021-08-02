@@ -1,3 +1,4 @@
+import { IChat } from './../../interfaces/chat.interface';
 import { ActionsUserService } from './../../../services/actions-user.service';
 import { AppService } from './../../../app.service';
 import { HttpClient, HttpEventType } from '@angular/common/http';
@@ -8,7 +9,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { IUser, IUserData } from './../../interfaces/user.interface';
 import { ModalController, NavParams } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
-import { Capacitor, Plugins, FilesystemDirectory, FilesystemEncoding} from '@capacitor/core';
+import { Capacitor, Plugins, FilesystemDirectory } from '@capacitor/core';
 const {Filesystem} = Plugins;
 
 @Component({
@@ -21,7 +22,7 @@ export class PerfilModalComponent implements OnInit {
   user:IUser;
   imgPath:string;
   dbUsers:ILocalForage;
-  idChat:string;
+  chat:IChat;
 
   constructor(
     private navParams:NavParams,
@@ -52,7 +53,7 @@ export class PerfilModalComponent implements OnInit {
       }else{
         if(userData.imageUrl!==this.user.data.imageUrl){
 
-          let storageSubscribe=this.firebaseStorageService.getImage(userData.imageUrl)
+          let storageSubscribe=this.firebaseStorageService.getUrlFile(userData.imageUrl)
           .subscribe(downloadUrl=>{
             let httpSubscribe=this.http.get(downloadUrl,{
               responseType:'blob',
@@ -91,7 +92,7 @@ export class PerfilModalComponent implements OnInit {
     })
 
     this.user=this.navParams.get("user");
-    this.idChat=this.navParams.get("idChat");
+    this.chat=this.navParams.get("chat");
 
     if(this.user.data.imageUrlLoc){
       this.imgPath=Capacitor.convertFileSrc(this.user.data.imageUrlLoc);
@@ -105,7 +106,7 @@ export class PerfilModalComponent implements OnInit {
   }
 
   blockUser(){
-    this.actionsUserService.presentAlertConfirm(2,this.idChat,this.user.data.userName);
+    this.actionsUserService.presentAlertConfirm(2,this.chat.id,this.user.data.userName);
   }
 
 }

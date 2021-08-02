@@ -35,6 +35,7 @@ export class ItemChatComponent implements OnInit {
 
   ngOnInit() {
     let arrUser=this.chat.userNames.filter(userName=>userName!==this.chatUser);
+    console.log(arrUser, this.chatUser)
     this.chatName=arrUser[0];
 
     this.dbUsers=this.db.loadStore("users");
@@ -66,7 +67,7 @@ export class ItemChatComponent implements OnInit {
                 });
 
                 if(dataUser.imageUrl){
-                  let imageSubscribe=this.firebaseStorage.getImage(dataUser.imageUrl)
+                  let imageSubscribe=this.firebaseStorage.getUrlFile(dataUser.imageUrl)
                   .subscribe(downloadUrl=>{
                     imageSubscribe.unsubscribe();
                     let httpSubscribe=this.http.get(downloadUrl,{

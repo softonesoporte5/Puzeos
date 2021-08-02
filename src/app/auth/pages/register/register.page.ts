@@ -1,8 +1,5 @@
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
 import { AuthService } from './../../auth.service';
-import { ImageCropperModalComponent } from './../../../chat/components/image-cropper-modal/image-cropper.component';
-import { Subject, Subscription } from 'rxjs';
-import { CameraService } from './../../../services/camera.service';
 import { NotificationServiceService } from './../../../services/notification-service.service';
 import { ILocalForage } from './../../../chat/interfaces/localForage.interface';
 import { DbService } from './../../../services/db.service';
@@ -11,10 +8,10 @@ import { LoadingService } from './../../../services/loading.service';
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ToastController, ActionSheetController, ModalController } from '@ionic/angular';
+import { ToastController, ActionSheetController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import * as firebase from 'firebase';
-import { Plugins, CameraResultType, CameraPhoto, FilesystemDirectory, FilesystemEncoding, Capacitor, CameraSource } from '@capacitor/core';
+import { Plugins, FilesystemDirectory, CameraSource } from '@capacitor/core';
 import { IUser } from 'src/app/chat/interfaces/user.interface';
 
 const { Camera, Filesystem } = Plugins;
@@ -112,9 +109,6 @@ export class RegisterPage implements OnInit {
        .then(userInfo=>{
          userInfo.user.sendEmailVerification()//Enviamos email de verificación
           .then(()=>{
-            if(!this.notificationService.token){
-              this.notificationService.token='';
-            }
             this.dbUsers=this.db.loadStore("users");
 
             //Agregar a firebaseStorage
@@ -145,7 +139,8 @@ export class RegisterPage implements OnInit {
                       tagId:''
                     },
                     descripcion:this.descripcion.value,
-                    blockedUsers:[],
+                    blockedUsers:{},
+                    notAddUsers:{},
                     imageUrl:urlImage,
                     imageUrlLoc:respUser.uri
                   }).then(resp=>{
@@ -158,16 +153,17 @@ export class RegisterPage implements OnInit {
                         state:false,
                         tagId:''
                       },
-                      blockedUsers:[],
+                      blockedUsers:{},
+                      notAddUsers:{},
                       imageUrl:urlImage,
                       imageUrlLoc:respUser.uri
                     }).then(()=>{
                       this.loadingService.dismiss();
-                      this.router.navigate(['chat']);
+                      this.router.navigate(['chat'], { queryParams: {welcome:true}})
                     }).catch(err=>{
                       console.log(err);
                       this.loadingService.dismiss();
-                      this.router.navigate(['chat']);
+                      this.router.navigate(['chat'], { queryParams: {welcome:true}})
                     });
                   }).catch(err=>{
                     this.loadingService.dismiss();
@@ -194,7 +190,8 @@ export class RegisterPage implements OnInit {
                   tagId:''
                 },
                 descripcion:this.descripcion.value,
-                blockedUsers:[]
+                blockedUsers:{},
+                notAddUsers:{}
               }).then(resp=>{
                 this.dbUsers.setItem(userInfo.user.uid,{
                   userName:this.name.value,
@@ -205,14 +202,15 @@ export class RegisterPage implements OnInit {
                     state:false,
                     tagId:''
                   },
-                  blockedUsers:[]
+                  blockedUsers:{},
+                  notAddUsers:{}
                 }).then(()=>{
                   this.loadingService.dismiss();
-                  this.router.navigate(['chat']);
+                  this.router.navigate(['chat'], { queryParams: {welcome:true}})
                 }).catch(err=>{
                   console.log(err);
                   this.loadingService.dismiss();
-                  this.router.navigate(['chat']);
+                  this.router.navigate(['chat'], { queryParams: {welcome:true}})
                 });
               }).catch(err=>{
                 this.loadingService.dismiss();

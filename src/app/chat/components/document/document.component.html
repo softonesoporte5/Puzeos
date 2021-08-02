@@ -1,9 +1,22 @@
 <div *ngIf="document.user===userName">
   <span
     class="loc__btn-download"
-    (click)="openDocument()"
   >
-    <span class="max-100">
+    <span class="loc__cont-control" *ngIf="uploaded && document.state===0">
+      <ion-icon name="close-outline" (click)="cancelUpload($event)"></ion-icon>
+      <svg class="upload">
+        <circle cx="20" cy="20" r="20"/>
+        <circle cx="20" cy="20" r="20"/>
+      </svg>
+    </span>
+
+    <ion-icon
+      name="arrow-up-circle-outline"
+      class="loc__btn-upload"
+      *ngIf="!uploaded && document.state===0"
+      (click)="reUpload()"
+    ></ion-icon>
+    <span class="max-100" (click)="openDocument()">
       <span class="loc__flex">
         <span class="loc__expandir">{{document.fileName?.slice(0,document.fileName.lastIndexOf("."))}}</span>
         <span>{{document.fileName?.slice(document.fileName.lastIndexOf("."))}}</span>
@@ -20,7 +33,7 @@
     *ngIf="document.download===false"
   >
     <span *ngIf="document.download===false && downloaded==true" class="loc__cont-control">
-      <ion-icon name="close-outline" (click)="cancelDownload()"></ion-icon>
+      <ion-icon name="close-outline" (click)="cancelDownload($event)"></ion-icon>
       <svg>
         <circle cx="20" cy="20" r="20"/>
         <circle cx="20" cy="20" r="20"/>

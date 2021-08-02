@@ -64,3 +64,28 @@ a{
 .resaltar{
   background-color:yellow;
 }
+
+.center-child{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.absolute{
+  position:absolute;
+}
+
+.btn-upload{
+  background: #ffffff61;
+  border-radius: 1rem;
+  padding: 10px;
+  z-index: 99;
+}
+
+.z-99{
+  z-index:99;
+}
+
+app-chat{
+  background-color: #EBEBEB;
+}

@@ -1,6 +1,6 @@
 import { AppService } from './../app.service';
 import { IMessagesResp } from './../chat/interfaces/messagesResp.interface';
-import { AngularFirestore, DocumentChange } from '@angular/fire/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { IUserData } from './../chat/interfaces/user.interface';
 import { IMessage } from './../chat/interfaces/message.interface';
 import { IChat } from './../chat/interfaces/chat.interface';
@@ -13,6 +13,7 @@ import * as firebase from 'firebase';
 @Injectable({
   providedIn: 'root'
 })
+
 export class DbService{
 
   messagesSubscriptions:{}={};
@@ -82,10 +83,9 @@ export class DbService{
           }).catch(error=>{
             console.log(error);
           });
-        }else{
+        }else if(message.type==="voice"){
           this.appService.reUloadAudio(message)
           .then(()=>{
-            console.log(key);
             this.dbNotSendMessages.removeItem(key);
           })
         }
@@ -105,7 +105,6 @@ export class DbService{
       ref.onSnapshot(resp=>{
         let arrMensajes:IMessage[]=[];
         const datos=resp.docChanges();
-        console.log(datos,datos.length);
         if(datos.length===0){
           this.messagesSubscriptions$[chatID].next({resp:[],status:0});
         }
@@ -113,7 +112,7 @@ export class DbService{
         datos.forEach((mensaje,index)=>{
           if(mensaje.type!=='removed'){
             if(!mensaje.doc.metadata.hasPendingWrites){//Comprobar si los datos vienen del servidor
-              const data=mensaje.doc.data() as IMessage;
+              const data=mensaje.doc.data();
               this.dbMessages[chatID].getItem(mensaje.doc.id)
               .then((resp:IMessage)=>{
                 if(!resp){
@@ -126,15 +125,21 @@ export class DbService{
                         ...chat,
                         deleted:true
                       }).then(()=>{
-                        this.messagesSubscriptions$[chatID].next({resp:[],status:4});
                         if(data.type==="deleteAndBlock"){
                           this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
                           .then((resp:IUserData)=>{
-                            if(!resp.notAddUsers) resp.notAddUsers=[];
+                            if(!resp.notAddUsers) resp.notAddUsers={};
+                            console.log(data.specialData);
+                            resp.notAddUsers[data.specialData.id]=data.specialData.userName;
+                            console.log(resp.notAddUsers)
                             this.firestore.collection("users").doc(firebase.default.auth().currentUser.uid).update({
-                              notAddUsers:[...resp.notAddUsers,data.user]
-                            }).then(resp=>console.log("Enviado")).catch(error=> console.log(error));
+                              notAddUsers:resp.notAddUsers
+                            }).then(()=>{
+                              this.messagesSubscriptions$[chatID].next({resp:[],status:4});
+                            }).catch(error=> console.log(error));
                           });
+                        }else{
+                          this.messagesSubscriptions$[chatID].next({resp:[],status:4});
                         }
                       })
                     })
@@ -164,6 +169,7 @@ export class DbService{
                   }
                 }else{
                   if(data.idChat){
+                    console.log("Entró");
                     const messageResp={
                       ...data,
                       id:mensaje.doc.id,
@@ -211,8 +217,6 @@ export class DbService{
           }
         })
       });
-      console.log(this.messagesSubscriptions,this.messagesSubscriptions$);
-      console.log( this.messagesSubscriptions[chatID],this.messagesSubscriptions$[chatID])
       this.messagesSubscriptions[chatID]=this.messagesSubscriptions$[chatID].asObservable();
       if(index+1===this.user.chats.length){
         this.messagesSubscriptionsObject$.next(this.messagesSubscriptions);

@@ -12,9 +12,9 @@ export class IUserData{
   };
   imageUrl?:string;
   imageUrlLoc?:string;
-  blockedUsers:string[];
+  blockedUsers:{};
   token:string;
   createDate:any;
   descripcion?:string;
-  notAddUsers?:string[];
+  notAddUsers?:{};
 }

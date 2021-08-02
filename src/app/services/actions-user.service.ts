@@ -21,6 +21,7 @@ export class ActionsUserService {
   idChat:string;
   idUser:string=firebase.default.auth().currentUser.uid;
   contactName:string;
+  contactID:string;
 
   constructor(
     public toastController: ToastController,
@@ -46,7 +47,6 @@ export class ActionsUserService {
         .update({
           chats:chats
         }).then(()=>{
-
           this.dbChats.removeItem(this.idChat)
           .then(()=>{
 
@@ -63,7 +63,15 @@ export class ActionsUserService {
                 this.loadingService.dismiss();
                 this.popoverController.dismiss();
                 if(blocked){
-                  this.router.navigate(['chat'], { queryParams: { deleteChat:this.idChat,blockUser:resp.userName}});
+                  this.router.navigate(['chat'], { queryParams: {
+                    deleteChat:this.idChat,
+                    blockUser:JSON.stringify({
+                      userName:resp.userName,
+                      id:this.idUser
+                    })
+                  }
+                  });
+
                 }else{
                   this.router.navigate(['chat'], { queryParams: { deleteChat:this.idChat}});
                 }
@@ -82,20 +90,18 @@ export class ActionsUserService {
     this.dbUser=this.db.loadStore("users");
 
     this.dbUser.getItem(this.idUser)
-    .then(resp=>{
+    .then((resp:IUserData)=>{
       if(resp){
-        let blockedUsers=[this.contactName];
         if(resp.blockedUsers){
-          blockedUsers=[...resp.blockedUsers, this.contactName];
+          resp.blockedUsers[this.contactID]=this.contactName;
         }
-
         this.fireStore.collection("users").doc(this.idUser)
         .update({
-          blockedUsers:blockedUsers
+          blockedUsers:resp.blockedUsers
         }).then(()=>{
           this.dbUser.setItem(this.idUser,{
             ...resp,
-            blockedUsers:blockedUsers
+            blockedUsers:resp.blockedUsers
           }).then(()=>{
             this.loadingService.dismiss();
             this.deleteChatInDevice(true)
@@ -105,11 +111,12 @@ export class ActionsUserService {
     }).catch(err=>console.log(err));
   }
 
-  async presentAlertConfirm(action:number=1, idChat:string, contactName:string) {
+  async presentAlertConfirm(action:number=1, idChat:string, contactName:string,contactID?:string) {
     let message='';
     let actionText='';
     this.idChat=idChat;
     this.contactName=contactName;
+    if(contactID)this.contactID=contactID;
 
     if(action===1){
       message='¿Seguro de que desea eliminar este chat?';
@@ -137,5 +144,15 @@ export class ActionsUserService {
       ]
     });
     await alert.present();
+  }
+
+  async presentToast(mensaje:string){
+    const toast = await this.toastController.create({
+      message: mensaje,
+      position: 'top',
+      duration: 3000,
+      color:"danger"
+    });
+    toast.present();
   }
 }

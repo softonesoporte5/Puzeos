@@ -5,9 +5,6 @@ import { AlertController, ActionSheetController, ModalController } from '@ionic/
 import { Capacitor, CameraSource } from '@capacitor/core';
 import { IUserData } from './../../interfaces/user.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
-import { ActionsUserService } from './../../../services/actions-user.service';
-import { AppService } from './../../../app.service';
-import { FirebaseStorageService } from 'src/app/services/firebase-storage.service';
 import { DbService } from './../../../services/db.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Component, OnInit } from '@angular/core';

@@ -16,6 +16,7 @@ export class FirebaseStorageService {
 
   networkState:boolean;
   dbNotSendMessages:ILocalForage;
+  uploads={};
 
   constructor(
     private storage:AngularFireStorage,
@@ -103,8 +104,86 @@ export class FirebaseStorageService {
     }
   }
 
-  getAudio(url:string){
-    return this.storage.ref(url).getDownloadURL();
+  async uploadFile(data:string,userName:string, type:string, localUrl:string, idChat:string, extraData:{}={},ext:string){
+    const date=new Date().valueOf();
+    const randomId=Math.round(Math.random()*1000)+''+date;
+    const refUrl=`${userName}/send/${randomId}.${ext}`;
+
+    let base64Length = data.length - (data.indexOf(',') + 1);
+    let padding = (data.charAt(data.length - 2) === '=') ? 2 : ((data.charAt(data.length - 1) === '=') ? 1 : 0);
+    let fileSize = base64Length * 0.75 - padding;
+
+    if(this.networkState){
+      const ref = this.storage.ref(refUrl);
+
+      let upload=ref.putString(data, 'data_url');
+      this.uploads[randomId]=upload;
+
+      this.uploads[randomId].then(()=>{
+        this.firestore.collection("messages").doc(idChat).collection("messages").doc(randomId).set({
+          message:"Archivo",
+          ref:refUrl,
+          user:userName,
+          type:type,
+          size:fileSize,
+          idChat:idChat,
+          download:false,
+          id:randomId,
+          localRef:localUrl,
+          ...extraData,
+          state:1,
+          timestamp:firebase.default.firestore.FieldValue.serverTimestamp()
+        }).catch(error=>{
+          console.log(error);
+        });
+      }).catch(error=>{
+        console.log("Error al subir archivo",error);
+      });
+
+      const dbMessage=this.db.loadStore("messages"+idChat);
+
+      const newMessage={
+        message:"Archivo",
+        ref:refUrl,
+        user:userName,
+        type:type,
+        size:fileSize,
+        idChat:idChat,
+        id:randomId,
+        timestamp:new Date(),
+        state:0,
+        localRef:localUrl,
+        ...extraData
+      };
+
+      dbMessage.setItem(randomId,newMessage);
+
+      Array.prototype.push.apply(this.db.arrMessages[idChat],[newMessage]);
+      this.db.messagesSubscriptions$[idChat].next({resp:[...[newMessage]],status:1});
+
+    }else{
+      const dbMessage=this.db.loadStore("messages"+idChat);
+
+      const newMessage={
+        message:"Archivo",
+        ref:refUrl,
+        user:userName,
+        type:type,
+        size:fileSize,
+        idChat:idChat,
+        download:false,
+        id:randomId,
+        timestamp:new Date(),
+        state:0,
+        localRef:localUrl,
+        ...extraData
+      };
+
+      dbMessage.setItem(randomId,newMessage);
+
+      Array.prototype.push.apply(this.db.arrMessages[idChat],[newMessage]);
+      this.db.messagesSubscriptions$[idChat].next({resp:[...[newMessage]],status:1});
+    }
   }
 
   async uploadPhoto(photo:string,user:IUser,registerPage:boolean=false){
@@ -126,20 +205,8 @@ export class FirebaseStorageService {
     return refUrl;
   }
 
-  async uploadImageInChat(data:string,userName:string){
-    const date=new Date().valueOf();
-    const randomId=Math.round(Math.random()*1000)+date;
-    const refUrl=`${userName}/send/${randomId}.jpeg`;
-    const ref = this.storage.ref(refUrl);
 
-    await ref.putString(data, 'data_url').then(resp=>{
-
-    }).catch(err=>console.log(err));
-
-    return refUrl;
-  }
-
-  getImage(url:string){
+  getUrlFile(url:string){
     return this.storage.ref(url).getDownloadURL();
   }
 }

@@ -3,13 +3,13 @@ import * as admin from "firebase-admin";
 
 admin.initializeApp();
 // const firestore=admin.firestore();
+// firebase deploy --only functions
 
 exports.newMessage=functions.firestore
     .document("/messages/{idChat}/messages/{idMessage}")
     .onCreate(async (change, context) => {
       console.log(change.data(), context);
       const data=change.data() as IMessage;
-      const registrationTokens=[data.sendToToken];
 
       const dataFCM={
         enlace: "/chat/",
@@ -17,7 +17,7 @@ exports.newMessage=functions.firestore
 
       const notification: INotification={
         data: dataFCM,
-        tokens: registrationTokens,
+        token: data.sendToToken,
         notification: {
           title: data.user,
           body: data.message,
@@ -26,18 +26,44 @@ exports.newMessage=functions.firestore
 
       return sendNotification(notification);
     });
+/*
+exports.AddChat=functions.firestore
+    .document("/chats/{idChat}")
+    .onCreate(async (change, context) => {
+      console.log(change.data(), context);
+      const data=change.data() as IChat;
+      const registrationTokens=data.tokens;
+
+      const dataFCM={
+        enlace: "/chat/",
+      };
+
+      const body="Se ha agregado un compañero que";
+
+      const notification: INotification={
+        data: dataFCM,
+        tokens: registrationTokens,
+        notification: {
+          title: "Has agregado un compañero!!",
+          body: body +` quiere hablar contigo sobre ${data.tema}`,
+        },
+      };
+
+      return sendNotification(notification);
+    });*/
 
 const sendNotification= (notification: INotification)=>{
   return new Promise((resolve)=>{
-    const message: admin.messaging.MulticastMessage={
+    const message: admin.messaging.Message={
       data: notification.data,
-      tokens: notification.tokens,
+      token: notification.token,
       notification: notification.notification,
       android: {
         notification: {
           icon: "ic_stat_name",
           color: "#ffffff",
         },
+        collapseKey: "f",
       },
       apns: {
         payload: {
@@ -52,19 +78,9 @@ const sendNotification= (notification: INotification)=>{
       },
     };
 
-    admin.messaging().sendMulticast(message)
+    admin.messaging().send(message)
         .then((response)=>{
-          if (response.failureCount>0) {
-            const failedTokens: unknown[]=[];
-            response.responses.forEach((resp, idx)=>{
-              if (!resp.success) {
-                failedTokens.push(notification.tokens[idx]);
-              }
-            });
-            // Eliminar tokens
-          } else {
-            console.log("Send Notification success");
-          }
+          console.log("Send Notification success"+response);
           resolve(true);
           return;
         }, (err)=> {
@@ -79,7 +95,6 @@ interface IMessage{
   type:string,
   message?:string,
   user:string,
-  timestamp:any,
   ref?:string,
   download:boolean,
   state?:boolean,
@@ -92,6 +107,17 @@ interface IMessage{
 
 interface INotification {
   data:any;
-  tokens: string[];
+  token: string;
   notification: admin.messaging.Notification
 }
+/*
+interface IChat{
+  id:string,
+  group:boolean;
+  lastMessage:string;
+  userNames:string[];
+  newMessages?:number;
+  deleted?:boolean;
+  tokens:[];
+  tema:string;
+}*/

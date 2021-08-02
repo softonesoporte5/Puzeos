@@ -1,10 +1,10 @@
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IUser } from './../../interfaces/user.interface';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Component, OnInit } from '@angular/core';
-import { MenuController } from '@ionic/angular';
+import { MenuController, AlertController } from '@ionic/angular';
 import * as firebase from 'firebase';
 import { DbService } from 'src/app/services/db.service';
 
@@ -21,49 +21,55 @@ export class HomePage implements OnInit{
   dbChats:ILocalForage;
   dbUsers:ILocalForage;
   chatsObj={};
+  welcome=false;
 
   constructor(
     private menu: MenuController,
     private firestore:AngularFirestore,
     private db:DbService,
-    private route:ActivatedRoute
+    private route:ActivatedRoute,
+    private router:Router,
+    public alertController: AlertController
   ) { }
 
   ngOnInit() {
-
     this.dbChats=this.db.loadStore('chats');
     this.dbUsers=this.db.loadStore("users");
-    this.dbChats.iterate((values,key)=>{
-      this.chatsObj[key]={
-        id:key,
-        ...values
-      }
-      this.chatsFirebase++;
-    }).then(()=>{
-      this.orderChats();
-      this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
-      .then(user=>{
-        this.user={
-          id:firebase.default.auth().currentUser.uid,
-          data:{...user}
-        };
-      }).catch(err=>console.log(err))
 
-      //Nos subscribimos a los chats de manera local
-      this.db.getItemsChat()
-      .subscribe(resp=>{
-        let chat=resp as IChat;
-        this.chatsObj[chat.id]={
-          ...chat
+    this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
+    .then(user=>{
+      this.user={
+        id:firebase.default.auth().currentUser.uid,
+        data:{...user}
+      };
+
+      this.dbChats.iterate((values,key)=>{
+        this.chatsObj[key]={
+          id:key,
+          ...values
         }
+        this.chatsFirebase++;
+      }).then(()=>{
         this.orderChats();
-      });
-      this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
-      .then(user=>{
-        this.user={
-          id:firebase.default.auth().currentUser.uid,
-          data:{...user}
-        };
+        this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
+        .then(user=>{
+          console.log(user)
+          this.user={
+            id:firebase.default.auth().currentUser.uid,
+            data:{...user}
+          };
+        }).catch(err=>console.log(err))
+
+        //Nos subscribimos a los chats de manera local
+        this.db.getItemsChat()
+        .subscribe(resp=>{
+          let chat=resp as IChat;
+          this.chatsObj[chat.id]={
+            ...chat
+          }
+          this.orderChats();
+        });
+
         this.db.obtenerUsuario()
         .subscribe(user=>{
           this.user={
@@ -71,6 +77,7 @@ export class HomePage implements OnInit{
             data:{...user}
           };
           if(this.chatsFirebase<this.user?.data?.chats?.length){
+            console.log("Entró al if")
             for(let index=this.chats.length; index<user.chats.length; index++){
               console.log(user.chats[user.chats.length-1],user.chats.length-1);
               this.db.addNewConecction(user.chats[user.chats.length-1],user.chats.length-1);
@@ -78,6 +85,7 @@ export class HomePage implements OnInit{
               this.firestore.collection("chats").doc(user.chats[index])
               .get()
               .subscribe((resp)=>{
+                console.log("Se reinició el chat o se agregó uno nuevo")
                 const chat=resp.data() as IChat;
                 this.db.setItemChat(user.chats[index],{
                   ...chat,
@@ -88,8 +96,8 @@ export class HomePage implements OnInit{
             this.chatsFirebase=this.chatsFirebase+1;
           }
         });
-      });
-    }).catch(err=>console.log(err));
+      }).catch(err=>console.log(err));
+    });
 
     this.route.queryParams
     .subscribe(params => {
@@ -98,9 +106,10 @@ export class HomePage implements OnInit{
         delete this.chatsObj[params.deleteChat];
         let message;
         if(params.blockUser){
+          console.log(params.blockUser)
           message={
             type:"deleteAndBlock",
-            user:params.blockUser
+            specialData:JSON.parse(params.blockUser)
           }
         }else{
           message={type:"delete"}
@@ -112,6 +121,10 @@ export class HomePage implements OnInit{
         .add(message);
 
         this.orderChats();
+      }
+
+      if(params.welcome){
+        this.welcome=true;
       }
     });
   }
@@ -146,6 +159,26 @@ export class HomePage implements OnInit{
 
   trackItems(index: number, chat: IChat) {
     return chat.id;
+  }
+
+  agregarRoute(){
+    if(this.user.data.chats.length<5){
+      this.router.navigate(['/chat/agregar']);
+    }else{
+      this.presentAlert("Solo se pueden tener 5 chats activos a la vez, este límite será removido en futuras actualizaciones :D");
+    }
+  }
+
+  async presentAlert(message:string) {
+    const alert = await this.alertController.create({
+      message: message,
+      buttons: [
+        {
+          text: 'Aceptar',
+        }
+      ]
+    });
+    await alert.present();
   }
 }
 

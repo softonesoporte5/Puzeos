@@ -1,11 +1,9 @@
+import { FileSystemService } from '../../../services/file-system.service';
 import { ActionSheetController } from '@ionic/angular';
-import { IMessage } from './../../interfaces/message.interface';
-import { AngularFirestore } from '@angular/fire/firestore';
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
 import { Component, OnInit, Input } from '@angular/core';
 import { Chooser } from '@ionic-native/chooser/ngx';
-import * as firebase from 'firebase';
-import {Plugins, FilesystemDirectory, FilesystemEncoding} from '@capacitor/core';
+import {Plugins, FilesystemDirectory } from '@capacitor/core';
 const {Filesystem} = Plugins;
 
 
@@ -23,8 +21,8 @@ export class FileSelectorComponent implements OnInit {
   constructor(
     private chooser:Chooser,
     private firebaseStorage:FirebaseStorageService,
-    private firestore:AngularFirestore,
-    private actionSheetController: ActionSheetController
+    private actionSheetController: ActionSheetController,
+    private fileSystemService: FileSystemService
   ) { }
 
   ngOnInit() {}
@@ -32,69 +30,45 @@ export class FileSelectorComponent implements OnInit {
   selectFile(mime:string,type:string){
     this.chooser.getFile(mime)
     .then(file =>{
-
       if(file.name){
         const date=new Date().valueOf();
         const randomId=Math.round(Math.random()*1000)+date;
         let ext='';
+        let directory='';
 
         if(file.mediaType.includes("video")){
           type="video";
           ext='mp4';
+          directory="Videos/";
         }else if(file.mediaType.includes("image")){
           type="image";
           ext='jpeg';
+          directory="Images/";
         }else if(file.mediaType.includes("application") || file.mediaType.includes("text")){
           type="document";
-          ext=file.mediaType.slice((file.mediaType.lastIndexOf("/") - 1 >>> 0) + 2);;
+          ext=file.mediaType.slice((file.mediaType.lastIndexOf("/") - 1 >>> 0) + 2);
+          directory="DocumentsAndMusic/";
+        }else if(file.mediaType.includes("application")){
+          type="audio";
+          ext='mp3';
+          directory="DocumentsAndMusic/";
         }
 
-        Filesystem.writeFile({
-          path: `${randomId}.${ext}`,
-          data: file.dataURI,
-          directory: FilesystemDirectory.Data
-        }).then(fileResp=>{
-          this.firebaseStorage.uploadImageInChat(file.dataURI,this.userName)
-          .then(resp=>{
-            let base64Length = file.dataURI.length - (file.dataURI.indexOf(',') + 1);
-            let padding = (file.dataURI.charAt(file.dataURI.length - 2) === '=') ? 2 : ((file.dataURI.charAt(file.dataURI.length - 1) === '=') ? 1 : 0);
-            let fileSize = base64Length * 0.75 - padding;
+        this.fileSystemService.writeFile(file.dataURI,`${randomId}.${ext}`,directory)
+        .then(respUrl=>{
+          if(respUrl){
+            let extraData={};
 
-            const timestamp=firebase.default.firestore.FieldValue.serverTimestamp();
-            let message:IMessage;
-            if(type==="document"){
-              message={
-                message:"Archivo",
-                size:fileSize,
-                user:this.userName,
-                type:type,
-                timestamp:timestamp,
-                ref:resp,
-                download:false,
-                localRef:fileResp.uri,
+            if(type==="document" || type==="audio"){
+              extraData={
                 fileName:file.name,
                 mimeType:file.mediaType
               }
-            }else{
-              message={
-                message:"Archivo",
-                size:fileSize,
-                user:this.userName,
-                type:type,
-                timestamp:timestamp,
-                ref:resp,
-                download:false,
-                localRef:fileResp.uri
-              }
             }
-            this.firestore.collection("messages").doc(this.idChat).collection("messages")
-            .add(message)
-            .catch(error=>{
-              console.log(error);
-            });
-
-          }).catch(err=>console.log(err));
-        }).catch(err=>console.log(err))
+            this.firebaseStorage.uploadFile(file.dataURI,this.userName,type,respUrl,this.idChat,extraData,ext)
+            .catch(err=>console.log(err));
+          }
+        })
       }
     }).catch((error: any) => console.error(error));
   }

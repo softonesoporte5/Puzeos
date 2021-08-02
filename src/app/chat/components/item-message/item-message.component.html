@@ -67,7 +67,7 @@
     </ion-text>
   </ion-card-content>
 
-  <ion-card-content *ngIf="message.type==='document'">
+  <ion-card-content *ngIf="message.type==='document' || message.type==='audio'">
     <app-document [document]="message" [userName]="userName" [dbMessages]="dbMessage"></app-document>
     <ion-text color="tertiary">
       {{message.timestamp | date: 'shortTime'}}

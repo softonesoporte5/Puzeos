@@ -55,7 +55,6 @@ export class ItemMessageComponent implements AfterViewInit, OnInit {
   ngAfterViewInit() {
     if(this.idSearch!==undefined){
       if(this.idSearch===this.message.id){
-        //messageTxt.indexOf(search)
         const index=this.message.message.indexOf(this.searchMessage);
         let txt1=this.message.message.substr(0,index)
         let txt2=this.message.message.substr(index,this.searchMessage.length);
@@ -78,7 +77,11 @@ export class ItemMessageComponent implements AfterViewInit, OnInit {
           if(this.maxScroll-this.scrollTop<120 || this.content.scrollTop<10){
             this.content.lastElementChild.scrollIntoView(false);
           }
-          this.content.classList.add("scroll");
+
+          setTimeout(()=>{
+            this.content.lastElementChild.scrollIntoView(false);
+            this.content.classList.add("scroll");
+          },150);
         },220);
       }
     }

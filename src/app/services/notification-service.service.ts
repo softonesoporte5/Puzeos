@@ -1,30 +1,28 @@
 import { Router } from '@angular/router';
-import { PlatformLocation } from '@angular/common';
 import { Injectable } from '@angular/core';
-
 import {
   Plugins,
   PushNotification,
   PushNotificationToken,
   PushNotificationActionPerformed,
 } from '@capacitor/core';
-
-
 import { Platform } from '@ionic/angular';
 
-const { NotificationExtension } = Plugins
-const { PushNotifications } = Plugins;
+import { FCM } from '@capacitor-community/fcm';
+const fcm = new FCM();
+
+const { PushNotifications } = Plugins
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationServiceService {
 
-  token:string;
+  token:string='';
 
   constructor(
     private platform:Platform,
-    private router:Router,
+    private router:Router
   ) {
 
   }
@@ -35,6 +33,8 @@ export class NotificationServiceService {
       .then(resul=>{
         if(resul.granted){
           PushNotifications.register();
+
+
           this.addListeners();
         }else{
 
@@ -44,14 +44,25 @@ export class NotificationServiceService {
   }
 
   addListeners(){
-    NotificationExtension.addListener('pushNotificationActionPerformed', (notification: PushNotificationActionPerformed) => {
-      localStorage.setItem("1-"+new Date().toString(),JSON.stringify(notification));
+    PushNotifications.addListener('registration',
+    (token:PushNotificationToken)=>{
+      console.log(token.value);
+     this.token=token.value;
     });
 
-    NotificationExtension.addListener('pushNotificationReceived', (notification) => {
-      localStorage.setItem("2-"+new Date().toString(),JSON.stringify(notification));
+    PushNotifications.addListener('registrationError',(err:any)=>{
+      console.log(err);
     });
 
-    NotificationExtension.register();
+    //Primer plano
+    PushNotifications.addListener('pushNotificationReceived',(notification:PushNotification)=>{
+      console.log(notification);
+    });
+
+    PushNotifications.addListener('pushNotificationActionPerformed',
+    (notification:PushNotificationActionPerformed)=>{
+      console.log('Click en notificación segundo plano',notification);
+      this.router.navigate(['/chat']);
+    })
   }
 }

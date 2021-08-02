@@ -88,10 +88,7 @@ export class AgregarPage implements OnInit, OnDestroy {
       }
     })
 
-    //Comprobamos si existe el sessionStorage de buscando
-    if(JSON.parse(sessionStorage.getItem("buscando"))){
-      this.buscando=JSON.parse(sessionStorage.getItem("buscando")).state;
-    }
+    //Comprobamos si el usuario está buscando
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then(user=>{
       console.log(user);
@@ -101,7 +98,6 @@ export class AgregarPage implements OnInit, OnDestroy {
       };
 
       this.buscando=this.user.data.buscando.state;
-      sessionStorage.setItem("buscando",JSON.stringify(this.user.data.buscando));
 
       this.userSubscription=this.db.obtenerUsuario()
       .subscribe(user=>{
@@ -117,7 +113,6 @@ export class AgregarPage implements OnInit, OnDestroy {
         }
 
         this.buscando=this.user.data.buscando.state;
-        sessionStorage.setItem("buscando",JSON.stringify(this.user.data.buscando));
       });
     }).catch(err=>console.log(err));
   }
@@ -148,7 +143,7 @@ export class AgregarPage implements OnInit, OnDestroy {
     });
   }
 
-   buscarCompa(tagId:string){//Añade al usuario en la coleccion de busquedas
+   buscarCompa(tagId:string, title:string){//Añade al usuario en la coleccion de busquedas
     this.buscando=true;
 
     let searchSubscribe=this.fireStore.collection("searchs").doc(tagId).get()
@@ -167,16 +162,22 @@ export class AgregarPage implements OnInit, OnDestroy {
           this.user.data.notAddUsers=[];
         }
         for(const key in data.users) {
-          if(!this.user.data.blockedUsers.includes(data.users[key]) && !this.user.data.notAddUsers.includes(data.users[key])){
-            values.unshift({id:key,userName:data.users[key]});
+          if(!this.user.data.blockedUsers[key] && !this.user.data.notAddUsers[key]){
+            values.unshift({
+              id:key,
+              userName:data.users[key].userName,
+              token:data.users[key].token
+            });
           }
-
         }
 
         if(values.length<1){//Comprobamos si no hay nadie buscando, en ese caso se inserta el usuario a la coleccion de busqueda
           this.actualizarEstadoBusquedaUser(true,tagId);
           this.fireStore.collection("searchs").doc(tagId).update({
-            [`users.${this.user.id}`]:this.user.data.userName
+            [`users.${this.user.id}`]:{
+              userName:this.user.data.userName,
+              token:this.user.data.token
+            }
           }).catch(error=>{
             console.log(error);
           });
@@ -190,7 +191,12 @@ export class AgregarPage implements OnInit, OnDestroy {
           [
             this.user.data.userName,
             values[0].userName
-          ]);
+          ],
+          [
+            this.user.data.token,
+            values[0].token
+          ],
+          title);
           this.fireStore.collection("searchs").doc(tagId).update({//Eliminamos al usuario de la tabla de busquedas
             [`users.${values[0].id}`]:firebase.default.firestore.FieldValue.delete()
           })
@@ -199,7 +205,7 @@ export class AgregarPage implements OnInit, OnDestroy {
     });
   }
 
-  generarChat(members:object,contact:string, userNames:string[]){
+  generarChat(members:object,contact:string, userNames:string[],tokens:string[],title:string){
     this.fireStore.collection("chats").add({
       group:false,
       lastMessage: "Se ha creado el chat",
@@ -207,7 +213,9 @@ export class AgregarPage implements OnInit, OnDestroy {
       members:{
         ...members
       },
-      userNames:userNames
+      userNames:userNames,
+      tokens:tokens,
+      tema:title
     }).then((resp)=>{
       resp.get()
       .then(chat=>{//Agregamos el chat a los usuarios

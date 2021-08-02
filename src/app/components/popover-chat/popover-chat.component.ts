@@ -15,6 +15,7 @@ export class PopoverChatComponent implements OnInit {
   saved:boolean=true;
   idChat:string;
   contactName:string;
+  contactID:string;
 
   constructor(
     private navParams: NavParams,
@@ -24,6 +25,7 @@ export class PopoverChatComponent implements OnInit {
   ngOnInit() {
     this.idChat=this.navParams.data.id;
     this.contactName=this.navParams.data.contactName;
+    this.contactID=this.navParams.data.contactID;
   }
 
   deleteChat(){
@@ -31,7 +33,7 @@ export class PopoverChatComponent implements OnInit {
   }
 
   blockUser(){
-    this.actionsUserService.presentAlertConfirm(2,this.idChat,this.contactName);
+    this.actionsUserService.presentAlertConfirm(2,this.idChat,this.contactName,this.contactID);
   }
 
 }
