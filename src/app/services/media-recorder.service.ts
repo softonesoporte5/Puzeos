@@ -54,7 +54,7 @@ export class MediaRecorderService {
         this.appService.convertBlobToBase64(this.audioBlob)
         .then((resp:string)=>{
           const name='audio'+new Date().valueOf()+'.ogg';
-          this.fileSystemService.writeFile(resp, name, "VoiceNotes/")
+          this.fileSystemService.writeFile(resp, name, "Puzeos VoiceNotes/",true)
           .then(respUrl=>{
             if(respUrl){
               console.log(respUrl)

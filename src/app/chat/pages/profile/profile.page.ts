@@ -21,6 +21,7 @@ export class ProfilePage implements OnInit {
   user:IUser;
   imgPath:string='../../../../assets/person.jpg';
   dbUsers:ILocalForage;
+  numBlockedUsers=0;
 
   constructor(
     private firestore:AngularFirestore,
@@ -36,12 +37,13 @@ export class ProfilePage implements OnInit {
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then((resp:IUserData)=>{
-      //const date=new Date(resp.createDate.toDate());
       const date=new Date();
       this.user={
         data:{...resp,createDate:date.valueOf()},
         id:firebase.default.auth().currentUser.uid
       }
+
+      this.numBlockedUsers=Object.keys(resp.blockedUsers).length;
       if(resp.imageUrlLoc){
         this.imgPath=Capacitor.convertFileSrc(resp.imageUrlLoc);
       }
@@ -106,13 +108,14 @@ export class ProfilePage implements OnInit {
 
   private selectImage(source:CameraSource){
     this.camara.takePicture(this.user,source).then(resp=>{
-
-      this.dbUsers.setItem(this.user.id,{
-        ...this.user.data,
-        imageUrl:resp.firebasePath,
-        imageUrlLoc:resp.filepath
-      }).catch(err=>console.log(err));
-      this.imgPath=resp.base64Data;
+      if(resp){
+        this.dbUsers.setItem(this.user.id,{
+          ...this.user.data,
+          imageUrl:resp.firebasePath,
+          imageUrlLoc:resp.filepath
+        }).catch(err=>console.log(err));
+        this.imgPath=resp.base64Data;
+      }
     })
   }
 
@@ -164,7 +167,14 @@ export class ProfilePage implements OnInit {
               .update({
                 imageUrl:firebase.default.firestore.FieldValue.delete(),
                 imageUrlLoc:firebase.default.firestore.FieldValue.delete()
-              }).then(()=>this.imgPath="../../../../assets/person.jpg")
+              }).then(()=>{
+                this.imgPath="../../../../assets/person.jpg";
+                delete this.user.data.imageUrl;
+                delete this.user.data.imageUrlLoc;
+                this.dbUsers.setItem(this.user.id,{
+                  ...this.user,
+                })
+              })
               .catch(err=>console.log(err));
             });
           }

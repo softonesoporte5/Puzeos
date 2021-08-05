@@ -1,6 +1,5 @@
 import { NavParams, ModalController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
-import videojs from 'video.js';
 
 @Component({
   selector: 'app-image-modal',
@@ -11,8 +10,6 @@ export class ImageModalComponent implements OnInit {
 
   path:string;
   type:string;
-
-player: videojs.Player;
 
   sliderOpts={
     zoom:{

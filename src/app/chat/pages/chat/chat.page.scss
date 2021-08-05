@@ -4,13 +4,12 @@
   border-radius: 50%;
 }
 
-.loc_toolbar{
+.loc_toolbar, .loc__reply{
   padding-left:0.5rem;
 }
 
-.loc_icon-footer{
+.loc_icon-footer, .loc__reply ion-icon{
   font-size: 25px;
-  margin-right: 0.5rem;
 }
 
 .loc__btns-footer{
@@ -41,6 +40,31 @@ ion-footer{
     width: 100%;
     float: left;
   }
+
+  .loc__reply{
+    border-bottom: 1px solid #d9d9d9;
+    padding: 7px 0.5rem;
+    display: flex;
+    align-items: center;
+    >span{
+      margin: 0 9px;
+      font-size: 13px;
+      flex:1;
+      padding-left: 8px;
+    }
+
+    .userName{
+      width: 100%;
+      margin: 0;
+      color: var(--ion-color-primary);
+      font-weight: 600;
+    }
+  }
+}
+
+.loc__delete-reply{
+  color:gray;
+  display: flex;
 }
 
 .footer-grabando{
@@ -64,7 +88,6 @@ ion-item-sliding{
 
 .chat__input{
   flex:1;
-  border-bottom: 1px solid var(--ion-color-tertiary);
   margin:0 9px;
   font-size: 16px;
   max-height: 150px;
@@ -76,10 +99,6 @@ ion-back-button {
   ion-icon{
     font-size: 37px;
   }
-}
-
-.loc__espacio{
-  flex:1;
 }
 
 .loc_contac-info{
@@ -138,6 +157,7 @@ ion-back-button {
   overflow-x: hidden;
   position: relative;
   margin-bottom: 10px;
+  --background:transparent;
 
   ion-card{
     -webkit-user-select: none;

@@ -26,14 +26,21 @@
 </ion-header>
 <div class="loc__espacio"></div>
 
-<div class="loc__content" #content (scroll)="scrollEvent($event)">
+<ion-content class="loc__content" #content (scroll)="scrollEvent($event)">
+
+  <ion-infinite-scroll threshold="100px" position="top" (ionInfinite)="loadData($event)">
+    <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Loading more data...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 
   <app-scroll-bottom
     [content]="content"
     *ngIf="showScrollButton"
   ></app-scroll-bottom>
 
-  <span *ngFor="let mensaje of mensajes; trackBy: trackByFn; last as isLast">
+  <span *ngFor="let mensaje of mensajes; trackBy: trackByFn; last as isLast" class="message-chat">
 
     <app-item-message
       *ngIf="mensaje.type!=='text'"
@@ -56,9 +63,25 @@
       [idChat]="idChat"
     ></app-item-message>
   </span>
-</div>
+</ion-content>
 
 <ion-footer>
+  <div *ngIf="replyMessage">
+    <div class="loc__reply">
+      <ion-icon name="arrow-redo" color="primary"></ion-icon>
+      <span class="truncar">
+        <p class="userName">
+          {{replyMessage.user}}
+        </p>
+        <span >
+          {{replyMessage.message}}
+        </span>
+      </span>
+      <div class="loc__delete-reply" (click)="deleteReply()">
+        <ion-icon name="close"></ion-icon>
+      </div>
+    </div>
+  </div>
   <form [formGroup]="miFormulario" style="display: contents;" *ngIf="!blockChat">
     <ion-toolbar class="loc_toolbar d-flex">
       <div

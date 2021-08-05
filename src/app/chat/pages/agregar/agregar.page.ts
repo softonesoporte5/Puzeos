@@ -131,7 +131,7 @@ export class AgregarPage implements OnInit, OnDestroy {
 
   actualizarEstadoBusquedaUser(estado:boolean, tagId:string=''){
     this.buscando=estado;
-    sessionStorage.setItem("buscando",JSON.stringify({state:estado,tagId:tagId}));
+    this.user.data.buscando={state:estado,tagId:tagId};
 
     this.fireStore.collection("users").doc(this.user.id).update({
       buscando:{
@@ -161,45 +161,51 @@ export class AgregarPage implements OnInit, OnDestroy {
         if(!this.user.data.notAddUsers){
           this.user.data.notAddUsers=[];
         }
-        for(const key in data.users) {
-          if(!this.user.data.blockedUsers[key] && !this.user.data.notAddUsers[key]){
-            values.unshift({
-              id:key,
-              userName:data.users[key].userName,
-              token:data.users[key].token
-            });
-          }
-        }
-
-        if(values.length<1){//Comprobamos si no hay nadie buscando, en ese caso se inserta el usuario a la coleccion de busqueda
-          this.actualizarEstadoBusquedaUser(true,tagId);
-          this.fireStore.collection("searchs").doc(tagId).update({
-            [`users.${this.user.id}`]:{
-              userName:this.user.data.userName,
-              token:this.user.data.token
+        if(data){
+          for(const key in data.users) {
+            if(!this.user.data.blockedUsers[key] && !this.user.data.notAddUsers[key]){
+              values.unshift({
+                id:key,
+                userName:data.users[key].userName,
+                token:data.users[key].token
+              });
             }
-          }).catch(error=>{
-            console.log(error);
-          });
+          }
 
+          if(values.length<1){//Comprobamos si no hay nadie buscando, en ese caso se inserta el usuario a la coleccion de busqueda
+            this.actualizarEstadoBusquedaUser(true,tagId);
+            this.fireStore.collection("searchs").doc(tagId).update({
+              [`users.${this.user.id}`]:{
+                userName:this.user.data.userName,
+                token:this.user.data.token
+              }
+            }).catch(error=>{
+              console.log(error);
+            });
+
+          }else{
+            this.generarChat({//Creamos el chat
+              [this.user.id]:true,
+              [values[0].id]:true
+            },
+            values[0].id,
+            [
+              this.user.data.userName,
+              values[0].userName
+            ],
+            [
+              this.user.data.token,
+              values[0].token
+            ],
+            title);
+            this.fireStore.collection("searchs").doc(tagId).update({//Eliminamos al usuario de la tabla de busquedas
+              [`users.${values[0].id}`]:firebase.default.firestore.FieldValue.delete()
+            })
+          }
         }else{
-          this.generarChat({//Creamos el chat
-            [this.user.id]:true,
-            [values[0].id]:true
-          },
-          values[0].id,
-          [
-            this.user.data.userName,
-            values[0].userName
-          ],
-          [
-            this.user.data.token,
-            values[0].token
-          ],
-          title);
-          this.fireStore.collection("searchs").doc(tagId).update({//Eliminamos al usuario de la tabla de busquedas
-            [`users.${values[0].id}`]:firebase.default.firestore.FieldValue.delete()
-          })
+          this.fireStore.collection("searchs").doc(tagId).set({
+            [`users.${this.user.id}`]:this.user.data.userName
+          }).catch(error=>console.log(error));
         }
       }
     });
@@ -259,9 +265,8 @@ export class AgregarPage implements OnInit, OnDestroy {
 
   cancelarBusqueda(){
     // Elimina al usuario del documento de busqueda
-    const buscandoState=JSON.parse(sessionStorage.getItem("buscando"));
 
-    this.fireStore.collection("searchs").doc(buscandoState.tagId).update({
+    this.fireStore.collection("searchs").doc(this.user.data.buscando.tagId).update({
       [`users.${this.user.id}`]:firebase.default.firestore.FieldValue.delete()
     }).then(()=>{
       this.actualizarEstadoBusquedaUser(false);

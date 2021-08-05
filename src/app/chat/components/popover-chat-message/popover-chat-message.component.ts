@@ -1,3 +1,4 @@
+import { ChatService } from './../../pages/chat/chat.service';
 import { IMessage } from './../../interfaces/message.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
@@ -20,7 +21,8 @@ export class PopoverChatMessageComponent implements OnInit {
     private navParams: NavParams,
     public toastController: ToastController,
     private popoverController: PopoverController,
-    private db:DbService
+    private db:DbService,
+    private chatService:ChatService
   ) { }
 
   ngOnInit() {
@@ -59,4 +61,8 @@ export class PopoverChatMessageComponent implements OnInit {
     this.presentToast('Mensaje guardado.');
   }
 
+  reply(){
+    this.chatService.replyMessage$.next(this.message);
+    this.popoverController.dismiss();
+  }
 }

@@ -1,8 +1,3 @@
-import { File } from '@ionic-native/file/ngx';
-import { Camera } from '@ionic-native/camera/ngx';
-import { FilePath } from '@ionic-native/file-path/ngx';
-import { Media } from '@ionic-native/media/ngx';
-
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -21,6 +16,7 @@ import { AngularFireStorageModule } from '@angular/fire/storage';
 import { FileOpener } from '@ionic-native/file-opener/ngx';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { Chooser } from '@ionic-native/chooser/ngx';
+import { OneSignal } from '@ionic-native/onesignal/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -39,11 +35,8 @@ import { Chooser } from '@ionic-native/chooser/ngx';
   ],
   providers: [
     FileOpener,
-    File,
     Chooser,
-    Camera,
-    FilePath,
-    Media,
+    OneSignal,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
   bootstrap: [AppComponent],

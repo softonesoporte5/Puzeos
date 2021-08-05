@@ -1,6 +1,9 @@
 .close-fake{
   --background:#00000030;
   z-index: 9;
+  position: fixed;
+  width: 100vw;
+
   ion-icon{
     font-size:2rem;
     color:white;
@@ -13,7 +16,6 @@ ion-button{
 }
 
 .loc__cont-info{
-  position: absolute;
   top: 0;
   left: 0;
   width: 100%;

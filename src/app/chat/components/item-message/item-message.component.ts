@@ -1,6 +1,6 @@
 import { ChatService } from './../../pages/chat/chat.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
-import { PopoverController } from '@ionic/angular';
+import { IonContent, PopoverController } from '@ionic/angular';
 import { IMessage } from './../../interfaces/message.interface';
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { PopoverChatMessageComponent } from '../popover-chat-message/popover-chat-message.component';
@@ -15,7 +15,7 @@ export class ItemMessageComponent implements AfterViewInit, OnInit {
   @Input("message") message:IMessage;
   @Input("idChat") idChat:string;
   @Input("last") last?:boolean;
-  @Input("content") content:HTMLElement;
+  @Input("content") content:IonContent;
   @Input("userName") userName:string;
   @Input("dbMessage") dbMessage?:ILocalForage;
   @Input("searchMessage") searchMessage?:string;
@@ -36,10 +36,6 @@ export class ItemMessageComponent implements AfterViewInit, OnInit {
   ngOnInit() {
     this.lastDate=this.chatService.lastDate;
 
-    if(this.last===true){
-      this.maxScroll=this.content.scrollHeight-this.content.offsetHeight;
-      this.scrollTop=this.content.scrollTop;
-    }
     if(this.message.timestamp.toDateString()!==this.lastDate){
       this.chatService.setLastDate(this.message.timestamp.toDateString());
       this.showDate=true;
@@ -66,23 +62,22 @@ export class ItemMessageComponent implements AfterViewInit, OnInit {
           <span>${txt3}</span>
         `;
         setTimeout(()=>{
-          this.content.querySelector(`#${this.idSearch}`).scrollIntoView();
-          console.log(this.content.querySelector(`#${this.idSearch}`), this.idSearch)
-          this.content.classList.add("scroll");
+          document.querySelector(`#${this.idSearch}`).scrollIntoView();
         },220);
       }
     }else{
       if(this.last===true){
-        setTimeout(()=>{
-          if(this.maxScroll-this.scrollTop<120 || this.content.scrollTop<10){
-            this.content.lastElementChild.scrollIntoView(false);
-          }
-
+        this.content.getScrollElement()
+        .then(resp=>{
           setTimeout(()=>{
-            this.content.lastElementChild.scrollIntoView(false);
-            this.content.classList.add("scroll");
-          },150);
-        },220);
+            let maxScroll=resp.scrollHeight-resp.offsetHeight;
+            let scrollTop=resp.scrollTop;
+
+            if(maxScroll-scrollTop<120 || resp.scrollTop<10){
+              this.content.scrollToBottom();
+            }
+          },220);
+        })
       }
     }
   }
@@ -94,6 +89,14 @@ export class ItemMessageComponent implements AfterViewInit, OnInit {
       componentProps:{"message":message,"idChat":this.idChat}
     });
     return await popover.present();
+  }
+
+  scrollToReply(){
+    this.chatService.scrollReply$.next(this.message.reply.id);
+  }
+
+  reply(){
+    this.chatService.replyMessage$.next(this.message);
   }
 
 }

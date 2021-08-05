@@ -2,7 +2,6 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 
 admin.initializeApp();
-// const firestore=admin.firestore();
 // firebase deploy --only functions
 
 exports.newMessage=functions.firestore
@@ -10,23 +9,19 @@ exports.newMessage=functions.firestore
     .onCreate(async (change, context) => {
       console.log(change.data(), context);
       const data=change.data() as IMessage;
+      const registrationTokens=[data.sendToToken];
 
-      const dataFCM={
-        enlace: "/chat/",
+      const messagee ={
+        app_id: "e8539368-3a10-4b86-b79d-96b1d68118cd",
+        contents: {"en": data.message, "es": data.message},
+        headings: {"en": data.user, "es": data.user},
+        android_group: context.params.idChat,
+        include_player_ids: registrationTokens,
       };
 
-      const notification: INotification={
-        data: dataFCM,
-        token: data.sendToToken,
-        notification: {
-          title: data.user,
-          body: data.message,
-        },
-      };
-
-      return sendNotification(notification);
+      return sendNotification(messagee);
     });
-/*
+
 exports.AddChat=functions.firestore
     .document("/chats/{idChat}")
     .onCreate(async (change, context) => {
@@ -34,36 +29,38 @@ exports.AddChat=functions.firestore
       const data=change.data() as IChat;
       const registrationTokens=data.tokens;
 
-      const dataFCM={
-        enlace: "/chat/",
-      };
-
       const body="Se ha agregado un compañero que";
 
-      const notification: INotification={
-        data: dataFCM,
-        tokens: registrationTokens,
-        notification: {
-          title: "Has agregado un compañero!!",
-          body: body +` quiere hablar contigo sobre ${data.tema}`,
-        },
+      const messagee ={
+        app_id: "e8539368-3a10-4b86-b79d-96b1d68118cd",
+        contents: {
+          "en": body +` quiere hablar contigo sobre ${data.tema}`,
+          "es": body +` quiere hablar contigo sobre ${data.tema}`},
+        headings: {
+          "en": "Has agregado un compañero!!",
+          "es": "Has agregado un compañero!!"},
+        included_segments: ["Subscribed Users"],
+        android_group: "a",
+        include_player_ids: registrationTokens,
       };
 
-      return sendNotification(notification);
-    });*/
+      return sendNotification(messagee);
+    });
 
-const sendNotification= (notification: INotification)=>{
+const sendNotification= (notification: any)=>{
   return new Promise((resolve)=>{
-    const message: admin.messaging.Message={
+    sendNotificationOneSignal(notification);
+    resolve("");
+    /*
+    const message: admin.messaging.MulticastMessage={
       data: notification.data,
-      token: notification.token,
+      tokens: notification.tokens,
       notification: notification.notification,
       android: {
         notification: {
           icon: "ic_stat_name",
           color: "#ffffff",
         },
-        collapseKey: "f",
       },
       apns: {
         payload: {
@@ -78,17 +75,59 @@ const sendNotification= (notification: INotification)=>{
       },
     };
 
-    admin.messaging().send(message)
+    admin.messaging().sendMulticast(message)
         .then((response)=>{
-          console.log("Send Notification success"+response);
+          if (response.failureCount>0) {
+            const failedTokens: unknown[]=[];
+            response.responses.forEach((resp, idx)=>{
+              if (!resp.success) {
+                failedTokens.push(notification.tokens[idx]);
+              }
+            });
+            // Eliminar tokens
+          } else {
+            console.log("Send Notification success");
+          }
           resolve(true);
           return;
         }, (err)=> {
           console.log("Error al enviar FCM", err);
           resolve(false);
           return;
-        });
+        });*/
   });
+};
+
+const sendNotificationOneSignal = function(data:any) {
+  console.log("Entrí");
+  const headers = {
+    "Content-Type": "application/json; charset=utf-8",
+  };
+
+  const options = {
+    host: "onesignal.com",
+    port: 443,
+    path: "/api/v1/notifications",
+    method: "POST",
+    headers: headers,
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const https =require("https");
+  const req = https.request(options, function(res:any) {
+    res.on("data", function(data:any) {
+      console.log("Response:");
+      console.log(JSON.parse(data));
+    });
+  });
+
+  req.on("error", function(e:any) {
+    console.log("ERROR:");
+    console.log(e);
+  });
+
+  req.write(JSON.stringify(data));
+  req.end();
 };
 
 interface IMessage{
@@ -105,12 +144,6 @@ interface IMessage{
   sendToToken:string
 }
 
-interface INotification {
-  data:any;
-  token: string;
-  notification: admin.messaging.Notification
-}
-/*
 interface IChat{
   id:string,
   group:boolean;
@@ -120,4 +153,4 @@ interface IChat{
   deleted?:boolean;
   tokens:[];
   tema:string;
-}*/
+}

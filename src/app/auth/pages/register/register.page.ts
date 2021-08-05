@@ -119,7 +119,7 @@ export class RegisterPage implements OnInit {
                   userName:this.name.value,
                 }
               };
-              this.firebaseStorage.uploadPhoto(this.imgPath, user as IUser,true)
+              this.firebaseStorage.uploadPhoto(this.imgPath, user as IUser,'',true)
               .then(urlImage=>{
                 // Guardamos la imagen de manera local
                 const fileName = new Date().getTime() + '.jpeg';
@@ -248,6 +248,7 @@ export class RegisterPage implements OnInit {
           icon: 'image-sharp',
           handler: () => {
             this.authService.selectImage(CameraSource.Photos)
+            .then(resp=>this.imgPath=resp);
           }
         },
         {

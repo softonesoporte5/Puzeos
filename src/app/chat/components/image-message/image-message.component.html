@@ -1,5 +1,5 @@
-<div *ngIf="image.user===userName" class="center-child">
-  <img [src]="imageUrl" alt="Imágen" (click)="openModal()">
+<div *ngIf="image.user===userName" class="center-child loc__min-8">
+  <img [src]="imageUrl" alt="Imágen" (click)="openModal()" class="no-disponible">
   <span class="loc__cont-control absolute" *ngIf="uploaded && image.state===0">
     <ion-icon name="close-outline" (click)="cancelUpload()"></ion-icon>
     <svg class="upload">
@@ -18,13 +18,14 @@
 
 </div>
 
-<div *ngIf="image.user!==userName">
-  <ion-img
+<div *ngIf="image.user!==userName" class="loc__min-8">
+  <img
     [src]="imageUrl"
     alt="Imágen"
     *ngIf="image.download===true"
     (click)="openModal()"
-  ></ion-img>
+    class="no-disponible"
+  >
 
   <span *ngIf="image.download===false && downloaded==true" class="loc__cont-control">
     <ion-icon name="close-outline" (click)="cancelDownload()"></ion-icon>

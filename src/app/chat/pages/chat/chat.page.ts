@@ -10,10 +10,10 @@ import { DbService } from 'src/app/services/db.service';
 import { MediaRecorderService } from './../../../services/media-recorder.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import * as firebase from 'firebase';
-import { IonItemSliding, PopoverController, ModalController, AlertController } from '@ionic/angular';
+import { IonItemSliding, PopoverController, ModalController, AlertController, IonInfiniteScroll, IonContent } from '@ionic/angular';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
 import { Capacitor } from '@capacitor/core';
 import { IUser } from '../../interfaces/user.interface';
@@ -23,10 +23,11 @@ import { IUser } from '../../interfaces/user.interface';
   templateUrl: './chat.page.html',
   styleUrls: ['./chat.page.scss'],
 })
-export class ChatPage implements OnInit, OnDestroy{
+export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
 
   idChat:string;
   mensajes:IMessage[]=[];
+  allMessages:IMessage[]=[];
   userName:string='';
   showEmojiPicker:boolean=false;
   tooglePress:boolean=false;
@@ -35,6 +36,8 @@ export class ChatPage implements OnInit, OnDestroy{
   dbMessages:ILocalForage;
   dbUsers:ILocalForage;
   mensajesSubscribe:Subscription;
+  replySubscribe:Subscription;
+  scrollReplySubscribe:Subscription;
   tiempoGrabacion:string='00:00';
   bucleTime:NodeJS.Timeout;
   cancelar:boolean=false;
@@ -46,9 +49,11 @@ export class ChatPage implements OnInit, OnDestroy{
   blockChat:boolean=false;
   posEmoji:number=0;
   resetPosEmoji:boolean=true;
-  notSendMessages:{}={};
-  @ViewChild('content') content: HTMLElement;
+  @ViewChild('content') content: IonContent;
   @ViewChild('sliding', { static: false }) sliding: IonItemSliding;
+  @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
+  posM=0;
+  replyMessage:IMessage;
 
   miFormulario:FormGroup=this.fb.group({
     mensaje:['',[Validators.required,Validators.minLength(1)]]
@@ -115,6 +120,20 @@ export class ChatPage implements OnInit, OnDestroy{
         }
       }).then(()=>{
         this.mensajes=this.chatService.orderMessages(arrMessages);
+       if(this.routeQuery.id){
+          this.mensajes=this.chatService.orderMessages(arrMessages);
+        }else{
+          if(arrMessages.length>19){
+            this.allMessages=this.chatService.orderMessages(arrMessages);
+            this.posM=this.allMessages.length;
+            this.mensajes=this.allMessages.slice(this.posM-19, this.posM);
+            this.posM-=19;
+          }else{
+            this.mensajes=this.chatService.orderMessages(arrMessages);
+          }
+
+          //console.log(this.allMessages[10]);
+        }
         this.db.setItemChat(this.idChat,{...this.chat,newMessages:0});
       })
       .catch(error=>console.log(error));
@@ -122,7 +141,6 @@ export class ChatPage implements OnInit, OnDestroy{
       if(this.db.messagesSubscriptions){
         const messages=this.db.messagesSubscriptions[this.idChat] as Subject<IMessagesResp>
         this.mensajesSubscribe=messages.subscribe(messagesResp=>{
-          console.log(messagesResp.status);
           if(messagesResp.status===0){//Si no llega ningun mensaje
             for (let i = this.mensajes.length -1; i > 0; i--){
               const message=this.mensajes[i];
@@ -214,21 +232,111 @@ export class ChatPage implements OnInit, OnDestroy{
       }
     }).catch(err=>console.log(err));
 
+    this.replySubscribe=this.chatService.replyMessage$.subscribe(resp=>{
+      this.replyMessage=resp;
+    });
+
+    this.scrollReplySubscribe=this.chatService.scrollReply$.subscribe(resp=>{
+      if(this.allMessages.length>0){
+        this.allMessages.find((message,index)=>{
+          if(message.id===resp){
+            if(this.mensajes.length>=this.allMessages.length-index){
+              const replyMessage:Element=document.querySelector("#"+resp);
+              replyMessage.scrollIntoView();
+              replyMessage.parentElement.animate([
+                {backgroundColor: "#87bcf3b8"},
+                {backgroundColor: "#87bcf300"}
+              ],{
+                duration:3000,
+                easing:"ease-out"
+              })
+
+            }else{
+              let rest=this.allMessages.length-this.mensajes.length-index;
+              this.mensajes.unshift(...this.allMessages.slice(index, this.allMessages.length-this.mensajes.length));
+              this.posM-=rest;
+              setTimeout(()=>{
+                const replyMessage:Element=document.querySelector("#"+resp);
+                replyMessage.scrollIntoView();
+                replyMessage.parentElement.animate([
+                  {backgroundColor: "#87bcf3b8"},
+                  {backgroundColor: "#87bcf300"}
+                ],{
+                  duration:3000,
+                  easing:"ease-out"
+                })
+              },220);
+            }
+            return;
+          }
+        });
+      }else{
+        this.mensajes.find((message)=>{
+          if(message.id===resp){
+            const replyMessage:Element=document.querySelector("#"+resp);
+              replyMessage.scrollIntoView();
+              replyMessage.parentElement.animate([
+                {backgroundColor: "#87bcf3b8"},
+                {backgroundColor: "#87bcf300"}
+              ],{
+                duration:3000,
+                easing:"ease-out"
+              });
+            return;
+          }
+        });
+      }
+    });
+
     const ref=this.firestore.collection("messages")
     .doc(this.idChat).collection<IMessage>("messages")
     .ref;
+  }
+
+  ngAfterViewInit(){
+    this.content.getScrollElement()
+    .then(resp=>{
+      resp.addEventListener("scroll",e=>this.scrollEvent(e));
+    });
   }
 
   ngOnDestroy(){
     if(this.mensajesSubscribe){
       this.mensajesSubscribe.unsubscribe();
     }
+    if(this.replySubscribe){
+      this.replySubscribe.unsubscribe();
+    }
+    if(this.scrollReplySubscribe){
+      this.scrollReplySubscribe.unsubscribe();
+    }
+  }
+
+  loadData(event) {
+    if(this.posM-19<0){
+      this.mensajes.unshift(...this.allMessages.slice(0, this.posM));
+    }else{
+      this.mensajes.unshift(...this.allMessages.slice(this.posM-19, this.posM));
+    }
+    this.posM-=19;
+    console.log("Se agregaron nuevos mensajes")
+    event.target.complete();
+
+    if (this.posM <= 0) {
+      event.target.disabled = true;
+    }
   }
 
   agregarMensaje(){
     const message=this.mensaje.value;
-    this.chatService.addMessageInFirebase(message,this.idChat,this.userName,this.user);
-    this.mensaje.setValue('');
+    if(this.replyMessage){
+      this.chatService.addMessageInFirebase(message,this.idChat,this.userName,this.user,this.replyMessage);
+      this.mensaje.setValue('');
+      this.replyMessage=null;
+    }else{
+      this.chatService.addMessageInFirebase(message,this.idChat,this.userName,this.user);
+      this.mensaje.setValue('');
+    }
   }
 
   async presentPopover(ev: any) {
@@ -320,7 +428,7 @@ export class ChatPage implements OnInit, OnDestroy{
       component:PerfilModalComponent,
       componentProps:{
         user:this.user,
-        chat:this.chat
+        chat:this.chat,
       }
     }).then(modal=>modal.present());
   }
@@ -335,5 +443,9 @@ export class ChatPage implements OnInit, OnDestroy{
       ]
     });
     await alert.present();
+  }
+
+  deleteReply(){
+    this.replyMessage=null;
   }
 }

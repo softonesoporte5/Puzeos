@@ -16,6 +16,7 @@ export interface IMessage{
   mimeType?:string;
   idChat?:string;
   specialData?:any
+  reply?:IMessage;
 }
 
 export interface IMessageSearch{

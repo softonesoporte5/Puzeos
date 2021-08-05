@@ -17,4 +17,15 @@
       Guardar mensaje
     </ion-label>
   </ion-item>
+  <ion-item
+    button
+    mode="md"
+    (click)="reply()"
+    *ngIf="message.state!==0"
+  >
+    <ion-icon name="arrow-redo-outline" slot="start"></ion-icon>
+    <ion-label>
+      Responder
+    </ion-label>
+  </ion-item>
 </ion-list>

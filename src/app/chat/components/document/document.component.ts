@@ -6,7 +6,7 @@ import { HttpClient, HttpEventType } from '@angular/common/http';
 import { IMessage } from './../../interfaces/message.interface';
 import { Component, Input, OnInit } from '@angular/core';
 import { FirebaseStorageService } from 'src/app/services/firebase-storage.service';
-import {Plugins, FilesystemDirectory} from '@capacitor/core';
+import {Plugins } from '@capacitor/core';
 const {Filesystem} = Plugins;
 import { Capacitor } from '@capacitor/core';
 import { FileOpener } from '@ionic-native/file-opener/ngx';

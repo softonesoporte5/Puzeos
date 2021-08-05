@@ -38,8 +38,6 @@ export class AuthService {
       }
     }).then(modal=>modal.present());
 
-    //this.base64Data$.next(cameraPhoto.dataUrl);
-
     const cropperData:string=await new Promise((resolve, rejeact)=>{
       this.cropperSubscribe=this.getCropperImage()
       .subscribe((resp:string)=>{

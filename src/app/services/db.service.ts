@@ -67,7 +67,6 @@ export class DbService{
 
     this.appService.getNetworkStatus()
     .subscribe(resp=>{
-      console.log(resp)
       this.dbNotSendMessages.iterate((message:IMessage,key:string)=>{
         if(message.type==="text"){
           const timestamp=firebase.default.firestore.FieldValue.serverTimestamp();
@@ -117,10 +116,8 @@ export class DbService{
               .then((resp:IMessage)=>{
                 if(!resp){
                   if(data.type==="delete" || data.type==="deleteAndBlock"){
-                    console.log(data);
                     this.dbChats.getItem(chatID)
                     .then(chat=>{
-                      console.log(chat)
                       this.dbChats.setItem(chatID,{
                         ...chat,
                         deleted:true
@@ -129,9 +126,7 @@ export class DbService{
                           this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
                           .then((resp:IUserData)=>{
                             if(!resp.notAddUsers) resp.notAddUsers={};
-                            console.log(data.specialData);
                             resp.notAddUsers[data.specialData.id]=data.specialData.userName;
-                            console.log(resp.notAddUsers)
                             this.firestore.collection("users").doc(firebase.default.auth().currentUser.uid).update({
                               notAddUsers:resp.notAddUsers
                             }).then(()=>{
@@ -169,7 +164,6 @@ export class DbService{
                   }
                 }else{
                   if(data.idChat){
-                    console.log("Entró");
                     const messageResp={
                       ...data,
                       id:mensaje.doc.id,
@@ -210,8 +204,7 @@ export class DbService{
               this.dbMessages[chatID].setItem(mensaje.doc.id,{
                 ...resp,
                 state:2
-              }).then((resp:any)=>console.log(resp))
-              .catch((error:any)=>console.log(error));
+              }).catch((error:any)=>console.log(error));
             },(err:any)=>console.log(err))
 
           }

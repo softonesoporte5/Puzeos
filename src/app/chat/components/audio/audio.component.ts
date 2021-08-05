@@ -84,7 +84,7 @@ export class AudioComponent implements OnInit {
           this.appService.convertBlobToBase64(event.body)
           .then((result:string | ArrayBuffer)=>{
             base64=result;
-            this.fileSystemService.writeFile(base64,name, "VoiceNotes/")
+            this.fileSystemService.writeFile(base64,name, "Puzeos VoiceNotes/",true)
             .then(respUrl=>{
               if(respUrl){
                 this.readFile(name);

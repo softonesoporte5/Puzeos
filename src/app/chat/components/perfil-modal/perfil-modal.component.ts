@@ -1,3 +1,5 @@
+import { IMessage } from './../../interfaces/message.interface';
+import { FileSystemService } from './../../../services/file-system.service';
 import { IChat } from './../../interfaces/chat.interface';
 import { ActionsUserService } from './../../../services/actions-user.service';
 import { AppService } from './../../../app.service';
@@ -23,6 +25,8 @@ export class PerfilModalComponent implements OnInit {
   imgPath:string;
   dbUsers:ILocalForage;
   chat:IChat;
+  messages:IMessage[]=[];
+  dbMessages:ILocalForage;
 
   constructor(
     private navParams:NavParams,
@@ -32,10 +36,15 @@ export class PerfilModalComponent implements OnInit {
     private firebaseStorageService:FirebaseStorageService,
     private http:HttpClient,
     private appService:AppService,
-    private actionsUserService:ActionsUserService
+    private actionsUserService:ActionsUserService,
+    private fileSystemService:FileSystemService
   ) { }
 
   ngOnInit() {
+    this.user=this.navParams.get("user");
+    this.chat=this.navParams.get("chat");
+    this.messages=this.navParams.get("messages");
+    this.dbMessages=this.db.loadStore("messages"+this.chat.id);
     this.dbUsers=this.db.loadStore("users");
 
     this.firestore.collection("users")
@@ -68,31 +77,36 @@ export class PerfilModalComponent implements OnInit {
                 this.appService.convertBlobToBase64(event.body)
                 .then((result:string | ArrayBuffer)=>{
                   base64=result;
-                  Filesystem.writeFile({
-                    path:randomId+'.jpeg',
-                    data:base64,
-                    directory:FilesystemDirectory.Data
-                  }).then(resp=>{
-                    this.dbUsers.setItem(this.user.id,{
-                      ...userData,
-                      imageUrlLoc:resp.uri
-                    }).then(()=>{
-                      this.imgPath=Capacitor.convertFileSrc(resp.uri);
+                  this.fileSystemService.writeFile(base64, randomId+'.jpeg', "Puzeos Profile/")
+                  .then(resp=>{
+                    if(resp){
+                      this.dbUsers.setItem(this.user.id,{
+                        ...userData,
+                        imageUrlLoc:resp
+                      }).then(()=>{
+                        this.imgPath=Capacitor.convertFileSrc(resp);
 
-                      storageSubscribe.unsubscribe();
-                      httpSubscribe.unsubscribe();
-                    })
+                        storageSubscribe.unsubscribe();
+                        httpSubscribe.unsubscribe();
+                      });
+                    }
                   }).catch(err=>console.log(err));
                 }).catch(err=>console.log(err));
               }
             });
-          })
+          });
         }
       }
-    })
+    });
 
-    this.user=this.navParams.get("user");
-    this.chat=this.navParams.get("chat");
+    /*let arrMessages:IMessage[];
+    this.dbMessages.iterate((values:IMessage)=>{
+      if(values.type!=="text" && values.type!=="voice"){
+        arrMessages.push(values);
+      }
+    }).then(()=>{
+      this.messages=this.orderMessages(arrMessages);
+    })*/
 
     if(this.user.data.imageUrlLoc){
       this.imgPath=Capacitor.convertFileSrc(this.user.data.imageUrlLoc);
@@ -107,6 +121,19 @@ export class PerfilModalComponent implements OnInit {
 
   blockUser(){
     this.actionsUserService.presentAlertConfirm(2,this.chat.id,this.user.data.userName);
+  }
+
+  orderMessages(mesagges:IMessage[]){
+    mesagges=mesagges.sort(function (a, b) {
+      if (a.timestamp.valueOf() < b.timestamp.valueOf()) {
+        return 1;
+      }
+      if (a.timestamp.valueOf() > b.timestamp.valueOf()) {
+        return -1;
+      }
+      return 0;
+    });
+    return mesagges;
   }
 
 }

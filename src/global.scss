@@ -62,7 +62,7 @@ a{
 }
 
 .resaltar{
-  background-color:yellow;
+  background-color:#363600;
 }
 
 .center-child{
@@ -87,5 +87,46 @@ a{
 }
 
 app-chat{
-  background-color: #EBEBEB;
+  background-color: #8e8e8e40;
+}
+
+.no-disponible::before{
+  /*Solo se muestra en archivos rotos*/
+  white-space: pre-wrap;
+  position: absolute;
+  color: #333;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  border-bottom: 0;
+  border-radius: 5px;
+  background-color: #ddd;
+  font-weight: bold;
+  font-size: 16px;
+  font-size: 17px;
+  align-items: center;
+  display: flex;
+  text-align: center;
+}
+
+.truncar{
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.reply-select{
+  animation:fade 3s ease-out;
+}
+
+@keyframes fade {
+  from {
+    background-color: #87bcf3b8;
+  }
+
+  to {
+    background-color: #87bcf300;
+  }
 }

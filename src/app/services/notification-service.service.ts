@@ -7,9 +7,7 @@ import {
   PushNotificationActionPerformed,
 } from '@capacitor/core';
 import { Platform } from '@ionic/angular';
-
-import { FCM } from '@capacitor-community/fcm';
-const fcm = new FCM();
+import { OneSignal } from '@ionic-native/onesignal/ngx';
 
 const { PushNotifications } = Plugins
 
@@ -22,7 +20,8 @@ export class NotificationServiceService {
 
   constructor(
     private platform:Platform,
-    private router:Router
+    private router:Router,
+    private oneSignal: OneSignal
   ) {
 
   }
@@ -33,21 +32,35 @@ export class NotificationServiceService {
       .then(resul=>{
         if(resul.granted){
           PushNotifications.register();
-
-
           this.addListeners();
         }else{
 
         }
       });
+
+      this.oneSignal.startInit('e8539368-3a10-4b86-b79d-96b1d68118cd', '400280439340');
+
+      this.oneSignal.getIds()
+      .then(resp=>{
+        this.token=resp.userId;
+      })
+
+      this.oneSignal.handleNotificationReceived().subscribe(() => {
+      // do something when notification is received
+      });
+
+      this.oneSignal.handleNotificationOpened().subscribe(() => {
+        // do something when a notification is opened
+      });
+
+      this.oneSignal.endInit();
     }
   }
 
   addListeners(){
     PushNotifications.addListener('registration',
     (token:PushNotificationToken)=>{
-      console.log(token.value);
-     this.token=token.value;
+     //this.token=token.value;
     });
 
     PushNotifications.addListener('registrationError',(err:any)=>{

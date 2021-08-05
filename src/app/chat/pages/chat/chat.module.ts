@@ -11,7 +11,8 @@ import { AudioComponent } from './../../components/audio/audio.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-
+import { ScrollingModule } from '@angular/cdk/scrolling';
+import {ScrollingModule as ExperimentalScrollingModule} from '@angular/cdk-experimental/scrolling';
 import { IonicModule } from '@ionic/angular';
 
 import { ChatPageRoutingModule } from './chat-routing.module';
@@ -30,6 +31,8 @@ import { HttpClientModule } from '@angular/common/http';
     ReactiveFormsModule,
     Ionic4EmojiPickerModule,
     HttpClientModule,
+    ScrollingModule,
+    ExperimentalScrollingModule
   ],
   declarations: [
     ChatPage,

@@ -104,10 +104,10 @@ export class FirebaseStorageService {
     }
   }
 
-  async uploadFile(data:string,userName:string, type:string, localUrl:string, idChat:string, extraData:{}={},ext:string){
+  async uploadFile(data:string,userName:string, type:string, localUrl:string, idChat:string, extraData:{}={},ext:string, messageTxt:string){
     const date=new Date().valueOf();
     const randomId=Math.round(Math.random()*1000)+''+date;
-    const refUrl=`${userName}/send/${randomId}.${ext}`;
+    const refUrl=`${idChat}/send/${randomId}.${ext}`;
 
     let base64Length = data.length - (data.indexOf(',') + 1);
     let padding = (data.charAt(data.length - 2) === '=') ? 2 : ((data.charAt(data.length - 1) === '=') ? 1 : 0);
@@ -121,7 +121,7 @@ export class FirebaseStorageService {
 
       this.uploads[randomId].then(()=>{
         this.firestore.collection("messages").doc(idChat).collection("messages").doc(randomId).set({
-          message:"Archivo",
+          message:messageTxt,
           ref:refUrl,
           user:userName,
           type:type,
@@ -143,7 +143,7 @@ export class FirebaseStorageService {
       const dbMessage=this.db.loadStore("messages"+idChat);
 
       const newMessage={
-        message:"Archivo",
+        message:messageTxt,
         ref:refUrl,
         user:userName,
         type:type,
@@ -165,7 +165,7 @@ export class FirebaseStorageService {
       const dbMessage=this.db.loadStore("messages"+idChat);
 
       const newMessage={
-        message:"Archivo",
+        message:messageTxt,
         ref:refUrl,
         user:userName,
         type:type,
@@ -186,16 +186,17 @@ export class FirebaseStorageService {
     }
   }
 
-  async uploadPhoto(photo:string,user:IUser,registerPage:boolean=false){
+  async uploadPhoto(photo:string, user:IUser, localUrl?:string, registerPage:boolean=false){
     const date=new Date().valueOf();
     const randomId=Math.round(Math.random()*1000)+date;
-    const refUrl=`${user.data.userName}/images/${randomId}.jpeg`;
+    const refUrl=`${user.id}/images/${randomId}.jpeg`;
     const ref = this.storage.ref(refUrl);
 
     if(!registerPage){
       await ref.putString(photo, 'data_url').then(resp=>{
         this.firestore.collection("users").doc(user.id).update({
           imageUrl:refUrl,
+          imageUrlLoc:localUrl
         }).catch(error=>{
           console.log(error);
         });

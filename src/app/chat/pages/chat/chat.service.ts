@@ -1,3 +1,4 @@
+import { Subject } from 'rxjs';
 import { DbService } from 'src/app/services/db.service';
 import { AppService } from './../../../app.service';
 import { IUser } from './../../interfaces/user.interface';
@@ -15,9 +16,10 @@ export class ChatService{
   userName:string;
   idChat:string;
   dbNotSendMessages:ILocalForage;
-
   lastDate:Date;
   networkStatus:boolean=true;
+  replyMessage$=new Subject<IMessage>();
+  scrollReply$=new Subject<string>();
 
   constructor(
     private appService:AppService,
@@ -33,7 +35,6 @@ export class ChatService{
    }
 
   orderMessages(mesagges:IMessage[]){
-
     mesagges=mesagges.sort(function (a, b) {
       if (a.timestamp.valueOf() > b.timestamp.valueOf()) {
         return 1;
@@ -46,11 +47,10 @@ export class ChatService{
     return mesagges;
   }
 
-  addMessageInFirebase(message:string,idChat:string,userName:string,sendUser:IUser){
+  addMessageInFirebase(message:string,idChat:string,userName:string,sendUser:IUser, replyMessage?:IMessage){
     if(this.networkStatus){
       const dbMessage=this.db.loadStore("messages"+idChat);
-      const id=new Date().getTime()+''+Math.round(Math.random()*10000);
-
+      const id="a"+new Date().getTime()+''+Math.round(Math.random()*10000);
       const newMessage={
         message:message,
         user:userName,
@@ -62,7 +62,10 @@ export class ChatService{
         id:id,
         idChat:idChat,
         download:true
-      };
+      }
+      if(replyMessage){
+        newMessage["reply"]=replyMessage;
+      }
 
       dbMessage.setItem(id,newMessage);
 
@@ -84,7 +87,7 @@ export class ChatService{
       });
     }else{
       const dbMessage=this.db.loadStore("messages"+idChat);
-      const id=new Date().getTime()+''+Math.round(Math.random()*10000);
+      const id="a"+new Date().getTime()+''+Math.round(Math.random()*10000);
 
       const newMessage={
         message:message,
@@ -99,6 +102,10 @@ export class ChatService{
         download:true
       };
 
+      if(replyMessage){
+        newMessage["reply"]=replyMessage;
+      }
+
       dbMessage.setItem(id,newMessage);
 
       this.dbNotSendMessages.setItem(id,newMessage).then(resp=>{
@@ -111,5 +118,6 @@ export class ChatService{
   setLastDate(date:Date){
     this.lastDate=date;
   }
+
 }
 

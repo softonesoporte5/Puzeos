@@ -1,6 +1,6 @@
 import { ToastController } from '@ionic/angular';
 import { Injectable } from '@angular/core';
-import {Plugins, FilesystemDirectory, FilesystemEncoding} from '@capacitor/core';
+import {Plugins, FilesystemDirectory, FilesystemEncoding, FileWriteOptions} from '@capacitor/core';
 const {Filesystem} = Plugins;
 
 @Injectable({
@@ -12,14 +12,18 @@ export class FileSystemService {
     private toastController: ToastController
   ) { }
 
-  async writeFile(data:string, fileName:string, dir:string){
+  async writeFile(data:string, fileName:string, dir:string, utf8=false){
+    let dataWrite:FileWriteOptions={
+      data:data,
+      path: 'Puzeos/'+dir+fileName,
+      directory:FilesystemDirectory.ExternalStorage,
+    }
+    if(utf8){
+      dataWrite.encoding=FilesystemEncoding.UTF8;
+    }
+
     try{//Se guarda si existe la carpeta Puzeos y la carpeta que se pase por dir
-      const fileUrl=await Filesystem.writeFile({
-        data:data,
-        path: 'Puzeos/'+dir+fileName,
-        directory:FilesystemDirectory.ExternalStorage,
-        encoding: FilesystemEncoding.UTF8
-      });
+      const fileUrl=await Filesystem.writeFile(dataWrite);
 
       return fileUrl.uri;
     }catch(e){
@@ -34,11 +38,7 @@ export class FileSystemService {
           path:"Puzeos/"+dir
         });
 
-        const fileUrl=await Filesystem.writeFile({
-          data:data,
-          path: 'Puzeos/'+dir+fileName,
-          directory:FilesystemDirectory.ExternalStorage
-        });
+        const fileUrl=await Filesystem.writeFile(dataWrite);
 
         return fileUrl.uri;
       }catch(e){
@@ -48,11 +48,7 @@ export class FileSystemService {
             path:"Puzeos/"+dir
           });
 
-          const fileUrl=await Filesystem.writeFile({
-            data:data,
-            path: 'Puzeos/'+dir+fileName,
-            directory:FilesystemDirectory.ExternalStorage
-          });
+          const fileUrl=await Filesystem.writeFile(dataWrite);
           return fileUrl.uri;
         }catch(e){
           this.presentAlert("No se pudo guardar el archivo");

@@ -35,7 +35,6 @@ export class ItemChatComponent implements OnInit {
 
   ngOnInit() {
     let arrUser=this.chat.userNames.filter(userName=>userName!==this.chatUser);
-    console.log(arrUser, this.chatUser)
     this.chatName=arrUser[0];
 
     this.dbUsers=this.db.loadStore("users");

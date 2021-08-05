@@ -6,14 +6,14 @@ ion-card{
   box-shadow: none;
   margin: 5px 5px 5px 13px;
   float: left;
-  --background: #d0d0d0;
+  --background: #fdfdfd;
   overflow: visible;
 
   &::before{
     content: "";
     position: absolute;
     border: solid 10px transparent;
-    border-right: solid 10px #d0d0d0;
+    border-right: solid 10px #fdfdfd;
     border-radius: 50%;
     left: -9px;
     top: -3px;
@@ -40,8 +40,6 @@ ion-card{
         margin-left: 5px;
       }
     }
-
-
   }
 }
 
@@ -74,4 +72,32 @@ app-image-message{
   width: 100%;
   display: flex;
   justify-content: center;
+}
+
+
+.loc__reply{
+  display: flex;
+  padding: 0.25rem 0.5rem;
+  flex-direction: column;
+  align-items: flex-start;
+  border-left: solid 3px #d2b48c;
+  font-size: 12px;
+  .userName{
+    color: #f7ce97;
+    font-weight: 600;
+  }
+}
+
+.replyNotSend{
+  position: absolute;
+  bottom: 0;
+  right: -2.5rem;
+  font-size: 2rem;
+}
+
+.replySend{
+  position: absolute;
+  bottom: 0;
+  left: -2.5rem;
+  font-size: 2rem;
 }

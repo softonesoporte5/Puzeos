@@ -27,6 +27,7 @@
     alt="Imágen"
     preload="metadata"
     (click)="openModal()"
+    class="no-disponible"
   >
     <source [src]="imageUrl" type="video/mp4">
   </video>
@@ -37,6 +38,7 @@
     alt="Imágen"
     *ngIf="video.download===true"
     preload="metadata"
+    class="no-disponible"
   >
     <source [src]="imageUrl" type="video/mp4">
   </video>

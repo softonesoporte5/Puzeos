@@ -3,9 +3,6 @@ import { ActionSheetController } from '@ionic/angular';
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
 import { Component, OnInit, Input } from '@angular/core';
 import { Chooser } from '@ionic-native/chooser/ngx';
-import {Plugins, FilesystemDirectory } from '@capacitor/core';
-const {Filesystem} = Plugins;
-
 
 @Component({
   selector: 'app-file-selector',
@@ -35,23 +32,27 @@ export class FileSelectorComponent implements OnInit {
         const randomId=Math.round(Math.random()*1000)+date;
         let ext='';
         let directory='';
-
+        let messageTxt='';
         if(file.mediaType.includes("video")){
           type="video";
           ext='mp4';
           directory="Videos/";
+          messageTxt="Video";
         }else if(file.mediaType.includes("image")){
           type="image";
           ext='jpeg';
           directory="Images/";
+          messageTxt="Imágen";
         }else if(file.mediaType.includes("application") || file.mediaType.includes("text")){
           type="document";
           ext=file.mediaType.slice((file.mediaType.lastIndexOf("/") - 1 >>> 0) + 2);
           directory="DocumentsAndMusic/";
-        }else if(file.mediaType.includes("application")){
+          messageTxt=file.name;
+        }else if(file.mediaType.includes("audio")){
           type="audio";
           ext='mp3';
           directory="DocumentsAndMusic/";
+          messageTxt=file.name;
         }
 
         this.fileSystemService.writeFile(file.dataURI,`${randomId}.${ext}`,directory)
@@ -65,7 +66,7 @@ export class FileSelectorComponent implements OnInit {
                 mimeType:file.mediaType
               }
             }
-            this.firebaseStorage.uploadFile(file.dataURI,this.userName,type,respUrl,this.idChat,extraData,ext)
+            this.firebaseStorage.uploadFile(file.dataURI,this.userName,type,respUrl,this.idChat,extraData,ext, messageTxt)
             .catch(err=>console.log(err));
           }
         })
