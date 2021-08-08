@@ -1,3 +1,4 @@
+import { SharedModule } from './../../../shared/shared.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -13,7 +14,8 @@ import { BlockedUsersPage } from './blocked-users.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    BlockedUsersPageRoutingModule
+    BlockedUsersPageRoutingModule,
+    SharedModule
   ],
   declarations: [BlockedUsersPage]
 })

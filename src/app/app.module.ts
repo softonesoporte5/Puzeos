@@ -1,3 +1,6 @@
+import { SharedModule } from './shared/shared.module';
+import { ChatModule } from './chat/chat.module';
+import { TranslateModule } from '@ngx-translate/core';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -25,13 +28,17 @@ import { OneSignal } from '@ionic-native/onesignal/ngx';
     BrowserModule,
     IonicModule.forRoot(),
     AuthModule,
+    SharedModule,
     AppRoutingModule,
     SnackbarModule.forRoot(),
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,
     AngularFirestoreModule,
     AngularFireStorageModule,
-    ImageCropperModule
+    ImageCropperModule,
+    TranslateModule.forRoot({
+      defaultLanguage: 'en'
+    })
   ],
   providers: [
     FileOpener,
@@ -42,3 +49,5 @@ import { OneSignal } from '@ionic-native/onesignal/ngx';
   bootstrap: [AppComponent],
 })
 export class AppModule {}
+
+

@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
@@ -29,8 +30,11 @@ export class HomePage implements OnInit{
     private db:DbService,
     private route:ActivatedRoute,
     private router:Router,
-    public alertController: AlertController
-  ) { }
+    public alertController: AlertController,
+    private translate:TranslateService
+  ) {
+
+  }
 
   ngOnInit() {
     this.dbChats=this.db.loadStore('chats');
@@ -165,16 +169,21 @@ export class HomePage implements OnInit{
     if(this.user.data.chats.length<5){
       this.router.navigate(['/chat/agregar']);
     }else{
-      this.presentAlert("Solo se pueden tener 5 chats activos a la vez, este límite será removido en futuras actualizaciones :D");
+      let alertTxt='';
+      this.translate.get("HomePage.LimitMessage").subscribe(resp=>{
+        this.presentAlert(resp+" :D");
+      });
     }
   }
 
   async presentAlert(message:string) {
+    let txt='';
+    this.translate.get("HomePage.ToAccept").subscribe(resp=>{txt=resp});
     const alert = await this.alertController.create({
       message: message,
       buttons: [
         {
-          text: 'Aceptar',
+          text: txt,
         }
       ]
     });

@@ -1,0 +1,105 @@
+{
+  "RegisterPage":{
+    "UserNamePlaceholder": "Enter your username",
+    "EmailLabel": "Email",
+    "EmailPlaceholder": "Enter your email",
+    "PasswordLabel": "Password",
+    "PasswordPlaceholder": "Enter your password",
+    "PasswordLabel_2": "Confirm your password",
+    "PasswordPlaceholder_2": "Confirm your password",
+    "DescriptionLabel":"Description (optional)",
+    "DescriptionPlaceholder":"Add a short description",
+    "Continue":"Continue",
+    "SignIn": "Sign in",
+    "H4Text":"You have an account?",
+    "Login":"Log in"
+  },
+  "LoginPage":{
+    "H4Text":"You do not have an account?"
+  },
+  "Global":{
+    "Language":"Language",
+    "Camera":"Camera",
+    "Galery":"Galery",
+    "RemovePicture":"Remove profile picture",
+    "UserName": "Username",
+    "Cancel":"Cancel",
+    "Save":"Save",
+    "ActiveChats":"active chats",
+    "SavedMessages":"Saved messages",
+    "BlockedUsers":"Blocked users",
+    "ToAccept":"Accept"
+  },
+  "Error":{
+    "NotMatchPasswords":"Passwords do not match",
+    "ConfirmPasswordRequired":"The 'Confirm password' field is required",
+    "MinLengthPassword": "Password must be at least 9 characters",
+    "MinLengthEmail":"The email must be at least 6 characters long",
+    "InvalidEmail":"Please enter a valid email",
+    "MinUserName":"Username must be at least 8 characters long",
+    "EmailRequired":"Email is required",
+    "PasswordRequired":"Password is required",
+    "UserNameRequired":"Username is required",
+    "UserNotFound":"No user associated with this email",
+    "WrongPassword":"Incorrect password"
+  },
+  "MenuComponent":{
+    "CreateGroup":"Create group",
+    "CoomingSoon":"Cooming soon",
+    "Setting":"Setting"
+  },
+  "ProfilePage":{
+    "Join":"He joined Puzeos on",
+    "Description":"Description",
+    "Info":"Other information",
+    "BlockedUsers":"blocked users",
+    "ChangeDescription":"Change description",
+    "ShortDescription":"Short description"
+  },
+  "BlockedUsersPage":{
+    "ToUnlock":"To unlock",
+    "SlideUnlock":"Slide to unlock"
+  },
+  "SearchMessagePage":{
+    "SearchMessage":"Search message"
+  },
+  "HomePage":{
+    "Welcome":"Welcome to Puzeos",
+    "WelcomeMessage":"Press the + button to chat with another person about a topic.",
+    "Skip":"Skip",
+    "LimitMessage":"You can only have 5 chats active at a time, this limit will be removed in future updates"
+  },
+  "AgregarPage":{
+    "Title":"Add a chat",
+    "Popular":"Popular Topics",
+    "SearchPlaceholder":"What do you want to chat about?",
+    "ApplyFor":"Apply for!!",
+    "AllTheThemes":"All the themes",
+    "RequestTxt":"Request that a conversation topic be added, we will notify you if we accept it.",
+    "Placeholder":"Conversation topic",
+    "Send":"Send",
+    "NotFound":"Conversation topic not found",
+    "Searching":"Searching",
+    "SearchingMessage":"This may take time, we will notify you when we find a partner."
+  },
+  "ChatPage":{
+    "Message":"Message",
+    "DeleteChat":"Delete chat",
+    "BlockUser":"Block user",
+    "DeleteChatMessage":"You can't send messages because {{value}} deleted the chat",
+    "AlertMessage":"We need permission to be able to use the microphone, if you declined, you must activate it. <br> <br> If you need help, press <a target='_blank' href='https://support.google.com/googleplay/answer/6270602?hl=es-419#'> here </a> and go to the section 'How to activate or deactivate permission'!",
+    "Swipe":"Swipe to cancel",
+    "ImageOrVideo":"Image or video",
+    "Document":"Document",
+    "Audio":"Audio"
+  },
+  "ProfileModal":{
+    "Info":"Username and description",
+    "Join":"He joined Puzeos on",
+    "Theme":"Conversation topic",
+    "BlockUser":"Block user"
+  },
+  "SettingPage":{
+    "DarkMode":"Activate dark mode"
+  }
+}

@@ -39,86 +39,109 @@
       color="primary"
       class="ion-padding-vertical sombra ion-padding auth__cont mb-10"
     >
-      <ion-item>
-        <ion-icon name="person" slot="start"></ion-icon>
-        <ion-label position="floating">Nombre de usuario</ion-label>
-        <ion-input
-          type="text"
-          id="name"
-          class="auth__input"
-          placeholder="Ingrese su nombre de usuario"
-          formControlName="name"
-        ></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-icon name="mail" slot="start"></ion-icon>
-        <ion-label position="floating">Correo electrónico</ion-label>
-        <ion-input
-          type="email"
-          id="email"
-          class="auth__input"
-          placeholder="Ingrese su email"
-          formControlName="email"
-        ></ion-input>
-      </ion-item>
-
-
-      <span formGroupName="passwords">
-        <ion-item>
-          <ion-icon name="key" slot="start"></ion-icon>
-          <ion-label position="floating">Contraseña</ion-label>
-          <ion-input
-              type="password"
-              id="password"
+      <ion-slides pager="true" [options]="slideOpts" #IonSlides>
+        <ion-slide>
+          <ion-item>
+            <ion-icon name="person" slot="start"></ion-icon>
+            <ion-label position="floating">{{ 'Global.UserName' | translate }}</ion-label>
+            <ion-input
+              type="text"
+              id="name"
               class="auth__input"
-              placeholder="Ingrese su contraseña"
-              formControlName="password"
+              [placeholder]="'RegisterPage.UserNamePlaceholder' | translate "
+              formControlName="name"
             ></ion-input>
-        </ion-item>
+          </ion-item>
 
-        <ion-item>
-          <ion-icon name="key" slot="start"></ion-icon>
-          <ion-label position="floating">Confirmar contraseña</ion-label>
-          <ion-input
-              type="password"
-              id="password2"
+          <ion-item>
+            <ion-icon name="mail" slot="start"></ion-icon>
+            <ion-label position="floating">{{ 'RegisterPage.EmailLabel' | translate }}</ion-label>
+            <ion-input
+              type="email"
+              id="email"
               class="auth__input"
-              placeholder="Confirme su contraseña"
-              formControlName="password2"
+              [placeholder]="'RegisterPage.EmailPlaceholder' | translate"
+              formControlName="email"
             ></ion-input>
-        </ion-item>
-      </span>
+          </ion-item>
 
-      <ion-item>
-        <ion-icon name="information-circle" slot="start"></ion-icon>
-        <ion-label position="floating">Descripción (Opcional)</ion-label>
-        <ion-input
-          type="text"
-          id="email"
-          class="auth__input"
-          placeholder="Agrega un descripción corta"
-          maxlength="80"
-          formControlName="descripcion"
-        ></ion-input>
-      </ion-item>
+          <span formGroupName="passwords">
+            <ion-item>
+              <ion-icon name="key" slot="start"></ion-icon>
+              <ion-label position="floating">{{ 'RegisterPage.PasswordLabel' | translate }}</ion-label>
+              <ion-input
+                  type="password"
+                  id="password"
+                  class="auth__input"
+                  [placeholder]="'RegisterPage.PasswordPlaceholder' | translate"
+                  formControlName="password"
+                ></ion-input>
+            </ion-item>
 
+            <ion-item>
+              <ion-icon name="key" slot="start"></ion-icon>
+              <ion-label position="floating">{{ 'RegisterPage.PasswordLabel_2' | translate }}</ion-label>
+              <ion-input
+                  type="password"
+                  id="password2"
+                  class="auth__input"
+                  [placeholder]="'RegisterPage.PasswordPlaceholder_2' | translate"
+                  formControlName="password2"
+                ></ion-input>
+            </ion-item>
+          </span>
+        </ion-slide>
+        <ion-slide>
+          <ion-item>
+            <ion-icon name="information-circle" slot="start"></ion-icon>
+            <ion-label position="floating">{{ 'RegisterPage.DescriptionLabel' | translate }}</ion-label>
+            <ion-input
+              type="text"
+              id="email"
+              class="auth__input"
+              [placeholder]="'RegisterPage.DescriptionPlaceholder' | translate"
+              maxlength="80"
+              formControlName="descripcion"
+            ></ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-label>{{'Global.Language' | translate}}</ion-label>
+            <ion-select [(ngModel)]="languageSelect" (ionChange)="setLanguage()">
+              <ion-select-option value="es">Español</ion-select-option>
+              <ion-select-option value="en">English</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-slide>
+      </ion-slides>
     </div>
 
     <ion-button
       expand="block"
-      class="ion-text-capitalize"
+      class="ion-text-capitalize center-child"
       color="secondary"
-      type="submit"
-    >Registrarse</ion-button>
+      (click)="activeSlide===0?next():enviar()"
+    >
+      <span *ngIf="activeSlide===0">
+        {{'RegisterPage.Continue' | translate}}
+      </span>
+      <span *ngIf="activeSlide!==0">
+        {{'RegisterPage.SignIn' | translate}}
+      </span>
+      <ion-icon
+        *ngIf="activeSlide===0"
+        name="arrow-forward-outline"
+        class="auth__icon-continue"
+      ></ion-icon>
+    </ion-button>
 
     <ion-text color="tertiary">
-      <h4 class="ion-text-center">¿Tienes una cuenta?</h4>
+      <h4 class="ion-text-center">{{'RegisterPage.H4Text' | translate}}</h4>
     </ion-text>
     <a
       [routerLink]="['/auth/login']"
       class="ion-text-center auth__enlace"
-    >Inicia sesión</a>
+    >{{'RegisterPage.Login' | translate}}</a>
 
   </form>
 </ion-content>

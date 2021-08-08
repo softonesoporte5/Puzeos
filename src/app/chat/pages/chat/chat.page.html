@@ -93,7 +93,7 @@
 
         <ion-icon name="chevron-back-outline"></ion-icon>
         <p>
-          Deslice para cancelar
+          {{'ChatPage.Swipe' | translate}}
         </p>
       </div>
       <ion-icon
@@ -106,7 +106,7 @@
       ></ion-icon>
 
       <ion-textarea
-        placeholder="Mensaje"
+        [placeholder]="'ChatPage.Message' | translate"
         class="chat__input"
         formControlName="mensaje"
         auto-grow="true"
@@ -170,7 +170,7 @@
     </ion-toolbar>
   </form>
   <ion-text *ngIf="blockChat">
-    No puedes enviar mensajes porque {{user?.data.userName}} eliminó el chat
+    {{'ChatPage.DeleteChatMessage' | translate:{ value: user?.data.userName} }}
   </ion-text>
 </ion-footer>
 

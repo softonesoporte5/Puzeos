@@ -1,3 +1,5 @@
+import { SharedModule } from './../../../shared/shared.module';
+import { TranslateModule } from '@ngx-translate/core';
 import { DocumentComponent } from './../../components/document/document.component';
 import { VideoMessageComponent } from './../../components/video-message/video-message.component';
 import { PerfilModalComponent } from './../../components/perfil-modal/perfil-modal.component';
@@ -32,7 +34,8 @@ import { HttpClientModule } from '@angular/common/http';
     Ionic4EmojiPickerModule,
     HttpClientModule,
     ScrollingModule,
-    ExperimentalScrollingModule
+    ExperimentalScrollingModule,
+    SharedModule
   ],
   declarations: [
     ChatPage,

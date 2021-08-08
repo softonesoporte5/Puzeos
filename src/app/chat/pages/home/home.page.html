@@ -47,12 +47,14 @@
     </ion-fab-button>
   </ion-fab>
 
-  <small>{{user?.data.chats.length}}/5 chats activos</small>
+  <small>{{user?.data.chats.length}}/5 {{'Global.ActiveChats' | translate}}</small>
 </ion-content>
 
 <div class="loc__guia" *ngIf="welcome && chatsFirebase===0">
-  <h1>Bienvenido a Puzeos :D</h1>
-  <p>Pulsa en el botón de + para conversar con otra persona sobre un tema.</p>
+  <h1>{{'HomePage.Welcome' | translate}} :D</h1>
+  <p>{{'HomePage.WelcomeMessage' | translate}}</p>
   <img src="../../../../assets/img-welcome.png" alt="Imágen">
-  <ion-button color="primary" routerLink="chat/" (click)="welcome=false">Omitir</ion-button>
+  <ion-button color="primary" routerLink="chat/" (click)="welcome=false">
+    {{'HomePage.Skip' | translate}}
+  </ion-button>
 </div>

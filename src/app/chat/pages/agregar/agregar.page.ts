@@ -1,3 +1,5 @@
+import { TranslateService } from '@ngx-translate/core';
+import { AlertController } from '@ionic/angular';
 import { FormGroup, Validators, FormBuilder, AbstractControl } from '@angular/forms';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from './../../../services/db.service';
@@ -14,7 +16,8 @@ interface IItem{
   data:{
     title:string
   },
-  color:string
+  color:string,
+  chatsCreated?:number
 }
 
 @Component({
@@ -34,12 +37,15 @@ export class AgregarPage implements OnInit, OnDestroy {
   dbUsers:ILocalForage;
   searchTxt:AbstractControl=this.miFormulario.get("searchTxt");
   search:string;
+  popularTags:IItem[]=[];
 
   constructor(
     private fireStore:AngularFirestore,
     private router:Router,
     private db:DbService,
-    private fb:FormBuilder
+    private fb:FormBuilder,
+    private alertController: AlertController,
+    private translate:TranslateService
   ) { }
 
   ngOnInit() {
@@ -48,20 +54,33 @@ export class AgregarPage implements OnInit, OnDestroy {
     //Almacenar los tags en el sessionStorage para que no cargen cada vez
     if(sessionStorage.getItem("tags")){
       this.items=JSON.parse(sessionStorage.getItem("tags"));
+      this.popularTags=this.items.slice(0,5);
     }else{
+      let tags=[];
       this.fireStore.collection("tags").ref.get()
       .then(items=>{
         items.forEach(item=>{
-          const title=item.data() as any;
-          this.items.push({
+          const data=item.data() as any;
+          tags.push({
             id:item.id,
             data:{
-              title:title.title
+              title:data.title,
             },
-            color:this.colorRGB()
+            color:this.colorRGB(),
+            chatsCreated:data.chatsCreated?data.chatsCreated:0
           });
         });
+        this.items=tags.sort((a, b)=>{
+          if (a.chastCreated < b.chatsCreated) {
+            return 1;
+          }
+          if (a.chatsCreated > b.chatsCreated) {
+            return -1;
+          }
+          return 0;
+        });
         sessionStorage.setItem("tags",JSON.stringify(this.items));
+        this.popularTags=this.items.slice(0,5);
       }).catch(error=>{
         console.log(error);
       });
@@ -143,15 +162,14 @@ export class AgregarPage implements OnInit, OnDestroy {
     });
   }
 
-   buscarCompa(tagId:string, title:string){//Añade al usuario en la coleccion de busquedas
+  buscarCompa(tagId:string, title:string){//Añade al usuario en la coleccion de busquedas
     this.buscando=true;
 
     let searchSubscribe=this.fireStore.collection("searchs").doc(tagId).get()
     .subscribe((resp:DocumentSnapshot<searchsUser>)=>{
       searchSubscribe.unsubscribe();
-      console.log(resp);
       if(!resp){
-        this.fireStore.collection("searchs").doc(tagId).set({
+        this.fireStore.collection("searchs").doc(tagId).update({
           [`users.${this.user.id}`]:this.user.data.userName
         }).catch(error=>console.log(error));
       }else{
@@ -197,7 +215,9 @@ export class AgregarPage implements OnInit, OnDestroy {
               this.user.data.token,
               values[0].token
             ],
-            title);
+            title,
+            tagId
+            );
             this.fireStore.collection("searchs").doc(tagId).update({//Eliminamos al usuario de la tabla de busquedas
               [`users.${values[0].id}`]:firebase.default.firestore.FieldValue.delete()
             })
@@ -211,7 +231,7 @@ export class AgregarPage implements OnInit, OnDestroy {
     });
   }
 
-  generarChat(members:object,contact:string, userNames:string[],tokens:string[],title:string){
+  generarChat(members:object,contact:string, userNames:string[],tokens:string[],title:string, tagId:string){
     this.fireStore.collection("chats").add({
       group:false,
       lastMessage: "Se ha creado el chat",
@@ -250,6 +270,10 @@ export class AgregarPage implements OnInit, OnDestroy {
             },
             chats:firebase.default.firestore.FieldValue.arrayUnion(chat.id)
           }).then(()=>{//Redireccionamos al home
+            console.log(tagId)
+            this.fireStore.collection("tags").doc(tagId).update({
+              chatsCreated: firebase.default.firestore.FieldValue.increment(1)
+            });
             this.router.navigate(['chat']);
           }).catch(error=>{
             console.log(error);
@@ -273,8 +297,56 @@ export class AgregarPage implements OnInit, OnDestroy {
     })
   }
 
-
   trackItems(index: number, item: IItem) {
     return item.id;
+  }
+
+  async addTheme(){
+    let headerTxt='';
+    this.translate.get("AgregarPage.ApplyFor").subscribe(resp=>headerTxt=resp);
+    let messageTxt='';
+    this.translate.get("AgregarPage.RequestTxt").subscribe(resp=>messageTxt=resp);
+    let inputTxt='';
+    this.translate.get("AgregarPage.Placeholder").subscribe(resp=>inputTxt=resp);
+    let cancelTxt='';
+    this.translate.get("Global.Cancel").subscribe(resp=>cancelTxt=resp);
+    let sendTxt='';
+    this.translate.get("AgregarPage.Send").subscribe(resp=>sendTxt=resp);
+
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: headerTxt,
+      message: messageTxt,
+      inputs: [
+        {
+          id: 'newThemeTxt',
+          type: 'text',
+          placeholder: inputTxt,
+          attributes: {
+            maxlength: 40
+          }
+        },
+      ],
+      buttons: [
+        {
+          text: cancelTxt,
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: sendTxt,
+          handler: () => {
+            const themeTxt=document.querySelector("#newThemeTxt") as HTMLInputElement;
+            this.fireStore.collection("newTags").add({
+              title:themeTxt.value,
+              notificationToken:this.user.data.token
+            }).catch(error=>{
+              console.log("Hubo un error",error);
+            });
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 }

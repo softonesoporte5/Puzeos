@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import * as firebase from 'firebase';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-menu',
@@ -22,7 +23,6 @@ export class MenuComponent implements OnInit {
     private router:Router,
     private auth:AngularFireAuth,
     private db:DbService,
-
   ) { }
 
   ngOnInit() {

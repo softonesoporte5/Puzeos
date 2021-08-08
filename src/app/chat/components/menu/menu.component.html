@@ -35,7 +35,9 @@
           name="people-sharp"
           slot="start"
         ></ion-icon>
-        <span color="dark">Crear grupo <br/><small>Próximamente</small></span>
+        <span color="dark">{{'MenuComponent.CreateGroup' | translate}} <br/>
+          <small>{{'MenuComponent.CoomingSoon' | translate}}</small>
+        </span>
       </ion-item>
       <ion-item routerLink="/chat/saved-messages">
         <ion-icon
@@ -43,21 +45,21 @@
           slot="start"
           name="bookmark-sharp"
         ></ion-icon>
-          <span color="dark">Mensajes guardados</span>
+          <span color="dark">{{'Global.SavedMessages' | translate}}</span>
       </ion-item>
       <ion-item routerLink="/chat/blocked-users">
         <ion-icon
           color="secondary"
           slot="start"
           name="heart-dislike-sharp"></ion-icon>
-         <span color="dark">Usuarios bloqueados</span>
+         <span color="dark">{{'Global.BlockedUsers' | translate}}</span>
       </ion-item>
       <ion-item  routerLink="/chat/setting">
         <ion-icon
           color="secondary"
           slot="start"
           name="settings-sharp"></ion-icon>
-        <span color="dark">Configuración</span>
+        <span color="dark">{{'MenuComponent.Setting' | translate}}</span>
       </ion-item>
       <!-- <ion-item (click)="logout()">
         <ion-icon

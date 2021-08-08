@@ -1,0 +1,105 @@
+{
+  "RegisterPage":{
+    "UserNamePlaceholder": "Ingrese su nombre de usuario",
+    "EmailLabel": "Correo electrónico",
+    "EmailPlaceholder": "Ingrese su email",
+    "PasswordLabel": "Contraseña",
+    "PasswordPlaceholder": "Ingrese su contraseña",
+    "PasswordLabel_2": "Confirmar contraseña",
+    "PasswordPlaceholder_2": "Confirme su contraseña",
+    "DescriptionLabel":"Descripción (opcional)",
+    "DescriptionPlaceholder":"Agrega una descripción corta",
+    "Continue":"Continuar",
+    "SignIn": "Registrarse",
+    "H4Text":"¿Tienes una cuenta?",
+    "Login":"Inicia sesión"
+  },
+  "LoginPage":{
+    "H4Text":"¿No tienes una cuenta?"
+  },
+  "Global":{
+    "Language":"Idioma",
+    "Camera":"Cámara",
+    "Galery":"Galería",
+    "RemovePicture":"Quitar foto de perfil",
+    "UserName": "Nombre de usuario",
+    "Cancel":"Cancelar",
+    "Save":"Guardar",
+    "ActiveChats":"chats activos",
+    "SavedMessages":"Mensajes guardados",
+    "BlockedUsers":"Usuarios bloqueados",
+    "ToAccept":"Aceptar"
+  },
+  "Error":{
+    "NotMatchPasswords":"Las constraseñas no coinciden",
+    "ConfirmPasswordRequired":"El campo 'Confirmar contraseña' es requerido",
+    "MinLengthPassword": "La contraseña debe tener al menos 9 caracteres",
+    "MinLengthEmail":"El correo debe tener al menos 6 caracteres",
+    "InvalidEmail":"Introduzca una dirección de correo válida",
+    "MinUserName":"El nombre de usuario debe tener al menos 8 caracteres",
+    "EmailRequired":"El correo es requerido",
+    "PasswordRequired":"La contraseña es requerida",
+    "UserNameRequired":"El nombre de usuario es requerido",
+    "UserNotFound":"Ningún usuario asociado a este correo",
+    "WrongPassword":"Contraseña incorrecta"
+  },
+  "MenuComponent":{
+    "CreateGroup":"Crear grupo",
+    "CoomingSoon":"Próximamente",
+    "Setting":"Configuración"
+  },
+  "ProfilePage":{
+    "Join":"Se unió a Puzeos el",
+    "Description":"Descripción",
+    "Info":"Otra información",
+    "BlockedUsers":"usuarios bloqueados",
+    "ChangeDescription":"Cambiar descripción",
+    "ShortDescription":"Descripción corta"
+  },
+  "BlockedUsersPage":{
+    "ToUnlock":"Desbloquear",
+    "SlideUnlock":"Deslice para desbloquear"
+  },
+  "SearchMessagePage":{
+    "SearchMessage":"Buscar mensaje"
+  },
+  "HomePage":{
+    "Welcome":"Bienvenido a Puzeos",
+    "WelcomeMessage":"Pulsa en el botón de + para conversar con otra persona sobre un tema.",
+    "Skip":"Omitir",
+    "LimitMessage":"Solo se pueden tener 5 chats activos a la vez, este límite será removido en futuras actualizaciones"
+  },
+  "AgregarPage":{
+    "Title":"Agrega un chat",
+    "Popular":"Temas populares",
+    "SearchPlaceholder":"¿Sobre qué quieres chatear?",
+    "ApplyFor":"Solicitar!",
+    "AllTheThemes":"Todos los temas",
+    "RequestTxt":"Solicita que se agregue un tema de conversación, te notificaremos si lo aceptamos.",
+    "Placeholder":"Tema de conversación",
+    "Send":"Enviar",
+    "NotFound":"Tema de conversación no encontrado",
+    "Searching":"Buscando",
+    "SearchingMessage":"Esto puede tardar, le notificaremos cuando encontremos un compañero."
+  },
+  "ChatPage":{
+    "Message":"Mensaje",
+    "DeleteChat":"Eliminar chat",
+    "BlockUser":"Bloquear usuario",
+    "DeleteChatMessage":"No puedes enviar mensajes porque {{value}} eliminó el chat",
+    "AlertMessage":"Necesitamos permiso para poder usar el micrófono, si lo rechazaste, debes activarlo. <br> <br>Si necesitas ayuda, presiona <a target='_blank' href='https://support.google.com/googleplay/answer/6270602?hl=es-419#'>aquí</a> y dirígete a la sección de 'Cómo activar o desactivar permiso'¡",
+    "Swipe":"Desliza para cancelar",
+    "ImageOrVideo":"Imágen o video",
+    "Document":"Documento",
+    "Audio":"Audio"
+  },
+  "ProfileModal":{
+    "Info":"Nombre de usuario y descripción",
+    "Join":"Se unió a Puzeos el",
+    "Theme":"Tema de conversación",
+    "BlockUser":"Bloquear usuario"
+  },
+  "SettingPage":{
+    "DarkMode":"Activar modo oscuro"
+  }
+}

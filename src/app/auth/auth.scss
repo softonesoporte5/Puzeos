@@ -90,3 +90,20 @@ ion-button{
 .ion-page{
   align-items: center;
 }
+
+.auth__icon-continue{
+  margin:2px 0 0 5px;
+}
+
+ion-slides {
+  height: 100%;
+}
+
+ion-slide{
+  display: block;
+}
+
+:host ::ng-deep .swiper-pagination{
+  position: relative;
+  bottom: 0;
+}

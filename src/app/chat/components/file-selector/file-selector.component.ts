@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core';
 import { FileSystemService } from '../../../services/file-system.service';
 import { ActionSheetController } from '@ionic/angular';
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
@@ -19,12 +20,14 @@ export class FileSelectorComponent implements OnInit {
     private chooser:Chooser,
     private firebaseStorage:FirebaseStorageService,
     private actionSheetController: ActionSheetController,
-    private fileSystemService: FileSystemService
+    private fileSystemService: FileSystemService,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {}
 
   selectFile(mime:string,type:string){
+
     this.chooser.getFile(mime)
     .then(file =>{
       if(file.name){
@@ -75,25 +78,32 @@ export class FileSelectorComponent implements OnInit {
   }
 
   async openOpc() {
+    let txt1='';
+    this.translate.get("ChatPage.ImageOrVideo").subscribe(resp=>{txt1=resp});
+    let txt2='';
+    this.translate.get("ChatPage.Document").subscribe(resp=>{txt2=resp});
+    let txt3='';
+    this.translate.get("ChatPage.Audio").subscribe(resp=>{txt3=resp});
+
     const actionSheet = await this.actionSheetController.create({
       cssClass: 'my-custom-class',
       buttons: [
         {
-          text: 'Imágen o video',
+          text: txt1,
           icon: 'camera-sharp',
           handler: () => {
             this.selectFile("image/*,video/*","image")
           }
         },
         {
-          text: 'Documento',
+          text: txt2,
           icon: 'document-outline',
           handler: () => {
             this.selectFile("application/*,text/*","document")
           }
         },
         {
-          text: 'Audio',
+          text: txt3,
           icon: 'musical-notes-outline',
           handler: () => {
             this.selectFile("audio/*","audio")

@@ -6,12 +6,32 @@
       text=""
       mode="md"
     ></ion-back-button>
-    <ion-title class="ion-no-padding">Agrega un chat</ion-title>
+    <ion-title class="ion-no-padding">{{'AgregarPage.Title' | translate}}</ion-title>
+    <ion-button slot="end" mode="md" class="loc__add-theme" (click)="addTheme()">
+      <ion-icon
+        name="add-outline"
+        slot="icon-only"
+      ></ion-icon>
+    </ion-button>
   </ion-toolbar>
 </ion-header>
 
 <ion-content *ngIf="!buscando; else contBuscando" class="ion-padding">
   <span *ngIf="user?.data.chats.length<5">
+    <ion-list>
+      <ion-list-header>{{'AgregarPage.Popular' | translate}}</ion-list-header>
+      <ion-item
+        detail="true"
+        *ngFor="let tag of popularTags"
+        (click)="buscarCompa(tag.id, tag.data.title)"
+      >
+        <ion-label>{{tag.data.title}}</ion-label>
+        <ion-note slot="end" color="primary">{{tag.chatsCreated}}</ion-note>
+      </ion-item>
+    </ion-list>
+
+    <ion-list-header>{{'AgregarPage.AllTheThemes' | translate}}</ion-list-header>
+
     <form
       [formGroup]="miFormulario"
       autocomplete="off"
@@ -19,11 +39,12 @@
     >
       <ion-icon name="search-sharp"></ion-icon>
       <ion-input
-        placeholder="¿Sobre qué quieres chatear?"
+        [placeholder]="'AgregarPage.SearchPlaceholder' | translate"
         maxlength="50"
         formControlName="searchTxt"
       ></ion-input>
     </form>
+
 
     <ion-chip
       *ngFor="let item of items; trackBy:trackItems"
@@ -33,7 +54,7 @@
       <ion-label>{{item.data.title}}</ion-label>
     </ion-chip>
 
-    <p *ngIf="items.length===0">Etiqueta no encontrada</p>
+    <p *ngIf="items.length===0">{{'AgregarPage.NotFound' | translate}}</p>
   </span>
 </ion-content>
 
@@ -41,7 +62,7 @@
   <ion-content>
     <div class="ion-padding flex">
       <span style="display: flex;">
-        Buscando
+        {{'AgregarPage.Searching' | translate}}
         <ion-spinner
           color="primary"
           name="dots"
@@ -49,11 +70,11 @@
       </span>
 
       <ion-text class="ion-text-center" color="tertiary">
-        Esto puede tardar, le notificaremos cuando encontremos un compañero
+        {{'AgregarPage.SearchingMessage' | translate}}
       </ion-text>
 
       <ion-button color="secondary" (click)="cancelarBusqueda()">
-        Cancelar
+        {{'Global.Cancel' | translate}}
       </ion-button>
     </div>
   </ion-content>

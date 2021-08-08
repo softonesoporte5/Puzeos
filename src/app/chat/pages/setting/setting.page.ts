@@ -9,8 +9,11 @@ import { Component, OnInit } from '@angular/core';
 export class SettingPage implements OnInit {
 
   toogleDarkMode:boolean=false;
+  languageSelect:string;
 
-  constructor() { }
+  constructor() {
+    this.languageSelect=localStorage.getItem("language");
+  }
 
   ngOnInit() {
     const settings = JSON.parse(localStorage.getItem("settings")) as ISettings;
@@ -33,6 +36,9 @@ export class SettingPage implements OnInit {
     }
   }
 
-
-
+  setLanguage(){
+    if(this.languageSelect){
+      localStorage.setItem("language",this.languageSelect);
+    }
+  }
 }

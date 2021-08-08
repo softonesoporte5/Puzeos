@@ -1,3 +1,4 @@
+import { SharedModule } from './../shared/shared.module';
 import { SnackbarModule } from 'ngx-snackbar';
 import { IonicModule } from '@ionic/angular';
 import { AuthRoutingModule } from './auth-routing.module';
@@ -6,6 +7,7 @@ import { LoginPage } from './pages/login/login.page';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -17,7 +19,10 @@ import { ReactiveFormsModule } from '@angular/forms';
     AuthRoutingModule,
     ReactiveFormsModule,
     IonicModule,
-    SnackbarModule.forRoot()
+    SnackbarModule.forRoot(),
+    SharedModule,
+    FormsModule
   ]
 })
 export class AuthModule { }
+

@@ -22,28 +22,28 @@
       <ion-icon name="camera-sharp" slot="icon-only"></ion-icon>
     </ion-button>
     <div class="loc__cont-des">
-      <h6>Nombre de usuario</h6>
+      <h6>{{'Global.UserName' | translate}}</h6>
       <ion-item>
         <p>{{user?.data.userName}}</p>
       </ion-item>
       <ion-item>
-        Se unió a Puzeos el {{user?.data.createDate | date}}
+        {{'ProfilePage.Join' | translate}} {{user?.data.createDate | date}}
       </ion-item>
     </div>
 
     <div class="loc__cont-des">
-      <h6>Descripción</h6>
+      <h6>{{'ProfilePage.Description' | translate}}</h6>
       <ion-item (click)="changeDescription()" detail="true">
         <p>{{user?.data.descripcion}}</p>
       </ion-item>
     </div>
     <div class="loc__cont-des">
-      <h6>Otra información</h6>
+      <h6>{{'ProfilePage.Info' | translate}}</h6>
       <ion-item>
-        <p>{{numBlockedUsers}} usuarios bloqueados</p>
+        <p>{{numBlockedUsers}} {{'ProfilePage.BlockedUsers' | translate}}</p>
       </ion-item>
       <ion-item>
-        <p>{{user?.data.chats.length}} chats activos</p>
+        <p>{{user?.data.chats.length}} {{'Global.ActiveChats' | translate}}</p>
       </ion-item>
     </div>
 

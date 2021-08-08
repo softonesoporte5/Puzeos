@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core';
 import { IUserData } from './../../interfaces/user.interface';
 import { IMessagesResp } from './../../interfaces/messagesResp.interface';
 import { PerfilModalComponent } from './../../components/perfil-modal/perfil-modal.component';
@@ -70,7 +71,8 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
     private db:DbService,
     private chatService:ChatService,
     private modal:ModalController,
-    public alertController: AlertController
+    public alertController: AlertController,
+    private translate:TranslateService
   ) { }
 
   ngOnInit(){
@@ -387,12 +389,9 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
       }
       ,1000);
     }else{
-      this.presentAlert(`
-        Necesitamos permiso para poder usar el micrófono,
-        si lo rechazaste, debes activarlo. <br> <br>Si necesitas ayuda, presiona
-        <a target="_blank" href="https://support.google.com/googleplay/answer/6270602?hl=es-419#">aquí</a>
-        y dirígete a la sección de "Cómo activar o desactivar permisos".
-      `)
+      let txt='';
+      this.translate.get("ChatPage.AlertMessage").subscribe(resp=>{txt=resp});
+      this.presentAlert(txt);
     }
   }
 
@@ -434,11 +433,13 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
   }
 
   async presentAlert(message:string) {
+    let txt='';
+    this.translate.get("Global.ToAccept").subscribe(resp=>{txt=resp});
     const alert = await this.alertController.create({
       message: message,
       buttons: [
         {
-          text: 'Aceptar',
+          text: txt,
         }
       ]
     });

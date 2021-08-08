@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core';
 import { ImageModalComponent } from './../../components/image-modal/image-modal.component';
 import { ImageCropperModalComponent } from './../../components/image-cropper-modal/image-cropper.component';
 import { CameraService } from './../../../services/camera.service';
@@ -29,7 +30,8 @@ export class ProfilePage implements OnInit {
     public alertController: AlertController,
     private actionSheetController: ActionSheetController,
     private camara:CameraService,
-    private modal:ModalController
+    private modal:ModalController,
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
@@ -62,19 +64,28 @@ export class ProfilePage implements OnInit {
   }
 
   async changeDescription() {
+    let titleTxt='';
+    this.translate.get("ProfilePage.ChangeDescription").subscribe(resp=>titleTxt=resp);
+    let cancelTxt='';
+    this.translate.get("Global.Cancel").subscribe(resp=>cancelTxt=resp);
+    let saveTxt='';
+    this.translate.get("Global.Save").subscribe(resp=>saveTxt=resp);
+    let descriptionTxt='';
+    this.translate.get("ProfilePage.ShortDescription").subscribe(resp=>descriptionTxt=resp);
+
     const alert = await this.alertController.create({
       cssClass: 'alertDescription',
-      message: 'Cambiar descripción',
+      message: titleTxt,
       buttons: [
         {
-          text: 'Cancelar',
+          text: cancelTxt,
           role: 'cancel',
           cssClass: 'secondary',
-          handler: (blah) => {
+          handler: () => {
 
           }
         }, {
-          text: 'Guardar',
+          text: saveTxt,
           handler: () => {
             const newDescription=document.querySelector("#descriptionTxt") as HTMLInputElement;
             if(this.user.data.descripcion!==newDescription.value){
@@ -94,7 +105,7 @@ export class ProfilePage implements OnInit {
           id:'descriptionTxt',
           type: 'text',
           max:80,
-          placeholder: 'Descripción corta',
+          placeholder: descriptionTxt,
           value:this.user.data.descripcion,
           handler:()=>{
 
@@ -120,25 +131,32 @@ export class ProfilePage implements OnInit {
   }
 
   async changePhoto() {
+    let cameraTxt='';
+    this.translate.get("Global.Camera").subscribe(resp=>cameraTxt=resp);
+    let galeryTxt='';
+    this.translate.get("Global.Galery").subscribe(resp=>galeryTxt=resp);
+    let removeTxt='';
+    this.translate.get("Global.RemovePicture").subscribe(resp=>removeTxt=resp);
+
     const actionSheet = await this.actionSheetController.create({
       cssClass: 'my-custom-class',
       buttons: [
         {
-          text: 'Camara',
+          text: cameraTxt,
           icon: 'camera-sharp',
           handler: () => {
             this.selectImage(CameraSource.Camera)
           }
         },
         {
-          text: 'Galería',
+          text: galeryTxt,
           icon: 'image-sharp',
           handler: () => {
             this.selectImage(CameraSource.Photos)
           }
         },
         {
-          text: 'Quitar foto de perfil',
+          text: removeTxt,
           role: 'destructive',
           icon: 'trash',
           handler: () => {

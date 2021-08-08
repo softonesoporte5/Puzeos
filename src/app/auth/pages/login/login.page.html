@@ -9,7 +9,7 @@
     >
   </ion-row>
 
-  <h1 class="ion-text-center mb-20">Iniciar Sesión</h1>
+  <h1 class="ion-text-center mb-20">{{'RegisterPage.Login' | translate}}</h1>
   <form
     [formGroup]="miFormulario"
     action=""
@@ -24,24 +24,24 @@
 
       <ion-item>
         <ion-icon name="mail" slot="start"></ion-icon>
-        <ion-label position="floating">Correo electrónico</ion-label>
+        <ion-label position="floating">{{ 'RegisterPage.EmailLabel' | translate }}</ion-label>
         <ion-input
           type="email"
           id="email"
           class="auth__input"
-          placeholder="Ingrese su email"
+          [placeholder]="'RegisterPage.EmailPlaceholder' | translate"
           formControlName="email"
         ></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-icon name="key" slot="start"></ion-icon>
-        <ion-label position="floating">Contraseña</ion-label>
+        <ion-label position="floating">{{ 'RegisterPage.PasswordLabel' | translate }}</ion-label>
         <ion-input
             type="password"
             id="password"
             class="auth__input"
-            placeholder="Ingrese su contraseña"
+            [placeholder]="'RegisterPage.PasswordPlaceholder' | translate"
             formControlName="password"
           ></ion-input>
       </ion-item>
@@ -57,15 +57,15 @@
       color="secondary"
       type="submit"
       routerLink="/"
-    >Iniciar Sesión</ion-button>
+    >{{'RegisterPage.Login' | translate}}</ion-button>
 
     <ion-text color="tertiary">
-      <h4 class="ion-text-center">¿No tienes una cuenta?</h4>
+      <h4 class="ion-text-center">{{'RegisterPage.H4Text' | translate}}</h4>
     </ion-text>
     <a
       [routerLink]="['/auth/register']"
       class="ion-text-center auth__enlace"
-    >Registrate</a>
+    >{{'RegisterPage.SignIn' | translate}}</a>
 
   </form>
 </ion-content>

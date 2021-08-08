@@ -8,7 +8,7 @@
   <div class="loc__cont-info">
     <img [src]="imgPath" alt="">
     <div class="loc__cont-des">
-      <h6>Nombre de usuario y descripción</h6>
+      <h6>{{'ProfileModal.Info' | translate}}</h6>
       <ion-item>
         <p>{{user.data.userName}}</p>
       </ion-item>
@@ -16,12 +16,12 @@
         <p>{{user.data.descripcion}}</p>
       </ion-item>
       <ion-item>
-        Se unió a Puzeos el {{user.data.createDate | date}}
+        {{'ProfileModal.Join' | translate}} {{user.data.createDate | date}}
       </ion-item>
     </div>
 
     <div class="loc__cont-des">
-      <h6>Tema de conversación</h6>
+      <h6>{{'ProfileModal.Theme' | translate}}</h6>
       <ion-item>
         <p>{{chat.tema}}</p>
       </ion-item>
@@ -29,7 +29,7 @@
 
     <ion-item class="loc__btn-block" (click)="blockUser()">
       <ion-icon name="remove-circle-outline" color="danger"></ion-icon>
-      <p>Bloquear usuario</p>
+      <p>{{'ProfileModal.BlockUser' | translate}}</p>
     </ion-item>
   </div>
 

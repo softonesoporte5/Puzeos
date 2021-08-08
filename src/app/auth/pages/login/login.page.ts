@@ -4,6 +4,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
@@ -27,8 +28,11 @@ export class LoginPage implements OnInit {
     private toastController: ToastController,
     private auth:AngularFireAuth,
     private router:Router,
-    private loadingService:LoadingService
-  ) { }
+    private loadingService:LoadingService,
+    private translate: TranslateService
+  ) {
+    this.translate.use('en');
+   }
 
   ngOnInit() {}
 
@@ -52,11 +56,21 @@ export class LoginPage implements OnInit {
     if(this.miFormulario.invalid){
       let mensaje:string='';
       //Alertar sobre errores
-      if(this.email?.errors?.required){mensaje='El correo es requerido';}
-      if(this.email?.errors?.pattern){mensaje='Introduzca una dirección de correo válida';}
-      if(this.email?.errors?.minlength){mensaje='El correo debe tener al menos 6 caracteres';}
-      if(this.password?.errors?.required){mensaje='La contraseña es requerida';}
-      if(this.password?.errors?.minlength){mensaje='La contraseña debe tener al menos 9 caracteres';}
+      if(this.email?.errors?.required){
+        this.translate.get("Error.EmailRequired").subscribe(resp=>mensaje=resp);
+      }
+      if(this.email?.errors?.pattern){
+        this.translate.get("Error.InvalidEmail").subscribe(resp=>mensaje=resp);
+      }
+      if(this.email?.errors?.minlength){
+        this.translate.get("Error.MinLengthEmail").subscribe(resp=>mensaje=resp);
+      }
+      if(this.password?.errors?.required){
+        this.translate.get("Error.PasswordRequired").subscribe(resp=>mensaje=resp);
+      }
+      if(this.password?.errors?.minlength){
+        this.translate.get("Error.MinLengthPassword").subscribe(resp=>mensaje=resp);
+      }
 
       this.presentToastWithOptions(mensaje);
 
@@ -75,9 +89,13 @@ export class LoginPage implements OnInit {
         this.loadingService.dismiss();
 
         if(error.code==="auth/user-not-found"){
-          this.presentToastWithOptions("Ningún usuario asociado a este correo");
+          this.translate.get("Error.UserNotFound").subscribe(resp=>{
+            this.presentToastWithOptions(resp);
+          });
         }if(error.code==="auth/wrong-password"){
-          this.presentToastWithOptions("Contraseña incorrecta");
+          this.translate.get("Error.WrongPassword").subscribe(resp=>{
+            this.presentToastWithOptions(resp);
+          });
         }
       });
 

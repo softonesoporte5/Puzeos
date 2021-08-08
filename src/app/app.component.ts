@@ -1,6 +1,7 @@
 import { ISettings } from './chat/interfaces/settings.interface';
 import { NotificationServiceService } from './services/notification-service.service';
 import { Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,7 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   constructor(
-    private notificationService:NotificationServiceService
+    private notificationService:NotificationServiceService,
   ) {
     this.notificationService.inicializar();
     const settings = JSON.parse(localStorage.getItem("settings")) as ISettings;
