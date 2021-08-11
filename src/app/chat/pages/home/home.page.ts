@@ -178,7 +178,7 @@ export class HomePage implements OnInit{
 
   async presentAlert(message:string) {
     let txt='';
-    this.translate.get("HomePage.ToAccept").subscribe(resp=>{txt=resp});
+    this.translate.get("Global.ToAccept").subscribe(resp=>{txt=resp});
     const alert = await this.alertController.create({
       message: message,
       buttons: [

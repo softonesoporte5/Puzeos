@@ -45,7 +45,6 @@
       ></ion-input>
     </form>
 
-
     <ion-chip
       *ngFor="let item of items; trackBy:trackItems"
       (click)="buscarCompa(item.id, item.data.title)"
@@ -59,8 +58,39 @@
 </ion-content>
 
 <ng-template #contBuscando>
-  <ion-content>
-    <div class="ion-padding flex">
+  <ion-content class="ion-padding">
+
+    <span *ngIf="!searchLanguage">
+      <ion-text>
+        Selecciona el idioma en el que quieres conversar, por ejemplo, si quieres conversar en inglés, selecciona "English".
+      </ion-text>
+
+      <ion-item>
+        <ion-label>{{'Global.Language' | translate}}</ion-label>
+        <ion-select [(ngModel)]="selectValue">
+          <ion-select-option value="en">English</ion-select-option>
+          <ion-select-option value="es">Español (Spanish)</ion-select-option>
+          <ion-select-option value="fr">Français (French)</ion-select-option>
+          <ion-select-option value="po">Português (Portuguese)</ion-select-option>
+          <ion-select-option value="ch">中国人 (Chinese)</ion-select-option>
+          <ion-select-option value="ar">हिंदी (Hindi)</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <br>
+      <small>El idioma que selecciones se usará por defecto en las próximas búsquedas, ve a "Configuración" para cambiarlo.</small>
+      <br><br>
+
+      <div class="loc__cont-buttons">
+        <ion-button color="tertiary" (click)="buscando=false">
+          Cancelar
+        </ion-button>
+        <ion-button color="secondary" (click)="setSearchLanguage()">
+          Buscar
+        </ion-button>
+      </div>
+    </span>
+
+    <div class="flex" *ngIf="searchLanguage">
       <span style="display: flex;">
         {{'AgregarPage.Searching' | translate}}
         <ion-spinner

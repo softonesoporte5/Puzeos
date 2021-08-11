@@ -30,9 +30,7 @@ export class LoginPage implements OnInit {
     private router:Router,
     private loadingService:LoadingService,
     private translate: TranslateService
-  ) {
-    this.translate.use('en');
-   }
+  ) {}
 
   ngOnInit() {}
 

@@ -1,3 +1,4 @@
+import { FileSystemService } from './../../../services/file-system.service';
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
 import { AuthService } from './../../auth.service';
 import { NotificationServiceService } from './../../../services/notification-service.service';
@@ -39,6 +40,7 @@ export class RegisterPage implements OnInit, AfterViewInit {
     name:['',[Validators.required,Validators.minLength(8)]],
     email:['',[Validators.pattern(this._emailPattern),Validators.required,Validators.minLength(6)]],
     descripcion:['',[Validators.maxLength(80)]],
+    language:[localStorage.getItem("language")?localStorage.getItem("language"):'en'],
     passwords:this.fb.group({
       password:['', [Validators.required,Validators.minLength(9)]],
       password2:['',[Validators.required]],
@@ -70,11 +72,11 @@ export class RegisterPage implements OnInit, AfterViewInit {
     private actionSheetController: ActionSheetController,
     private authService:AuthService,
     private firebaseStorage:FirebaseStorageService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private fileSystemService:FileSystemService
   ) { }
 
   ngOnInit() {
-    this.translate.use('en');
   }
 
   ngAfterViewInit(){
@@ -147,7 +149,7 @@ export class RegisterPage implements OnInit, AfterViewInit {
      this.auth.createUserWithEmailAndPassword(this.email.value,this.password.value)
        .then(userInfo=>{
          userInfo.user.sendEmailVerification()//Enviamos email de verificación
-          .then(()=>{
+          .then(async ()=>{
             this.dbUsers=this.db.loadStore("users");
 
             //Agregar a firebaseStorage
@@ -158,16 +160,15 @@ export class RegisterPage implements OnInit, AfterViewInit {
                   userName:this.name.value,
                 }
               };
-              this.firebaseStorage.uploadPhoto(this.imgPath, user as IUser,'',true)
-              .then(urlImage=>{
-                // Guardamos la imagen de manera local
-                const fileName = new Date().getTime() + '.jpeg';
 
-                Filesystem.writeFile({
-                  path:fileName,
-                  data:this.imgPath,
-                  directory:FilesystemDirectory.Data
-                }).then(respUser=>{
+              const fileName = new Date().getTime() + '.jpeg';
+              const localImg=await this.fileSystemService.writeFile(this.imgPath,fileName,"Puzeos Profile/");
+
+              if(localImg){
+                this.firebaseStorage.uploadPhoto(this.imgPath, user as IUser,localImg,true)
+                .then(urlImage=>{
+                  console.log(urlImage)
+                  // Guardamos la imagen de manera local
                   this.fireStore.collection("users").doc(userInfo.user.uid).set({//Agregamos el usuario a FireStorage
                     userName:this.name.value,
                     chats:[],
@@ -181,7 +182,7 @@ export class RegisterPage implements OnInit, AfterViewInit {
                     blockedUsers:{},
                     notAddUsers:{},
                     imageUrl:urlImage,
-                    imageUrlLoc:respUser.uri
+                    imageUrlLoc:localImg
                   }).then(resp=>{
                     this.dbUsers.setItem(userInfo.user.uid,{
                       userName:this.name.value,
@@ -195,7 +196,7 @@ export class RegisterPage implements OnInit, AfterViewInit {
                       blockedUsers:{},
                       notAddUsers:{},
                       imageUrl:urlImage,
-                      imageUrlLoc:respUser.uri
+                      imageUrlLoc:localImg
                     }).then(()=>{
                       this.loadingService.dismiss();
                       this.router.navigate(['chat'], { queryParams: {welcome:true}})
@@ -208,16 +209,12 @@ export class RegisterPage implements OnInit, AfterViewInit {
                     this.loadingService.dismiss();
                     this.presentToastWithOptions("No se pudo registrar al usuario");
                   })
-
-                },err=>{
+                }).catch(err=>{
                   this.loadingService.dismiss();
-                  console.log(err)
-                });
-              }).catch(err=>{
-                this.loadingService.dismiss();
-                this.presentToastWithOptions("Ha ocurrido un error al tratar de guarda la imágen");
-                console.log(err);
-              })
+                  this.presentToastWithOptions("Ha ocurrido un error al tratar de guarda la imágen");
+                  console.log(err);
+                })
+              }
             }else{
               this.fireStore.collection("users").doc(userInfo.user.uid).set({//Agregamos el usuario a FireStorage
                 userName:this.name.value,
@@ -315,8 +312,9 @@ export class RegisterPage implements OnInit, AfterViewInit {
   }
 
   setLanguage(){
-    if(this.languageSelect){
-      localStorage.setItem("language",this.languageSelect);
+    if(this.miFormulario.get('language').value){
+      this.translate.use(this.miFormulario.get('language').value);
+      localStorage.setItem("language",this.miFormulario.get('language').value);
     }
   }
 }

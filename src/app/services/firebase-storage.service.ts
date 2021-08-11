@@ -32,8 +32,8 @@ export class FirebaseStorageService {
   uploadAudio(audio:IAudioBlob,userName:string,idChat:string,localUrl:string){
     const date=new Date().valueOf();
     const randomId=Math.round(Math.random()*1000)+''+date;
-    const refUrl=`${userName}/audios/${randomId}.ogg`;
-
+    const refUrl=`${idChat}/audios/${randomId}.mp3`;
+    console.log(localUrl)
     if(this.networkState){
       const dbMessage=this.db.loadStore("messages"+idChat);
 
@@ -77,7 +77,7 @@ export class FirebaseStorageService {
           console.log(error);
         });
       }).catch(error=>{
-        console.log("Error al subir audio",error);
+        console.log("Error al subir audio "+error);
       });
     }else{
       const dbMessage=this.db.loadStore("messages"+idChat);
@@ -193,14 +193,16 @@ export class FirebaseStorageService {
     const ref = this.storage.ref(refUrl);
 
     if(!registerPage){
-      await ref.putString(photo, 'data_url').then(resp=>{
+      await ref.putString(photo, 'data_url').then(()=>{
         this.firestore.collection("users").doc(user.id).update({
           imageUrl:refUrl,
           imageUrlLoc:localUrl
         }).catch(error=>{
           console.log(error);
         });
-      });
+      }).catch(err=>console.log(err))
+    }else{
+      await ref.putString(photo, 'data_url');
     }
 
     return refUrl;

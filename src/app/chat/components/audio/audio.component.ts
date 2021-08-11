@@ -8,7 +8,7 @@ import {Howl} from 'howler';
 import { IonRange } from '@ionic/angular';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 
-import {Plugins, FilesystemDirectory } from '@capacitor/core';
+import { Plugins, FilesystemDirectory, Capacitor } from '@capacitor/core';
 const {Filesystem} = Plugins;
 
 @Component({
@@ -45,12 +45,7 @@ export class AudioComponent implements OnInit {
           this.descargar=1;
         }else{
           this.descargar=3;
-          Filesystem.readFile({
-            path:this.audio.localRef,
-            directory:FilesystemDirectory.ExternalStorage
-          }).then(resp=>{
-            this.controls(resp.data);
-          }).catch(err=>console.log(err));
+          this.controls(Capacitor.convertFileSrc(this.audio.localRef));
         }
       }else{
         this.descargar=1;
@@ -80,14 +75,21 @@ export class AudioComponent implements OnInit {
           this.downloadProgress=0;
           let base64;
 
-          const name='audio'+this.audio.id+'.ogg';
+          const name='audio'+this.audio.id+'.mp3';
           this.appService.convertBlobToBase64(event.body)
           .then((result:string | ArrayBuffer)=>{
             base64=result;
             this.fileSystemService.writeFile(base64,name, "Puzeos VoiceNotes/",true)
             .then(respUrl=>{
               if(respUrl){
-                this.readFile(name);
+                this.controls(Capacitor.convertFileSrc(respUrl));
+                this.descargar=3;
+                this.dbMessages.setItem(this.audio.id,{
+                  ...this.audio,
+                  download:true,
+                  localRef:respUrl
+                }).catch(err=>console.log(err));
+
                 storageSubscribe.unsubscribe();
                 httpSubscribe.unsubscribe();
               }
@@ -98,27 +100,10 @@ export class AudioComponent implements OnInit {
     });
   }
 
-  async readFile(name:string){
-    this.descargar=3;
-
-    await Filesystem.readFile({
-      path:'VoiceNotes/'+name,
-      directory:FilesystemDirectory.ExternalStorage
-    }).then(resp=>{
-      this.controls(resp.data);
-    }).catch(err=>console.log(err));
-
-    this.dbMessages.setItem(this.audio.id,{
-      ...this.audio,
-      download:true,
-      localRef:'audios/'+name
-    }).catch(err=>console.log(err));
-  }
-
   controls(src:string):Howl{
     this.player=new Howl({
       src: [src],
-      format:'ogg',
+      format:'mp3',
       onplay:()=>{
         this.updateProgress();
       },

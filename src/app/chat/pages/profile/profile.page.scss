@@ -26,6 +26,7 @@ ion-button{
   }
   img{
     width: 100%;
+    min-height: 5rem;
   }
 
   .loc__btn-img{
@@ -37,11 +38,11 @@ ion-button{
     margin-top: -25px;
     margin-bottom: -25px;
     margin-right: 10px;
+    z-index:9;
   }
 }
 
 .loc__cont-des{
-  background-color: #fff;
   margin-top: 6px;
   padding:0.8rem;
   padding-bottom: 0;
@@ -69,4 +70,7 @@ ion-button{
   --max-width:95vw;
 }
 
-
+.no-disponible::before{
+  content:'Imágen no disponible';
+  height: 5rem;
+}

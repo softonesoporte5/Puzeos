@@ -1,6 +1,6 @@
 ion-chip{
-  --background:var(--ion-color-secondary);
   --color:#fff;
+  text-shadow: 0 0 5px #000;
 }
 
 .flex{
@@ -59,4 +59,9 @@ ion-item{
   ion-note{
     color: var(--ion-color-primary);
   }
+}
+
+.loc__cont-buttons{
+  display: flex;
+   justify-content: flex-end;
 }

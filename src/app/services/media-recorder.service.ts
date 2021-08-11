@@ -48,29 +48,24 @@ export class MediaRecorderService {
 
     this.mediaRecorder.ondataavailable=e=>{
       this.audioData.push(e.data);
-      this.audioBlob =new Blob([...this.audioData], { 'type' : 'audio/ogg; codecs=opus' });
+      this.audioBlob =new Blob([...this.audioData], { 'type' : 'audio/mp3; codecs=opus' });
 
       if(!this.cancel){
         this.appService.convertBlobToBase64(this.audioBlob)
         .then((resp:string)=>{
-          const name='audio'+new Date().valueOf()+'.ogg';
+          const name='audio'+new Date().valueOf()+'.mp3';
           this.fileSystemService.writeFile(resp, name, "Puzeos VoiceNotes/",true)
           .then(respUrl=>{
+            console.log(respUrl)
             if(respUrl){
-              console.log(respUrl)
-              Filesystem.readFile({
-                path:'Puzeos/VoiceNotes/'+name,
-                directory:FilesystemDirectory.ExternalStorage
-              }).then(resp=>{
-                const audioFile:IAudioBlob={
-                  data:resp.data,
-                  duration:this.duration
-                };
-                this.firebaseStorageService.uploadAudio(audioFile,this.userName,this.idChat,'Puzeos/VoiceNotes/'+name);
-              }).catch(e=>console.log(e))
+              const audioFile:IAudioBlob={
+                data:resp,
+                duration:this.duration
+              };
+              this.firebaseStorageService.uploadAudio(audioFile,this.userName,this.idChat,respUrl);
             }
-          });
-        },err=>console.log(err));
+          }).catch(e=>console.log(e))
+        },err=>console.log("Error en la línea 73 mediaRecord "+err));
       }
       this.audioData=[];
     }

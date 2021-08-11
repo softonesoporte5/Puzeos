@@ -13,6 +13,7 @@
       [src]="imgPath"
       alt="Imágen de perfil"
       (click)="openModal()"
+      class="no-disponible"
     >
     <ion-button
       class="loc__btn-img"
@@ -21,7 +22,7 @@
     >
       <ion-icon name="camera-sharp" slot="icon-only"></ion-icon>
     </ion-button>
-    <div class="loc__cont-des">
+    <ion-list class="loc__cont-des">
       <h6>{{'Global.UserName' | translate}}</h6>
       <ion-item>
         <p>{{user?.data.userName}}</p>
@@ -29,15 +30,15 @@
       <ion-item>
         {{'ProfilePage.Join' | translate}} {{user?.data.createDate | date}}
       </ion-item>
-    </div>
+    </ion-list>
 
-    <div class="loc__cont-des">
+    <ion-list class="loc__cont-des">
       <h6>{{'ProfilePage.Description' | translate}}</h6>
       <ion-item (click)="changeDescription()" detail="true">
         <p>{{user?.data.descripcion}}</p>
       </ion-item>
-    </div>
-    <div class="loc__cont-des">
+    </ion-list>
+    <ion-list class="loc__cont-des">
       <h6>{{'ProfilePage.Info' | translate}}</h6>
       <ion-item>
         <p>{{numBlockedUsers}} {{'ProfilePage.BlockedUsers' | translate}}</p>
@@ -45,7 +46,7 @@
       <ion-item>
         <p>{{user?.data.chats.length}} {{'Global.ActiveChats' | translate}}</p>
       </ion-item>
-    </div>
+    </ion-list>
 
   </div>
 

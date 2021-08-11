@@ -1,10 +1,10 @@
 import { TranslateService } from '@ngx-translate/core';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 import { FormGroup, Validators, FormBuilder, AbstractControl } from '@angular/forms';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from './../../../services/db.service';
 import { Subscription } from 'rxjs';
-import { IUser } from './../../interfaces/user.interface';
+import { IUser, IUserData } from './../../interfaces/user.interface';
 import { Router } from '@angular/router';
 import { searchsUser } from './../../interfaces/searchsUser.interface';
 import { AngularFirestore, DocumentSnapshot } from '@angular/fire/firestore';
@@ -38,6 +38,10 @@ export class AgregarPage implements OnInit, OnDestroy {
   searchTxt:AbstractControl=this.miFormulario.get("searchTxt");
   search:string;
   popularTags:IItem[]=[];
+  searchLanguage:string;
+  tagId:string;
+  title:string;
+  selectValue:string;
 
   constructor(
     private fireStore:AngularFirestore,
@@ -45,12 +49,16 @@ export class AgregarPage implements OnInit, OnDestroy {
     private db:DbService,
     private fb:FormBuilder,
     private alertController: AlertController,
-    private translate:TranslateService
+    private translate:TranslateService,
+    public toastController: ToastController
   ) { }
 
   ngOnInit() {
     this.dbUsers=this.db.loadStore("users");
-
+    let searchLanguage=localStorage.getItem("searchLanguage");
+    if(searchLanguage){
+      this.searchLanguage=searchLanguage;
+    }
     //Almacenar los tags en el sessionStorage para que no cargen cada vez
     if(sessionStorage.getItem("tags")){
       this.items=JSON.parse(sessionStorage.getItem("tags"));
@@ -109,15 +117,16 @@ export class AgregarPage implements OnInit, OnDestroy {
 
     //Comprobamos si el usuario está buscando
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
-    .then(user=>{
-      console.log(user);
+    .then((user:IUserData)=>{
       this.user={
         id:firebase.default.auth().currentUser.uid,
         data:{...user}
       };
 
       this.buscando=this.user.data.buscando.state;
-
+      if(user.buscando.state && !this.searchLanguage){
+        this.searchLanguage='.';
+      }
       this.userSubscription=this.db.obtenerUsuario()
       .subscribe(user=>{
         this.user={
@@ -165,70 +174,100 @@ export class AgregarPage implements OnInit, OnDestroy {
   buscarCompa(tagId:string, title:string){//Añade al usuario en la coleccion de busquedas
     this.buscando=true;
 
-    let searchSubscribe=this.fireStore.collection("searchs").doc(tagId).get()
-    .subscribe((resp:DocumentSnapshot<searchsUser>)=>{
-      searchSubscribe.unsubscribe();
-      if(!resp){
-        this.fireStore.collection("searchs").doc(tagId).update({
-          [`users.${this.user.id}`]:this.user.data.userName
-        }).catch(error=>console.log(error));
-      }else{
-        let values:any[]=[];
-        const data=resp.data();
-
-        if(!this.user.data.notAddUsers){
-          this.user.data.notAddUsers=[];
-        }
-        if(data){
-          for(const key in data.users) {
-            if(!this.user.data.blockedUsers[key] && !this.user.data.notAddUsers[key]){
-              values.unshift({
-                id:key,
-                userName:data.users[key].userName,
-                token:data.users[key].token
-              });
-            }
-          }
-
-          if(values.length<1){//Comprobamos si no hay nadie buscando, en ese caso se inserta el usuario a la coleccion de busqueda
-            this.actualizarEstadoBusquedaUser(true,tagId);
-            this.fireStore.collection("searchs").doc(tagId).update({
-              [`users.${this.user.id}`]:{
+    if(this.searchLanguage){
+      let searchSubscribe=this.fireStore.collection("searchs").doc(tagId).get()
+      .subscribe((resp:DocumentSnapshot<searchsUser>)=>{
+        searchSubscribe.unsubscribe();
+        if(!resp){
+          this.actualizarEstadoBusquedaUser(true,tagId);
+          this.fireStore.collection("searchs").doc(tagId).update({
+            users:{
+              [this.user.id]:{
                 userName:this.user.data.userName,
-                token:this.user.data.token
+                token:this.user.data.token,
+                language:this.searchLanguage
               }
-            }).catch(error=>{
-              console.log(error);
-            });
-
-          }else{
-            this.generarChat({//Creamos el chat
-              [this.user.id]:true,
-              [values[0].id]:true
-            },
-            values[0].id,
-            [
-              this.user.data.userName,
-              values[0].userName
-            ],
-            [
-              this.user.data.token,
-              values[0].token
-            ],
-            title,
-            tagId
-            );
-            this.fireStore.collection("searchs").doc(tagId).update({//Eliminamos al usuario de la tabla de busquedas
-              [`users.${values[0].id}`]:firebase.default.firestore.FieldValue.delete()
-            })
-          }
-        }else{
-          this.fireStore.collection("searchs").doc(tagId).set({
-            [`users.${this.user.id}`]:this.user.data.userName
+            }
           }).catch(error=>console.log(error));
+        }else{
+          let values:any[]=[];
+          const data=resp.data();
+
+          if(!this.user.data.notAddUsers){
+            this.user.data.notAddUsers=[];
+          }
+          if(data){
+            for(const key in data.users) {
+              if(!this.user.data.blockedUsers[key] && !this.user.data.notAddUsers[key] && data.users[key].language===this.searchLanguage){
+                values.unshift({
+                  id:key,
+                  userName:data.users[key].userName,
+                  token:data.users[key].token
+                });
+              }
+            }
+
+            if(values.length<1){//Comprobamos si no hay nadie buscando, en ese caso se inserta el usuario a la coleccion de busqueda
+              this.actualizarEstadoBusquedaUser(true,tagId);
+              this.fireStore.collection("searchs").doc(tagId).update({
+                [`users.${this.user.id}`]:{
+                  userName:this.user.data.userName,
+                  token:this.user.data.token,
+                  language:this.searchLanguage
+                }
+              }).catch(error=>{
+                console.log(error);
+              });
+
+            }else{
+              this.generarChat({//Creamos el chat
+                [this.user.id]:true,
+                [values[0].id]:true
+              },
+              values[0].id,
+              [
+                this.user.data.userName,
+                values[0].userName
+              ],
+              [
+                this.user.data.token,
+                values[0].token
+              ],
+              title,
+              tagId
+              );
+              this.fireStore.collection("searchs").doc(tagId).update({//Eliminamos al usuario de la tabla de busquedas
+                [`users.${values[0].id}`]:firebase.default.firestore.FieldValue.delete()
+              })
+            }
+          }else{
+            this.actualizarEstadoBusquedaUser(true,tagId);
+            this.fireStore.collection("searchs").doc(tagId).set({
+              users:{
+                [this.user.id]:{
+                  userName:this.user.data.userName,
+                  token:this.user.data.token,
+                  language:this.searchLanguage
+                }
+              }
+            }).catch(error=>console.log(error));
+          }
         }
-      }
-    });
+      });
+    }else{
+      this.tagId=tagId;
+      this.title=title;
+    }
+  }
+
+  setSearchLanguage(){
+    if(this.selectValue){
+      localStorage.setItem("searchLanguage",this.selectValue);
+      this.searchLanguage=this.selectValue;
+      this.buscarCompa(this.tagId, this.title);
+    }else{
+      this.presentToast("Selecciona un idioma para continuar");
+    }
   }
 
   generarChat(members:object,contact:string, userNames:string[],tokens:string[],title:string, tagId:string){
@@ -348,5 +387,14 @@ export class AgregarPage implements OnInit, OnDestroy {
     });
 
     await alert.present();
+  }
+
+  async presentToast(text:string) {
+    const toast = await this.toastController.create({
+      message: text,
+      duration: 1500,
+      position: 'top'
+    });
+    toast.present();
   }
 }

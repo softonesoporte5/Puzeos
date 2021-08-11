@@ -10,9 +10,11 @@ export class SettingPage implements OnInit {
 
   toogleDarkMode:boolean=false;
   languageSelect:string;
+  searchLanguageSelect:string;
 
   constructor() {
     this.languageSelect=localStorage.getItem("language");
+    this.searchLanguageSelect=localStorage.getItem("searchLanguage");
   }
 
   ngOnInit() {
@@ -39,6 +41,12 @@ export class SettingPage implements OnInit {
   setLanguage(){
     if(this.languageSelect){
       localStorage.setItem("language",this.languageSelect);
+    }
+  }
+
+  setSearchLanguage(){
+    if(this.searchLanguageSelect){
+      localStorage.setItem("searchLanguage",this.searchLanguageSelect);
     }
   }
 }

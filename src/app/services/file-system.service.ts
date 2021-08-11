@@ -18,9 +18,9 @@ export class FileSystemService {
       path: 'Puzeos/'+dir+fileName,
       directory:FilesystemDirectory.ExternalStorage,
     }
-    if(utf8){
+    /*if(utf8){
       dataWrite.encoding=FilesystemEncoding.UTF8;
-    }
+    }*/
 
     try{//Se guarda si existe la carpeta Puzeos y la carpeta que se pase por dir
       const fileUrl=await Filesystem.writeFile(dataWrite);
