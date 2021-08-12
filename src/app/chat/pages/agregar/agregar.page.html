@@ -62,7 +62,7 @@
 
     <span *ngIf="!searchLanguage">
       <ion-text>
-        Selecciona el idioma en el que quieres conversar, por ejemplo, si quieres conversar en inglés, selecciona "English".
+        {{'AgregarPage.SelectLanguage' | translate}}
       </ion-text>
 
       <ion-item>
@@ -77,15 +77,15 @@
         </ion-select>
       </ion-item>
       <br>
-      <small>El idioma que selecciones se usará por defecto en las próximas búsquedas, ve a "Configuración" para cambiarlo.</small>
+      <small>{{'AgregarPage.SelectTxt' | translate}}</small>
       <br><br>
 
       <div class="loc__cont-buttons">
         <ion-button color="tertiary" (click)="buscando=false">
-          Cancelar
+          {{'Global.Cancel' | translate}}
         </ion-button>
         <ion-button color="secondary" (click)="setSearchLanguage()">
-          Buscar
+          {{'AgregarPage.Search' | translate}}
         </ion-button>
       </div>
     </span>

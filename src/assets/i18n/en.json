@@ -12,7 +12,9 @@
     "Continue":"Continue",
     "SignIn": "Sign in",
     "H4Text":"You have an account?",
-    "Login":"Log in"
+    "Login":"Log in",
+    "PrivacyPolicy":"By registering you accept our",
+    "PrivacyPolicy2":"Privacy Policy"
   },
   "LoginPage":{
     "H4Text":"You do not have an account?"
@@ -80,7 +82,11 @@
     "Send":"Send",
     "NotFound":"Conversation topic not found",
     "Searching":"Searching",
-    "SearchingMessage":"This may take time, we will notify you when we find a partner."
+    "SearchingMessage":"This may take time, we will notify you when we find a partner.",
+    "SelectLanguage":"Select the language in which you want to converse, for example, if you want to converse in English, select 'English'.",
+    "SelectTxt":"The language you select will be used by default in the next searches, go to 'Settings' to change it.",
+    "Search":"Search",
+    "ToastMessage":"Select a language to continue"
   },
   "ChatPage":{
     "Message":"Message",

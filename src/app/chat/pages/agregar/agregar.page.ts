@@ -266,7 +266,9 @@ export class AgregarPage implements OnInit, OnDestroy {
       this.searchLanguage=this.selectValue;
       this.buscarCompa(this.tagId, this.title);
     }else{
-      this.presentToast("Selecciona un idioma para continuar");
+      this.translate.get("AgregarPage.ToastMessage").subscribe(resp=>{
+        this.presentToast(resp);
+      });
     }
   }
 

@@ -12,7 +12,9 @@
     "Continue":"Continuar",
     "SignIn": "Registrarse",
     "H4Text":"¿Tienes una cuenta?",
-    "Login":"Inicia sesión"
+    "Login":"Inicia sesión",
+    "PrivacyPolicy":"Al registrarte aceptas nuestra",
+    "PrivacyPolicy2":"Política de privacidad"
   },
   "LoginPage":{
     "H4Text":"¿No tienes una cuenta?"
@@ -80,7 +82,11 @@
     "Send":"Enviar",
     "NotFound":"Tema de conversación no encontrado",
     "Searching":"Buscando",
-    "SearchingMessage":"Esto puede tardar, le notificaremos cuando encontremos un compañero."
+    "SearchingMessage":"Esto puede tardar, le notificaremos cuando encontremos un compañero.",
+    "SelectLanguage":"Selecciona el idioma en el que quieres conversar, por ejemplo, si quieres conversar en inglés, selecciona 'English'.",
+    "SelectTxt":"El idioma que selecciones se usará por defecto en las próximas búsquedas, ve a 'Configuración' para cambiarlo.",
+    "Search":"Buscar",
+    "ToastMessage":"Selecciona un idioma para continuar"
   },
   "ChatPage":{
     "Message":"Mensaje",

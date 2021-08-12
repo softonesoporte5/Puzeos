@@ -1,5 +1,5 @@
 import { LoadingService } from './../../../services/loading.service';
-import { ToastController } from '@ionic/angular';
+import { ToastController, AlertController } from '@ionic/angular';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -29,7 +29,8 @@ export class LoginPage implements OnInit {
     private auth:AngularFireAuth,
     private router:Router,
     private loadingService:LoadingService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private alertController: AlertController
   ) {}
 
   ngOnInit() {}
@@ -97,6 +98,43 @@ export class LoginPage implements OnInit {
         }
       });
 
+  }
+
+  async resetPassword(){
+    const alert = await this.alertController.create({
+      message: 'Ingrese el correo electrónico de su cuenta para enviar un enlace de verificación.',
+      buttons: [
+        {
+          text: 'Enviar',
+          handler:async ()=>{
+            const newDescription=document.querySelector("#emailVerify") as HTMLInputElement;
+            this.auth.sendPasswordResetEmail(newDescription.value);
+            const toast = await this.toastController.create({
+              message: 'Revisa la bandeja del correo electrónico que ingresaste.',
+              position: 'top',
+              duration: 5000,
+              buttons: [
+                {
+                  text: 'x',
+                  role: 'cancel'
+                }
+              ]
+            });
+            toast.present();
+          }
+        }
+      ],
+      inputs: [
+        {
+          name: 'description',
+          id:'emailVerify',
+          type: 'email',
+          max:80,
+          placeholder: 'Correo electrónico'
+        }
+      ]
+    });
+    await alert.present();
   }
 
 }
