@@ -1,3 +1,4 @@
+import { FooterChatComponent } from './../../components/footer-chat/footer-chat.component';
 import { SharedModule } from './../../../shared/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { DocumentComponent } from './../../components/document/document.component';
@@ -49,7 +50,8 @@ import { HttpClientModule } from '@angular/common/http';
     ScrollBottomComponent,
     PerfilModalComponent,
     VideoMessageComponent,
-    DocumentComponent
+    DocumentComponent,
+    FooterChatComponent
   ]
 })
 export class ChatPageModule {}

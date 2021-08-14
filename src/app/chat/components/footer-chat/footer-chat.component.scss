@@ -1,0 +1,148 @@
+.loc_toolbar, .loc__reply{
+  padding-left:0.5rem;
+}
+
+.loc_icon-footer, .loc__reply ion-icon{
+  font-size: 25px;
+}
+
+.loc__btns-footer{
+  ion-button{
+    --ripple-color:transparent;
+    --background-activated-opacity:0;
+    --background-focused-opacity:0;
+    --background-hover-opacity:0;
+  }
+
+  ion-item,ion-label{
+    --padding-bottom:0;
+    --padding-end:0;
+    --padding-start:0;
+    --padding-top:0;
+    --inner-padding-bottom:0;
+    --inner-padding-end:0;
+    --inner-padding-start:0;
+    --inner-padding-top:0;
+    margin:0;
+  }
+}
+
+ion-footer{
+  background-color: #ffffff;
+  ion-text{
+    padding:0.5rem;
+    width: 100%;
+    float: left;
+  }
+
+  .loc__reply{
+    border-bottom: 1px solid #d9d9d9;
+    padding: 7px 0.5rem;
+    display: flex;
+    align-items: center;
+    >span{
+      margin: 0 9px;
+      font-size: 13px;
+      flex:1;
+      padding-left: 8px;
+    }
+
+    .userName{
+      width: 100%;
+      margin: 0;
+      color: var(--ion-color-primary);
+      font-weight: 600;
+    }
+  }
+}
+
+.loc__delete-reply{
+  color:gray;
+  display: flex;
+}
+
+.footer-grabando{
+  width: 10rem;
+  margin-bottom: -6px;
+  margin-right: 0;
+}
+
+ion-item-option{
+  --background:transparent;
+}
+
+ion-item-option.grabando{
+  width: 3rem;
+}
+
+ion-item-sliding{
+  display: flex;
+  justify-content: flex-end;
+}
+
+.chat__input{
+  flex:1;
+  margin:0 9px;
+  font-size: 16px;
+  max-height: 150px;
+  width: 94%;
+}
+
+:host ::ng-deep .categoryContainer{
+  position: fixed;
+  background-color: #f2f2f2;
+  z-index: 99;
+  width: 100%;
+
+}
+
+:host ::ng-deep emoji-picker>ion-content>ion-row{
+  >ion-col:nth-child(1){
+    &::after{
+      height: 75px;
+      content: " as";
+      width: 100%;
+      display: block;
+    }
+
+    .categoryContainer>div{
+      padding:0 10px;
+    }
+  }
+  >ion-col{
+    padding:0;
+  }
+
+  *{
+    height: min-content;
+  }
+}
+
+.loc__press{
+  height: 3.5rem;
+  width: 3.5rem;
+  border-radius: 50%;
+  margin: 0 -.5rem -0.5rem 0;
+  background: var(--ion-color-primary);
+}
+
+.loc__info-grabar{
+  display: flex;
+  flex: 1;
+  align-items: center;
+  width: 150%;
+
+  p{
+    margin:0;
+    white-space: nowrap;
+  }
+
+  ion-icon{
+    margin-top: 3px;
+  }
+}
+
+.loc__icon-grabando{
+  color: rgb(255, 1, 1);
+  margin-right: 5px;
+}

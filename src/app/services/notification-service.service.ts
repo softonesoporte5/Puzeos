@@ -39,19 +39,20 @@ export class NotificationServiceService {
       });
 
       this.oneSignal.startInit('e8539368-3a10-4b86-b79d-96b1d68118cd', '400280439340');
+      this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.None);
 
       this.oneSignal.getIds()
       .then(resp=>{
         this.token=resp.userId;
       })
 
-      this.oneSignal.handleNotificationReceived().subscribe(() => {
+      /*this.oneSignal.handleNotificationReceived().subscribe(() => {
       // do something when notification is received
       });
 
       this.oneSignal.handleNotificationOpened().subscribe(() => {
         // do something when a notification is opened
-      });
+      });*/
 
       this.oneSignal.endInit();
     }
@@ -68,13 +69,12 @@ export class NotificationServiceService {
     });
 
     //Primer plano
-    PushNotifications.addListener('pushNotificationReceived',(notification:PushNotification)=>{
+    /*PushNotifications.addListener('pushNotificationReceived',(notification:PushNotification)=>{
       console.log(notification);
-    });
+    });*/
 
     PushNotifications.addListener('pushNotificationActionPerformed',
     (notification:PushNotificationActionPerformed)=>{
-      console.log('Click en notificación segundo plano',notification);
       this.router.navigate(['/chat']);
     })
   }

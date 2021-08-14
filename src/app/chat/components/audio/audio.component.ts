@@ -1,4 +1,3 @@
-import { FileSystemService } from './../../../services/file-system.service';
 import { AppService } from './../../../app.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
@@ -33,8 +32,7 @@ export class AudioComponent implements OnInit {
   constructor(
     private http:HttpClient,
     private firebaseService:FirebaseStorageService,
-    private appService:AppService,
-    private fileSystemService:FileSystemService
+    private appService:AppService
   ) { }
 
   ngOnInit() {
@@ -79,20 +77,22 @@ export class AudioComponent implements OnInit {
           this.appService.convertBlobToBase64(event.body)
           .then((result:string | ArrayBuffer)=>{
             base64=result;
-            this.fileSystemService.writeFile(base64,name, "Puzeos VoiceNotes/",true)
-            .then(respUrl=>{
-              if(respUrl){
-                this.controls(Capacitor.convertFileSrc(respUrl));
-                this.descargar=3;
-                this.dbMessages.setItem(this.audio.id,{
-                  ...this.audio,
-                  download:true,
-                  localRef:respUrl
-                }).catch(err=>console.log(err));
+            //Guardamos el archivo de manera local
+            Filesystem.writeFile({
+              path:name,
+              data:base64,
+              directory: FilesystemDirectory.Data
+            }).then(respUrl=>{
+              this.controls(Capacitor.convertFileSrc(respUrl.uri));
+              this.descargar=3;
+              this.dbMessages.setItem(this.audio.id,{
+                ...this.audio,
+                download:true,
+                localRef:respUrl.uri
+              }).catch(err=>console.log(err));
 
-                storageSubscribe.unsubscribe();
-                httpSubscribe.unsubscribe();
-              }
+              storageSubscribe.unsubscribe();
+              httpSubscribe.unsubscribe();
             })
           }).catch(err=>console.log(err));
         }

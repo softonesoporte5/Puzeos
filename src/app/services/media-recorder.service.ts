@@ -54,17 +54,18 @@ export class MediaRecorderService {
         this.appService.convertBlobToBase64(this.audioBlob)
         .then((resp:string)=>{
           const name='audio'+new Date().valueOf()+'.mp3';
-          this.fileSystemService.writeFile(resp, name, "Puzeos VoiceNotes/",true)
-          .then(respUrl=>{
-            console.log(respUrl)
-            if(respUrl){
-              const audioFile:IAudioBlob={
-                data:resp,
-                duration:this.duration
-              };
-              this.firebaseStorageService.uploadAudio(audioFile,this.userName,this.idChat,respUrl);
-            }
-          }).catch(e=>console.log(e))
+          //Guardamos el archivo de manera local
+          Filesystem.writeFile({
+            path:name,
+            data:resp,
+            directory: FilesystemDirectory.Data
+          }).then(respUrl=>{
+            const audioFile:IAudioBlob={
+              data:resp,
+              duration:this.duration
+            };
+            this.firebaseStorageService.uploadAudio(audioFile,this.userName,this.idChat,respUrl.uri);
+          });
         },err=>console.log("Error en la línea 73 mediaRecord "+err));
       }
       this.audioData=[];

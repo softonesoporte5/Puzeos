@@ -1,4 +1,3 @@
-import { TranslateService } from '@ngx-translate/core';
 import { IUserData } from './../../interfaces/user.interface';
 import { IMessagesResp } from './../../interfaces/messagesResp.interface';
 import { PerfilModalComponent } from './../../components/perfil-modal/perfil-modal.component';
@@ -8,13 +7,11 @@ import { IMessage } from './../../interfaces/message.interface';
 import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
-import { MediaRecorderService } from './../../../services/media-recorder.service';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import * as firebase from 'firebase';
-import { IonItemSliding, PopoverController, ModalController, AlertController, IonInfiniteScroll, IonContent } from '@ionic/angular';
+import { PopoverController, ModalController, IonInfiniteScroll, IonContent } from '@ionic/angular';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
 import { Capacitor } from '@capacitor/core';
 import { IUser } from '../../interfaces/user.interface';
@@ -30,49 +27,28 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
   mensajes:IMessage[]=[];
   allMessages:IMessage[]=[];
   userName:string='';
-  showEmojiPicker:boolean=false;
-  tooglePress:boolean=false;
   dbChat:ILocalForage;
   chat:IChat;
   dbMessages:ILocalForage;
   dbUsers:ILocalForage;
   mensajesSubscribe:Subscription;
-  replySubscribe:Subscription;
   scrollReplySubscribe:Subscription;
-  tiempoGrabacion:string='00:00';
-  bucleTime:NodeJS.Timeout;
-  cancelar:boolean=false;
   showScrollButton=false;
   routeQuery:Params;
   user:IUser;
   imgPath:string;
-  showEmojiPickerCont:number=0;
   blockChat:boolean=false;
-  posEmoji:number=0;
-  resetPosEmoji:boolean=true;
   @ViewChild('content') content: IonContent;
-  @ViewChild('sliding', { static: false }) sliding: IonItemSliding;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
   posM=0;
-  replyMessage:IMessage;
-
-  miFormulario:FormGroup=this.fb.group({
-    mensaje:['',[Validators.required,Validators.minLength(1)]]
-  });
-
-  mensaje:AbstractControl=this.miFormulario.get("mensaje");
 
   constructor(
-    private fb:FormBuilder,
     private route:ActivatedRoute,
     private firestore:AngularFirestore,
     private popoverController: PopoverController,
-    private mediaRecorderService:MediaRecorderService,
     private db:DbService,
     private chatService:ChatService,
-    private modal:ModalController,
-    public alertController: AlertController,
-    private translate:TranslateService
+    private modal:ModalController
   ) { }
 
   ngOnInit(){
@@ -234,10 +210,6 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
       }
     }).catch(err=>console.log(err));
 
-    this.replySubscribe=this.chatService.replyMessage$.subscribe(resp=>{
-      this.replyMessage=resp;
-    });
-
     this.scrollReplySubscribe=this.chatService.scrollReply$.subscribe(resp=>{
       if(this.allMessages.length>0){
         this.allMessages.find((message,index)=>{
@@ -306,9 +278,6 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
     if(this.mensajesSubscribe){
       this.mensajesSubscribe.unsubscribe();
     }
-    if(this.replySubscribe){
-      this.replySubscribe.unsubscribe();
-    }
     if(this.scrollReplySubscribe){
       this.scrollReplySubscribe.unsubscribe();
     }
@@ -329,18 +298,6 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
     }
   }
 
-  agregarMensaje(){
-    const message=this.mensaje.value;
-    if(this.replyMessage){
-      this.chatService.addMessageInFirebase(message,this.idChat,this.userName,this.user,this.replyMessage);
-      this.mensaje.setValue('');
-      this.replyMessage=null;
-    }else{
-      this.chatService.addMessageInFirebase(message,this.idChat,this.userName,this.user);
-      this.mensaje.setValue('');
-    }
-  }
-
   async presentPopover(ev: any) {
     const popover = await this.popoverController.create({
       component: PopoverChatComponent,
@@ -352,62 +309,6 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
       event: ev
     });
     return await popover.present();
-  }
-
-  addEmoji(event:any) {
-    const textArea=document.querySelector(".native-textarea") as HTMLInputElement;
-    let end = textArea.selectionEnd;
-    if(this.resetPosEmoji){
-      this.posEmoji=end;
-    }else{
-      this.posEmoji+=2;
-      end=this.posEmoji;
-    }
-    this.resetPosEmoji=false;
-    this.mensaje.setValue(this.mensaje.value.substr(0,end)+event.data+this.mensaje.value.substr(end));
-  }
-
-  toogleEmojiPicker(){
-    this.showEmojiPicker=!this.showEmojiPicker;
-    this.showEmojiPickerCont++;
-  }
-
-  recorder(){
-    if(this.mediaRecorderService.permiso){
-      this.tooglePress=true;
-      this.cancelar=false;
-      this.mediaRecorderService.recorder();
-      let seconds=0;
-
-      this.bucleTime=setInterval(()=>{
-        seconds++;
-        let minute:string | number = Math.floor((seconds / 60) % 60);
-        minute = (minute < 10)? '0' + minute : minute;
-        let second:string | number = seconds % 60;
-        second = (second < 10)? '0' + second : second;
-        this.tiempoGrabacion=minute + ':' + second;
-      }
-      ,1000);
-    }else{
-      let txt='';
-      this.translate.get("ChatPage.AlertMessage").subscribe(resp=>{txt=resp});
-      this.presentAlert(txt);
-    }
-  }
-
-  stop(){
-    this.tooglePress=false;
-    this.sliding.close();
-    this.mediaRecorderService.stop(this.tiempoGrabacion,this.userName,this.idChat,this.cancelar);
-    this.tiempoGrabacion='00:00';
-    clearInterval(this.bucleTime);
-  }
-
-  public handleSlide(event: any): void {
-    if(event.detail.ratio>=1 && this.tooglePress || event.detail.ratio==1){
-      this.cancelar=true;
-      this.stop();
-    }
   }
 
   trackByFn(index:number, item:IMessage){
@@ -430,23 +331,5 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
         chat:this.chat,
       }
     }).then(modal=>modal.present());
-  }
-
-  async presentAlert(message:string) {
-    let txt='';
-    this.translate.get("Global.ToAccept").subscribe(resp=>{txt=resp});
-    const alert = await this.alertController.create({
-      message: message,
-      buttons: [
-        {
-          text: txt,
-        }
-      ]
-    });
-    await alert.present();
-  }
-
-  deleteReply(){
-    this.replyMessage=null;
   }
 }
