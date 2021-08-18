@@ -1,7 +1,6 @@
 import { ISettings } from './chat/interfaces/settings.interface';
 import { NotificationServiceService } from './services/notification-service.service';
 import { Component } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +12,7 @@ export class AppComponent {
     private notificationService:NotificationServiceService,
   ) {
     this.notificationService.inicializar();
+
     const settings = JSON.parse(localStorage.getItem("settings")) as ISettings;
     if(settings?.darkMode){
       document.body.classList.add("dark");

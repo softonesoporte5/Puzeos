@@ -12,5 +12,9 @@
       "presentationOptions": ["badge", "sound", "alert"]
     }
   },
-  "cordova": {}
+  "cordova": {
+    "preferences": {
+      "android-minSdkVersion": "30"
+    }
+  }
 }
