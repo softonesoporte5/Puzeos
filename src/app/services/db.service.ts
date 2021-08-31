@@ -23,6 +23,7 @@ export class DbService{
   chats:IChat[]=[];
   private dbChats:ILocalForage;
   private dbUsers:ILocalForage;
+  sync=false;
   user:IUserData;
   arrMessages={};
   dbMessages:ILocalForage[]=[];
@@ -30,7 +31,7 @@ export class DbService{
 
   constructor(
     private firestore:AngularFirestore,
-    private appService:AppService
+    private appService:AppService,
   ) {
     this.dbChats=this.loadStore("chats");
     this.dbUsers=this.loadStore("users");
@@ -66,29 +67,8 @@ export class DbService{
     }
 
     this.appService.getNetworkStatus()
-    .subscribe(resp=>{
-      this.dbNotSendMessages.iterate((message:IMessage,key:string)=>{
-        if(message.type==="text"){
-          const timestamp=firebase.default.firestore.FieldValue.serverTimestamp();
-          this.firestore.collection("messages").doc(message.idChat)
-          .collection("messages")
-          .doc(key)
-          .set({
-            ...message,
-            timestamp:timestamp,
-            state:1
-          }).then(()=>{
-            this.dbNotSendMessages.removeItem(key);
-          }).catch(error=>{
-            console.log(error);
-          });
-        }else if(message.type==="voice"){
-          this.appService.reUloadAudio(message)
-          .then(()=>{
-            this.dbNotSendMessages.removeItem(key);
-          })
-        }
-      });
+    .subscribe(()=>{
+      this.syncMessages();
     });
   }
 
@@ -244,6 +224,39 @@ export class DbService{
       .catch(error=>{
         console.log(error);
       });
+  }
+
+  syncMessages(){
+    this.dbNotSendMessages.iterate((message:IMessage,key:string)=>{
+      this.sync=true;
+      if(message.type==="text"){
+        const timestamp=firebase.default.firestore.FieldValue.serverTimestamp();
+        this.firestore.collection("messages").doc(message.idChat)
+        .collection("messages")
+        .doc(key)
+        .set({
+          ...message,
+          sendToToken:message.sendToToken || "",
+          timestamp:timestamp,
+          state:1
+        }).then(()=>{
+          this.dbNotSendMessages.removeItem(key);
+        }).catch(error=>{
+          console.log(error);
+        });
+      }else if(message.type==="voice"){
+
+        this.appService.reUloadAudio(message)
+        .then(()=>{
+          this.dbNotSendMessages.removeItem(key);
+        },err=>{
+          console.log(err);
+          this.dbNotSendMessages.removeItem(key);
+        })
+      }
+    }).then(()=>{
+      this.sync=false;
+    })
   }
 
   obtenerUsuario(){

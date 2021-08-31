@@ -41,7 +41,6 @@
   ></app-scroll-bottom>
 
   <span *ngFor="let mensaje of mensajes; trackBy: trackByFn; last as isLast" class="message-chat">
-
     <app-item-message
       *ngIf="mensaje.type!=='text'"
       [message]="mensaje"
@@ -65,8 +64,6 @@
   </span>
 </ion-content>
 
-<app-footer-chat [user]="user" [username]="userName" [idChat]="idChat">
-
-</app-footer-chat>
+<app-footer-chat [user]="user" [username]="userName" [idChat]="idChat"></app-footer-chat>
 <audio src="../../../../assets/sounds/soundMessage.mp3" class="sendMessageSound"></audio>
 

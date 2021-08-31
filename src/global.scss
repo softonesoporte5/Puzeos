@@ -43,6 +43,12 @@ a{
   opacity: 0.2;
 }
 
+.d-flex-center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .sombra{
   box-shadow: 0 0 6px #6B6363;
 }
@@ -129,4 +135,10 @@ app-chat{
   to {
     background-color: #87bcf300;
   }
+}
+
+
+.translucido{
+  width: 13rem;
+  height: 13rem;
 }

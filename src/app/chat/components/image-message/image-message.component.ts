@@ -5,7 +5,7 @@ import { ILocalForage } from './../../interfaces/localForage.interface';
 import { AppService } from './../../../app.service';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { IMessage } from './../../interfaces/message.interface';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { FirebaseStorageService } from 'src/app/services/firebase-storage.service';
 import { ModalController } from '@ionic/angular';
 import { Plugins, FilesystemDirectory, FilesystemEncoding } from '@capacitor/core';
@@ -18,7 +18,7 @@ import { Capacitor } from '@capacitor/core';
   templateUrl: './image-message.component.html',
   styleUrls: ['./image-message.component.scss'],
 })
-export class ImageMessageComponent implements OnInit {
+export class ImageMessageComponent implements OnInit, OnDestroy{
 
   @Input() image:IMessage;
   @Input() userName:string;
@@ -58,6 +58,15 @@ export class ImageMessageComponent implements OnInit {
         const progressBar=document.querySelector("svg.upload circle:nth-child(2)") as HTMLElement;
         progressBar.style.strokeDashoffset=`calc(60 - (60 * ${resp})/100)`;
       });
+    }
+  }
+
+  ngOnDestroy() {
+    if(this.storageSubscribe){
+      this.storageSubscribe.unsubscribe();
+    }
+    if(this.httpSubscribe){
+      this.httpSubscribe.unsubscribe();
     }
   }
 

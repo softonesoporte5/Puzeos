@@ -10,7 +10,8 @@ import { PopoverChatMessageComponent } from '../popover-chat-message/popover-cha
   templateUrl: './item-message.component.html',
   styleUrls: ['./item-message.component.scss'],
 })
-export class ItemMessageComponent implements AfterViewInit, OnInit {
+export class ItemMessageComponent implements AfterViewInit, OnInit
+{
 
   @Input("message") message:IMessage;
   @Input("idChat") idChat:string;
@@ -79,6 +80,13 @@ export class ItemMessageComponent implements AfterViewInit, OnInit {
           },220);
         })
       }
+    }
+
+    let scrollText=document.querySelector(`#${this.message.id} ion-card-content > span`);
+    //console.log(scrollText.clientHeight,scrollText.scrollHeight)
+    if(scrollText.clientHeight!==scrollText.scrollHeight){
+
+      scrollText.classList.add("put-text");
     }
   }
 

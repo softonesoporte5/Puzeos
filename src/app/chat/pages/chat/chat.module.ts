@@ -25,6 +25,9 @@ import { Ionic4EmojiPickerModule } from 'ionic4-emoji-picker';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
 import { HttpClientModule } from '@angular/common/http';
 
+import { NoKeyboardModule } from 'ionic-no-keyboard';
+
+
 @NgModule({
   imports: [
     CommonModule,
@@ -36,7 +39,8 @@ import { HttpClientModule } from '@angular/common/http';
     HttpClientModule,
     ScrollingModule,
     ExperimentalScrollingModule,
-    SharedModule
+    SharedModule,
+    NoKeyboardModule
   ],
   declarations: [
     ChatPage,

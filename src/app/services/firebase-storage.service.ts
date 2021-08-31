@@ -31,7 +31,7 @@ export class FirebaseStorageService {
 
   uploadAudio(audio:IAudioBlob,userName:string,idChat:string,localUrl:string){
     const date=new Date().valueOf();
-    const randomId=Math.round(Math.random()*1000)+''+date;
+    const randomId="a"+Math.round(Math.random()*1000)+''+date;
     const refUrl=`${idChat}/audios/${randomId}.mp3`;
     console.log(localUrl)
     if(this.networkState){

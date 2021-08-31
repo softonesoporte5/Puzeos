@@ -92,9 +92,15 @@ export class ProfilePage implements OnInit {
               this.user.data.descripcion=newDescription.value;
               this.firestore.collection("users").doc(this.user.id).update({
                 descripcion:newDescription.value
-              }).catch(error=>{
-                console.log("Hubo un error",error);
-              });
+              }).then(()=>{
+                this.dbUsers.getItem(this.user.id)
+                .then((userData:IUserData)=>{
+                  this.dbUsers.setItem(this.user.id,{
+                    ...userData,
+                    descripcion:newDescription.value
+                  });
+                })
+              },()=>{window.alert("Ocurrió un error al tratar de actualizar la descripción")});
             }
           }
         }

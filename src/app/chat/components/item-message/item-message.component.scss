@@ -21,14 +21,15 @@ ion-card{
   }
 
   ion-card-content{
-    font-size: 12px;
+    font-size: 15px;
     padding: 0;
     display: flex;
     flex-direction: column;
-    font-weight: 600;
+    font-weight: 400;
     max-height: 23rem;
     max-width: 100%;
-
+    line-height: 1.3125;
+    white-space: pre-wrap;
     ion-text{
       flex: 1;
       align-self: flex-end;
@@ -40,7 +41,18 @@ ion-card{
         margin-left: 5px;
       }
     }
+
+    >span{
+      flex: 1;
+      overflow-y: auto;
+    }
   }
+}
+
+.put-text{
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow: ellipsis;
 }
 
 .enviado{

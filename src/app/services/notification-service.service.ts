@@ -28,7 +28,7 @@ export class NotificationServiceService {
 
   inicializar(){
     if(this.platform.is("capacitor")){
-      PushNotifications.requestPermission()
+     /* PushNotifications.requestPermission()
       .then(resul=>{
         if(resul.granted){
           PushNotifications.register();
@@ -36,7 +36,7 @@ export class NotificationServiceService {
         }else{
 
         }
-      });
+      });*/
 
       this.oneSignal.startInit('e8539368-3a10-4b86-b79d-96b1d68118cd', '400280439340');
       this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.None);
@@ -59,7 +59,7 @@ export class NotificationServiceService {
   }
 
   addListeners(){
-    PushNotifications.addListener('registration',
+    /*PushNotifications.addListener('registration',
     (token:PushNotificationToken)=>{
      //this.token=token.value;
     });
@@ -73,9 +73,9 @@ export class NotificationServiceService {
       console.log(notification);
     });*/
 
-    PushNotifications.addListener('pushNotificationActionPerformed',
+    /*PushNotifications.addListener('pushNotificationActionPerformed',
     (notification:PushNotificationActionPerformed)=>{
       this.router.navigate(['/chat']);
-    })
+    })*/
   }
 }

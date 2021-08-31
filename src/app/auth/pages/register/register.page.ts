@@ -40,7 +40,7 @@ export class RegisterPage implements OnInit, AfterViewInit {
     name:['',[Validators.required,Validators.minLength(8)]],
     email:['',[Validators.pattern(this._emailPattern),Validators.required,Validators.minLength(6)]],
     descripcion:['',[Validators.maxLength(80)]],
-    language:[localStorage.getItem("language")?localStorage.getItem("language"):'en'],
+    language:[localStorage.getItem("language")?localStorage.getItem("language"):'es'],
     passwords:this.fb.group({
       password:['', [Validators.required,Validators.minLength(9)]],
       password2:['',[Validators.required]],

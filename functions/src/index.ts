@@ -7,7 +7,6 @@ admin.initializeApp();
 exports.newMessage=functions.firestore
     .document("/messages/{idChat}/messages/{idMessage}")
     .onCreate(async (change, context) => {
-      console.log(change.data(), context);
       const data=change.data() as IMessage;
       const registrationTokens=[data.sendToToken];
 
@@ -24,8 +23,7 @@ exports.newMessage=functions.firestore
 
 exports.AddChat=functions.firestore
     .document("/chats/{idChat}")
-    .onCreate(async (change, context) => {
-      console.log(change.data(), context);
+    .onCreate(async (change) => {
       const data=change.data() as IChat;
       const registrationTokens=data.tokens;
 
@@ -39,9 +37,8 @@ exports.AddChat=functions.firestore
         headings: {
           "en": "Has agregado un compañero!!",
           "es": "Has agregado un compañero!!"},
-        included_segments: ["Subscribed Users"],
-        android_group: "a",
         include_player_ids: registrationTokens,
+        android_group: "puzeos.group",
       };
 
       return sendNotification(messagee);

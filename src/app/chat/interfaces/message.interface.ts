@@ -17,6 +17,7 @@ export interface IMessage{
   idChat?:string;
   specialData?:any
   reply?:IMessage;
+  preview?:string;
 }
 
 export interface IMessageSearch{

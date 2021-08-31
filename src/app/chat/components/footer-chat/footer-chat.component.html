@@ -48,6 +48,7 @@
         (click)="resetPosEmoji=true"
         maxlength="1000"
         *ngIf="tooglePress===false"
+        autocapitalize
         #textarea
       ></ion-textarea>
 
@@ -109,6 +110,6 @@
   </ion-text>
 </ion-footer>
 
-<ion-footer class="emojiContainer" [style.minHeight]="showEmojiPicker?'300px':'0px'"> <!--Show/Hide emoji picker. Don't use *ngIf because the component will be created again and again and cause performance issue-->
-  <emoji-picker (onEmojiSelect)="addEmoji($event)" *ngIf="showEmojiPicker || showEmojiPickerCont!==0"></emoji-picker>
+<ion-footer class="emojiContainer" [style.minHeight]="emojiPickerHeight+'px'" *ngIf="showEmojiPicker"> <!--Show/Hide emoji picker. Don't use *ngIf because the component will be created again and again and cause performance issue-->
+  <emoji-picker (onEmojiSelect)="addEmoji($event)"></emoji-picker>
 </ion-footer>

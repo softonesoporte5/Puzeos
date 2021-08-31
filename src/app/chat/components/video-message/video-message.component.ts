@@ -1,22 +1,23 @@
+import { Subscription } from 'rxjs';
 import { FileSystemService } from './../../../services/file-system.service';
 import { IMessage } from './../../interfaces/message.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ImageModalComponent } from './../image-modal/image-modal.component';
 import { AppService } from './../../../app.service';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { FirebaseStorageService } from 'src/app/services/firebase-storage.service';
 import { ModalController } from '@ionic/angular';
-import {Plugins, FilesystemDirectory} from '@capacitor/core';
+import {Plugins} from '@capacitor/core';
 import { Capacitor } from '@capacitor/core';
-const {CapacitorVideoPlayer, Filesystem} = Plugins;
+const { Filesystem} = Plugins;
 
 @Component({
   selector: 'app-video-message',
   templateUrl: './video-message.component.html',
   styleUrls: ['./video-message.component.scss'],
 })
-export class VideoMessageComponent implements OnInit {
+export class VideoMessageComponent implements OnInit, OnDestroy{
 
   @Input() video:IMessage;
   @Input() userName:string;
@@ -25,6 +26,8 @@ export class VideoMessageComponent implements OnInit {
   downloaded:boolean=false;
   units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   size:string;
+  storageSubscribe:Subscription;
+  httpSubscribe:Subscription;
   uploaded=false;
 
   constructor(
@@ -36,6 +39,7 @@ export class VideoMessageComponent implements OnInit {
   ) { }
 
   ngOnInit(){
+    console.log(this.userName)
     if(this.video.user===this.userName){
       //Obtener la URL del archivo
       this.imageUrl=Capacitor.convertFileSrc(this.video.localRef)+"#t=0.5";
@@ -57,11 +61,20 @@ export class VideoMessageComponent implements OnInit {
     }
   }
 
+  ngOnDestroy() {
+    if(this.storageSubscribe){
+      this.storageSubscribe.unsubscribe();
+    }
+    if(this.httpSubscribe){
+      this.httpSubscribe.unsubscribe();
+    }
+  }
+
   downloadVideo(){
     this.downloaded=true;
-    let storageSubscribe=this.storageService.getUrlFile(this.video.ref)
+    this.storageSubscribe=this.storageService.getUrlFile(this.video.ref)
     .subscribe(downloadUrl=>{
-      let httpSubscribe=this.http.get(downloadUrl,{
+      this.httpSubscribe=this.http.get(downloadUrl,{
         responseType:'blob',
         reportProgress:true,
         observe:'events'
@@ -92,8 +105,8 @@ export class VideoMessageComponent implements OnInit {
                   this.video.download=true
                   this.imageUrl=Capacitor.convertFileSrc(respUrl);
 
-                  storageSubscribe.unsubscribe();
-                  httpSubscribe.unsubscribe();
+                  this.storageSubscribe.unsubscribe();
+                  this.httpSubscribe.unsubscribe();
                 }).catch(err=>console.log(err));
               }
             });
@@ -107,6 +120,16 @@ export class VideoMessageComponent implements OnInit {
     if(this.storageService.uploads[this.video.id]){
       this.uploaded=false;
       this.storageService.uploads[this.video.id].cancel();
+    }
+  }
+
+  cancelDownload(){
+    this.downloaded=false;
+    if(this.storageSubscribe){
+      this.storageSubscribe.unsubscribe();
+    }
+    if(this.httpSubscribe){
+      this.httpSubscribe.unsubscribe();
     }
   }
 

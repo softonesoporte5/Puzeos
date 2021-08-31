@@ -2,12 +2,12 @@ import { Subscription } from 'rxjs';
 import { ChatService } from './../../pages/chat/chat.service';
 import { TranslateService } from '@ngx-translate/core';
 import { IUser } from './../../interfaces/user.interface';
-import { IonItemSliding, AlertController, IonTextarea } from '@ionic/angular';
+import { IonItemSliding, AlertController, IonTextarea, Platform } from '@ionic/angular';
 import { FormGroup, Validators, FormBuilder, AbstractControl } from '@angular/forms';
 import { IMessage } from './../../interfaces/message.interface';
 import { MediaRecorderService } from './../../../services/media-recorder.service';
-import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { Plugins } from '@capacitor/core';
+import { Component, Input, OnInit, ViewChild, OnDestroy, AfterViewInit, ChangeDetectorRef } from '@angular/core';
+import { KeyboardInfo, PluginListenerHandle, Plugins } from '@capacitor/core';
 
 const { Keyboard } = Plugins;
 
@@ -16,18 +16,19 @@ const { Keyboard } = Plugins;
   templateUrl: './footer-chat.component.html',
   styleUrls: ['./footer-chat.component.scss'],
 })
-export class FooterChatComponent implements OnInit, OnDestroy {
+export class FooterChatComponent implements OnInit, OnDestroy, AfterViewInit {
 
   replyMessage:IMessage;
   tooglePress:boolean=false;
   blockChat:boolean=false;
-  showEmojiPickerCont:number=0;
   showEmojiPicker:boolean=false;
+  emojiPickerHeight=300;
   tiempoGrabacion:string='00:00';
   resetPosEmoji:boolean=true;
   posEmoji:number=0;
   cancelar:boolean=false;
   bucleTime:NodeJS.Timeout;
+  KeyboardListener:PluginListenerHandle;
   replySubscribe:Subscription;
   @ViewChild('sliding', { static: false }) sliding: IonItemSliding;
   @ViewChild('textarea') textarea: IonTextarea;
@@ -46,7 +47,9 @@ export class FooterChatComponent implements OnInit, OnDestroy {
     private fb:FormBuilder,
     private translate:TranslateService,
     private alertController: AlertController,
-    private chatService:ChatService
+    private chatService:ChatService,
+    private ref: ChangeDetectorRef,
+    private platform: Platform
   ) { }
 
   ngOnInit() {
@@ -54,16 +57,31 @@ export class FooterChatComponent implements OnInit, OnDestroy {
       this.replyMessage=resp;
     });
 
-    Keyboard.addListener("keyboardDidShow",()=>{
+    Keyboard.addListener("keyboardDidShow",(info: KeyboardInfo)=>{
+      this.emojiPickerHeight=info.keyboardHeight;
+      this.showEmojiPicker=false;
+      this.ref.detectChanges();
+    });
+
+    this.platform.backButton.subscribeWithPriority(10, processNextHandler => {
       if(this.showEmojiPicker){
-          Keyboard.hide();
+        this.showEmojiPicker=false;
+        this.ref.detectChanges();
+      }else{
+        processNextHandler();
       }
     });
+  }
+
+  ngAfterViewInit() {
   }
 
   ngOnDestroy(){
     if(this.replySubscribe){
       this.replySubscribe.unsubscribe();
+    }
+    if(this.KeyboardListener){
+      this.KeyboardListener.remove();
     }
   }
 
@@ -85,7 +103,6 @@ export class FooterChatComponent implements OnInit, OnDestroy {
       this.textarea.setFocus();
     }
     this.showEmojiPicker=!this.showEmojiPicker;
-    this.showEmojiPickerCont++;
   }
 
   recorder(){

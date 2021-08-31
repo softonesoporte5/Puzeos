@@ -8,7 +8,7 @@ import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit, NgZone, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import * as firebase from 'firebase';
 import { PopoverController, ModalController, IonInfiniteScroll, IonContent } from '@ionic/angular';
@@ -38,6 +38,7 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
   user:IUser;
   imgPath:string;
   blockChat:boolean=false;
+  syncInterval:NodeJS.Timeout;
   @ViewChild('content') content: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
   posM=0;
@@ -48,7 +49,9 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
     private popoverController: PopoverController,
     private db:DbService,
     private chatService:ChatService,
-    private modal:ModalController
+    private modal:ModalController,
+    private ngZone:NgZone,
+    private ref: ChangeDetectorRef
   ) { }
 
   ngOnInit(){
@@ -97,8 +100,7 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
           }
         }
       }).then(()=>{
-        this.mensajes=this.chatService.orderMessages(arrMessages);
-       if(this.routeQuery.id){
+        if(!this.routeQuery.id){
           this.mensajes=this.chatService.orderMessages(arrMessages);
         }else{
           if(arrMessages.length>19){
@@ -109,8 +111,6 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
           }else{
             this.mensajes=this.chatService.orderMessages(arrMessages);
           }
-
-          //console.log(this.allMessages[10]);
         }
         this.db.setItemChat(this.idChat,{...this.chat,newMessages:0});
       })
@@ -134,7 +134,7 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
                 }
               }
             }
-          }else if(messagesResp.status===1){
+          }else if(messagesResp.status===1){//Cuando se agrega un mensaje con state 0
             messagesResp.resp.forEach(message=>{
               if(message.user!==this.userName){
                 this.dbChat.getItem(this.idChat)
@@ -158,6 +158,7 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
               if(message.idChat && message.user===this.userName){
                 let index=this.mensajes.findIndex(mensaje=>mensaje.id===message.id);
                 this.mensajes.splice(index, 1);
+                this.ref.detectChanges();
               }else{
                 if(message.user!==this.userName){
                   this.dbChat.getItem(this.idChat)
@@ -262,6 +263,14 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
       }
     });
 
+    this.ngZone.runOutsideAngular(()=>{
+      this.syncInterval=setInterval(()=>{
+        if(!this.db.sync){
+          this.db.syncMessages();
+        }
+      },5000);
+    });
+
     const ref=this.firestore.collection("messages")
     .doc(this.idChat).collection<IMessage>("messages")
     .ref;
@@ -280,6 +289,9 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
     }
     if(this.scrollReplySubscribe){
       this.scrollReplySubscribe.unsubscribe();
+    }
+    if(this.syncInterval){
+      clearInterval(this.syncInterval);
     }
   }
 

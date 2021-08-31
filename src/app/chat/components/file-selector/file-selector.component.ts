@@ -32,7 +32,7 @@ export class FileSelectorComponent implements OnInit {
     .then(file =>{
       if(file.name){
         const date=new Date().valueOf();
-        const randomId=Math.round(Math.random()*1000)+date;
+        const randomId="a"+Math.round(Math.random()*1000)+date;
         let ext='';
         let directory='';
         let messageTxt='';

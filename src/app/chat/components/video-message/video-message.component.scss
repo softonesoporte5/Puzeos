@@ -48,11 +48,11 @@ svg circle:nth-child(2){
 
 .loc__btn-download{
   display: flex;
-  border: solid 1px gray;
-  border-radius: 1rem;
+  border-radius: 5px;
   padding: 0.25rem 0.5rem;
   align-items: center;
-  background: #00000045;
+  background: #dbdbdb80;
+  position: absolute;
 
   ion-icon{
     margin-right: 5px;
@@ -62,6 +62,7 @@ svg circle:nth-child(2){
 .loc__play{
   position: absolute;
   border: solid 1px gray;
+  color: #fff;
   border-radius: 50%;
   align-items: center;
   z-index: 2;

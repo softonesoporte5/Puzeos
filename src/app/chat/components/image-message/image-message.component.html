@@ -18,7 +18,7 @@
 
 </div>
 
-<div *ngIf="image.user!==userName" class="loc__min-8">
+<div *ngIf="image.user!==userName" class="loc__min-8 d-flex-center">
   <img
     [src]="imageUrl"
     alt="Imágen"
@@ -26,6 +26,12 @@
     (click)="openModal()"
     class="no-disponible"
   >
+
+  <img
+    *ngIf="image.download===false && downloaded===false"
+    src="../../../../assets/translucido.jpg"
+    class="translucido"
+  />
 
   <span *ngIf="image.download===false && downloaded==true" class="loc__cont-control">
     <ion-icon name="close-outline" (click)="cancelDownload()"></ion-icon>

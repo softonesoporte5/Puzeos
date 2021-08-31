@@ -30,7 +30,6 @@ export function HttpLoaderFactory(http: HttpClient): TranslateHttpLoader {
 }
 
 function language(){
-  console.log("a")
   let idioma=localStorage.getItem("language");
   if(idioma){
     return idioma;

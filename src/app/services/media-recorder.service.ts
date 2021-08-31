@@ -1,4 +1,3 @@
-import { FileSystemService } from './file-system.service';
 import { AppService } from './../app.service';
 import { FirebaseStorageService } from 'src/app/services/firebase-storage.service';
 import { IAudioBlob } from './../chat/interfaces/audioBlob.interface';
@@ -29,7 +28,6 @@ export class MediaRecorderService {
   constructor(
     private firebaseStorageService:FirebaseStorageService,
     private appService:AppService,
-    private fileSystemService: FileSystemService
   ) {
     const loadMedia=async ()=> {
       try{
@@ -66,7 +64,7 @@ export class MediaRecorderService {
             };
             this.firebaseStorageService.uploadAudio(audioFile,this.userName,this.idChat,respUrl.uri);
           });
-        },err=>console.log("Error en la línea 73 mediaRecord "+err));
+        },err=>console.log(err));
       }
       this.audioData=[];
     }
