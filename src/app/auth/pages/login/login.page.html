@@ -33,22 +33,8 @@
           formControlName="email"
         ></ion-input>
       </ion-item>
-
-      <ion-item>
-        <ion-icon name="key" slot="start"></ion-icon>
-        <ion-label position="floating">{{ 'RegisterPage.PasswordLabel' | translate }}</ion-label>
-        <ion-input
-            type="password"
-            id="password"
-            class="auth__input"
-            [placeholder]="'RegisterPage.PasswordPlaceholder' | translate"
-            formControlName="password"
-          ></ion-input>
-      </ion-item>
     </div>
-    <ion-text color="secondary" class="ion-text-center auth__enlace" (click)="resetPassword()">
-      Olvidé mi contraseña
-    </ion-text><br>
+    <br>
 
     <ion-button
       expand="block"
@@ -56,16 +42,7 @@
       color="secondary"
       type="submit"
       routerLink="/"
-    >{{'RegisterPage.Login' | translate}}</ion-button>
-
-    <ion-text color="tertiary">
-      <h4 class="ion-text-center">{{'RegisterPage.H4Text' | translate}}</h4>
-    </ion-text>
-    <a
-      [routerLink]="['/auth/register']"
-      class="ion-text-center auth__enlace"
-    >{{'RegisterPage.SignIn' | translate}}</a>
-
+    >{{'RegisterPage.Continue' | translate}}</ion-button>
   </form>
 </ion-content>
 

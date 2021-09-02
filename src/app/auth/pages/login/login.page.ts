@@ -1,3 +1,4 @@
+import { AngularFirestore } from '@angular/fire/firestore';
 import { LoadingService } from './../../../services/loading.service';
 import { ToastController, AlertController } from '@ionic/angular';
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -5,6 +6,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { Plugins, } from '@capacitor/core';
+import * as firebase from 'firebase';
+
+const { App } = Plugins;
 
 @Component({
   selector: 'app-login',
@@ -17,11 +22,12 @@ export class LoginPage implements OnInit {
 
   miFormulario:FormGroup=this.fb.group({
     email:['',[Validators.pattern(this._emailPattern),Validators.required,Validators.minLength(6)]],
-    password:['', [Validators.required,Validators.minLength(9)]]
   });
 
   get email(){ return this.miFormulario.get('email'); }
-  get password(){ return this.miFormulario.get('password'); }
+  // get password(){ return this.miFormulario.get('password'); }
+
+  link="";
 
   constructor(
     private fb:FormBuilder,
@@ -30,10 +36,31 @@ export class LoginPage implements OnInit {
     private router:Router,
     private loadingService:LoadingService,
     private translate: TranslateService,
+    private firestore:AngularFirestore,
     private alertController: AlertController
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    const email=localStorage.getItem("emailForSignIn");
+    if(email){
+      this.email.setValue(email);
+    }
+
+    App.getLaunchUrl().then(resp=>{
+      if(resp.url){
+        console.log(resp.url)
+        this.link=resp.url;
+      }
+    },e=>console.log(e));
+
+    if(this.auth.isSignInWithEmailLink(this.link) && email){
+      this.enviar();
+    }
+
+    if(firebase.default.auth()?.currentUser?.uid){
+      this.router.navigate(['auth/register']);
+    }
+  }
 
   async presentToastWithOptions(mensaje:string){//Mostrar notificaciones internas sobre errores del formulario
     const toast = await this.toastController.create({
@@ -64,13 +91,6 @@ export class LoginPage implements OnInit {
       if(this.email?.errors?.minlength){
         this.translate.get("Error.MinLengthEmail").subscribe(resp=>mensaje=resp);
       }
-      if(this.password?.errors?.required){
-        this.translate.get("Error.PasswordRequired").subscribe(resp=>mensaje=resp);
-      }
-      if(this.password?.errors?.minlength){
-        this.translate.get("Error.MinLengthPassword").subscribe(resp=>mensaje=resp);
-      }
-
       this.presentToastWithOptions(mensaje);
 
       return ;
@@ -79,62 +99,53 @@ export class LoginPage implements OnInit {
     //Mostrar spiner de carga
     this.loadingService.present();
 
-    this.auth.signInWithEmailAndPassword(this.email.value,this.password.value)
-      .then(resp=>{
-        this.loadingService.dismiss();
-        this.router.navigate(['chat']);
+    if(this.auth.isSignInWithEmailLink(this.link) && this.link!==""){
+      console.log("Entró")
+      this.auth.signInWithEmailLink(this.email.value,this.link)
+      .then((userInfo) => {
+        // Clear email from storage.
+        window.localStorage.removeItem('emailForSignIn');
 
-      }).catch(error=>{
-        this.loadingService.dismiss();
-
-        if(error.code==="auth/user-not-found"){
-          this.translate.get("Error.UserNotFound").subscribe(resp=>{
-            this.presentToastWithOptions(resp);
-          });
-        }if(error.code==="auth/wrong-password"){
-          this.translate.get("Error.WrongPassword").subscribe(resp=>{
-            this.presentToastWithOptions(resp);
-          });
-        }
-      });
-
-  }
-
-  async resetPassword(){
-    const alert = await this.alertController.create({
-      message: 'Ingrese el correo electrónico de su cuenta para enviar un enlace de verificación.',
-      buttons: [
-        {
-          text: 'Enviar',
-          handler:async ()=>{
-            const newDescription=document.querySelector("#emailVerify") as HTMLInputElement;
-            this.auth.sendPasswordResetEmail(newDescription.value);
-            const toast = await this.toastController.create({
-              message: 'Revisa la bandeja del correo electrónico que ingresaste.',
-              position: 'top',
-              duration: 5000,
-              buttons: [
-                {
-                  text: 'x',
-                  role: 'cancel'
-                }
-              ]
-            });
-            toast.present();
+        this.firestore.collection("users").doc(userInfo.user.uid).get()
+        .subscribe(resp=>{
+          if(!resp.exists){
+            this.router.navigate(['auth/register']);
+          }else{
+            this.router.navigate(['chat']);
           }
-        }
-      ],
-      inputs: [
-        {
-          name: 'description',
-          id:'emailVerify',
-          type: 'email',
-          max:80,
-          placeholder: 'Correo electrónico'
-        }
-      ]
-    });
-    await alert.present();
+        });
+        this.loadingService.dismiss();
+      })
+      .catch((error) => {
+        this.loadingService.dismiss();
+        console.log(error)
+      });
+    }else{
+      this.auth.sendSignInLinkToEmail(this.email.value,{
+        url:'http://usuarios-6b56a.web.app',
+        handleCodeInApp: true,
+        android: {
+          packageName: 'com.puzeos.puzeos',
+          installApp: true,
+        },
+        dynamicLinkDomain: 'puzeos.page.link'
+      }).then(()=>{
+        localStorage.setItem('emailForSignIn', this.email.value);
+        this.presentAlert();
+      },err=>console.log(err));
+    }
   }
 
+  async presentAlert() {
+    const alert = await this.alertController.create({
+      cssClass: 'my-custom-class',
+      header: 'Alert',
+      message: 'Se ha enviado un enlace de verificación al correo ingresado. <br> <br>Ingresa a tu correo y haz click en el enlace para poder iniciar sesión.',
+      buttons: ['OK']
+    });
+
+    await alert.present();
+    await alert.onDidDismiss();
+  }
 }
+

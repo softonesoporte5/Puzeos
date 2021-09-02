@@ -39,8 +39,6 @@
       color="primary"
       class="ion-padding-vertical sombra ion-padding auth__cont mb-10"
     >
-      <ion-slides pager="true" [options]="slideOpts" #IonSlides>
-        <ion-slide>
           <ion-item>
             <ion-icon name="person" slot="start"></ion-icon>
             <ion-label position="floating">{{ 'Global.UserName' | translate }}</ion-label>
@@ -53,45 +51,6 @@
             ></ion-input>
           </ion-item>
 
-          <ion-item>
-            <ion-icon name="mail" slot="start"></ion-icon>
-            <ion-label position="floating">{{ 'RegisterPage.EmailLabel' | translate }}</ion-label>
-            <ion-input
-              type="email"
-              id="email"
-              class="auth__input"
-              [placeholder]="'RegisterPage.EmailPlaceholder' | translate"
-              formControlName="email"
-            ></ion-input>
-          </ion-item>
-
-          <span formGroupName="passwords">
-            <ion-item>
-              <ion-icon name="key" slot="start"></ion-icon>
-              <ion-label position="floating">{{ 'RegisterPage.PasswordLabel' | translate }}</ion-label>
-              <ion-input
-                  type="password"
-                  id="password"
-                  class="auth__input"
-                  [placeholder]="'RegisterPage.PasswordPlaceholder' | translate"
-                  formControlName="password"
-                ></ion-input>
-            </ion-item>
-
-            <ion-item>
-              <ion-icon name="key" slot="start"></ion-icon>
-              <ion-label position="floating">{{ 'RegisterPage.PasswordLabel_2' | translate }}</ion-label>
-              <ion-input
-                  type="password"
-                  id="password2"
-                  class="auth__input"
-                  [placeholder]="'RegisterPage.PasswordPlaceholder_2' | translate"
-                  formControlName="password2"
-                ></ion-input>
-            </ion-item>
-          </span>
-        </ion-slide>
-        <ion-slide>
           <ion-item>
             <ion-icon name="information-circle" slot="start"></ion-icon>
             <ion-label position="floating">{{ 'RegisterPage.DescriptionLabel' | translate }}</ion-label>
@@ -119,27 +78,17 @@
               <small>{{'RegisterPage.PrivacyPolicy2' | translate}}</small>
             </a>
           </small>
-        </ion-slide>
-      </ion-slides>
     </div>
 
     <ion-button
       expand="block"
       class="ion-text-capitalize center-child"
       color="secondary"
-      (click)="activeSlide===0?next():enviar()"
+      (click)="enviar()"
     >
-      <span *ngIf="activeSlide===0">
-        {{'RegisterPage.Continue' | translate}}
-      </span>
-      <span *ngIf="activeSlide!==0">
+      <span>
         {{'RegisterPage.SignIn' | translate}}
       </span>
-      <ion-icon
-        *ngIf="activeSlide===0"
-        name="arrow-forward-outline"
-        class="auth__icon-continue"
-      ></ion-icon>
     </ion-button>
 
     <ion-text color="tertiary">
