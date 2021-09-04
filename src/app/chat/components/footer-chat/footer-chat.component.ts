@@ -138,13 +138,16 @@ export class FooterChatComponent implements OnInit, OnDestroy, AfterViewInit {
 
   agregarMensaje(){
     const message=this.mensaje.value;
+          this.textarea.setFocus();
     if(this.replyMessage){
       this.chatService.addMessageInFirebase(message,this.idChat,this.username,this.user,this.replyMessage);
       this.mensaje.setValue('');
+      this.textarea.setFocus();
       this.replyMessage=null;
     }else{
       this.chatService.addMessageInFirebase(message,this.idChat,this.username,this.user);
       this.mensaje.setValue('');
+      this.textarea.setFocus();
     }
   }
 

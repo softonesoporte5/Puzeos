@@ -1,48 +1,12 @@
-<div class="fondo"></div>
-
 <ion-content class="ion-padding">
-  <ion-row class="mb-20 ion-justify-content-center ion-padding-top">
-    <img
-      src="../../../../assets/logo.png"
-      alt="Logo"
-      class="auth__logo"
-    >
-  </ion-row>
+  <firebase-ui [language]="language"></firebase-ui>
 
-  <h1 class="ion-text-center mb-20">{{'RegisterPage.Login' | translate}}</h1>
-  <form
-    [formGroup]="miFormulario"
-    action=""
-    autocomplete="off"
-    (ngSubmit)="enviar()"
-  >
-    <div
-      color="primary"
-      class="ion-padding-vertical sombra ion-padding auth__cont mb-20"
-      style=" padding-top: 0rem; padding:1.5rem"
-    >
-
-      <ion-item>
-        <ion-icon name="mail" slot="start"></ion-icon>
-        <ion-label position="floating">{{ 'RegisterPage.EmailLabel' | translate }}</ion-label>
-        <ion-input
-          type="email"
-          id="email"
-          class="auth__input"
-          [placeholder]="'RegisterPage.EmailPlaceholder' | translate"
-          formControlName="email"
-        ></ion-input>
-      </ion-item>
-    </div>
-    <br>
-
-    <ion-button
-      expand="block"
-      class="ion-text-capitalize"
-      color="secondary"
-      type="submit"
-      routerLink="/"
-    >{{'RegisterPage.Continue' | translate}}</ion-button>
-  </form>
+  <ion-item>
+    <ion-label style="color:gray">{{'Global.Language' | translate}}</ion-label>
+    <ion-select [(ngModel)]="language">
+      <ion-select-option value="en">English</ion-select-option>
+      <ion-select-option value="es">Español</ion-select-option>
+    </ion-select>
+  </ion-item>
 </ion-content>
 

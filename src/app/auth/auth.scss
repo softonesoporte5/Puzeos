@@ -1,3 +1,4 @@
+
 .auth__logo{
   width: 40px;
   margin-right: 7px;
@@ -26,6 +27,7 @@ ion-content{
   background-color: #733db0;
   color: white;
   padding-top: 3rem;
+  text-align: center;
 }
 
 .auth__input{
@@ -42,7 +44,7 @@ h4{
   display:block;
 }
 
-ion-item{
+.auth__cont ion-item{
   --background:transparent;
   align-items: center;
   color:white;
@@ -53,7 +55,7 @@ ion-icon{
   color:#ffffff;
 }
 
-ion-label{
+.auth__cont ion-label{
   color:#ffffff !important;
 }
 

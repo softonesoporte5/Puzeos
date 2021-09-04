@@ -45,6 +45,8 @@
     "cordova-support-android-plugin": "^1.0.2",
     "extendable-media-recorder": "^6.1.56",
     "firebase": "^7.0 || ^8.0",
+    "firebaseui": "^5.0.0",
+    "firebaseui-angular-i18n": "^5.1.4",
     "howler": "^2.2.1",
     "i": "^0.3.6",
     "ionic-no-keyboard": "0.0.1",

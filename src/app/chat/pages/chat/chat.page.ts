@@ -24,13 +24,13 @@ import { IUser } from '../../interfaces/user.interface';
 export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
 
   idChat:string;
-  mensajes:IMessage[]=[];
   allMessages:IMessage[]=[];
   userName:string='';
   dbChat:ILocalForage;
   chat:IChat;
   dbMessages:ILocalForage;
   dbUsers:ILocalForage;
+  mensajes:IMessage[]=[];
   mensajesSubscribe:Subscription;
   scrollReplySubscribe:Subscription;
   showScrollButton=false;
@@ -51,7 +51,7 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
     private chatService:ChatService,
     private modal:ModalController,
     private ngZone:NgZone,
-    private ref: ChangeDetectorRef
+    private ref: ChangeDetectorRef,
   ) { }
 
   ngOnInit(){
@@ -112,102 +112,30 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
             this.mensajes=this.chatService.orderMessages(arrMessages);
           }
         }
-        this.db.setItemChat(this.idChat,{...this.chat,newMessages:0});
+        this.db.setItemChat(this.idChat,{
+          ...this.chat,
+          newMessages:0
+        });
+        this.db.newMessages[this.idChat]=0;
       })
       .catch(error=>console.log(error));
 
       if(this.db.messagesSubscriptions){
-        const messages=this.db.messagesSubscriptions[this.idChat] as Subject<IMessagesResp>
-        this.mensajesSubscribe=messages.subscribe(messagesResp=>{
-          if(messagesResp.status===0){//Si no llega ningun mensaje
-            for (let i = this.mensajes.length -1; i > 0; i--){
-              const message=this.mensajes[i];
-              if(message.user!==this.userName){
-                if(this.mensajes[i].state===1){
-                  this.mensajes[i].state=2;
-                  this.dbMessages.setItem(message.id,{
-                    ...this.mensajes[i],
-                    state:2
-                  }).catch(error=>console.log(error));
-                }else{
-                  break;
-                }
-              }
-            }
-          }else if(messagesResp.status===1){//Cuando se agrega un mensaje con state 0
-            messagesResp.resp.forEach(message=>{
-              if(message.user!==this.userName){
-                this.dbChat.getItem(this.idChat)
-                .then(chat=>{
-                  this.db.setItemChat(this.idChat,{...chat,newMessages:0});
-                },err=>console.log(err));
-                this.db.deleteMessage(message.id,this.idChat);
-              }else{
-                const audio=document.querySelector(".sendMessageSound") as HTMLMediaElement;
-                audio.play();
-              }
-            });
-            if(messagesResp.resp.length>1){
-              const orderResp=this.chatService.orderMessages(messagesResp.resp);
-              Array.prototype.push.apply(this.mensajes,orderResp);
+        try{
+          const messages=this.db.messagesSubscriptions[this.idChat] as Subject<IMessagesResp>;
+          this.subscribeMessages(messages);
+        }catch(e){
+          let mInterval=setInterval(()=>{
+            let messagesCon;
+            console.log(messagesCon)
+            if(messagesCon){
+              clearInterval(mInterval);
             }else{
-              Array.prototype.push.apply(this.mensajes,messagesResp.resp);
+              messagesCon=this.db.messagesSubscriptions[this.idChat] as Subject<IMessagesResp>;
+              this.subscribeMessages(messagesCon);
             }
-          }else if(messagesResp.status===5){//Cuando se agrega un mensaje nuevo
-            messagesResp.resp.forEach(message=>{
-              if(message.idChat && message.user===this.userName){
-                let index=this.mensajes.findIndex(mensaje=>mensaje.id===message.id);
-                this.mensajes.splice(index, 1);
-                this.ref.detectChanges();
-              }else{
-                if(message.user!==this.userName){
-                  this.dbChat.getItem(this.idChat)
-                  .then(chat=>{
-                    this.db.setItemChat(this.idChat,{...chat,newMessages:0});
-                  },err=>console.log(err));
-                  this.db.deleteMessage(message.id,this.idChat);
-                }else{
-                  const audio=document.querySelector(".sendMessageSound") as HTMLMediaElement;
-                  audio.play();
-                }
-              }
-            });
-            if(messagesResp.resp.length>1){
-              const orderResp=this.chatService.orderMessages(messagesResp.resp);
-              Array.prototype.push.apply(this.mensajes,orderResp);
-            }else{
-              Array.prototype.push.apply(this.mensajes,messagesResp.resp);
-            }
-          }else if(messagesResp.status===4){
-            this.blockChat=true;
-          }else{
-            console.log(messagesResp.resp)
-            messagesResp.resp.forEach(message=>{
-              if(message.user===this.userName){
-                let deletePer=false;
-                for (let i = this.mensajes.length -1; i > 0; i--){
-                  if(this.mensajes[i].id===message.id){
-                    deletePer=true;
-                  }
-                  if(deletePer===true){
-                    if(this.mensajes[i].state===1){
-                      this.mensajes[i].state=2;
-                      this.dbMessages.setItem(message.id,{
-                        ...this.mensajes[i],
-                        state:2
-                      }).then(resp=>console.log(resp))
-                      .catch(error=>console.log(error));
-                      break;
-                    }else{
-                      deletePer=false;
-                      break;
-                    }
-                  }
-                }
-              }
-            });
-          }
-        })
+          },2000);
+        }
       }
     }).catch(err=>console.log(err));
 
@@ -293,6 +221,105 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
     if(this.syncInterval){
       clearInterval(this.syncInterval);
     }
+  }
+
+  subscribeMessages(messages:Subject<IMessagesResp>){
+    this.mensajesSubscribe=messages.subscribe(messagesResp=>{
+      this.ngZone.run(()=>{
+        if(messagesResp.status===0){//Si no llega ningun mensaje
+          for (let i = this.mensajes.length -1; i > 0; i--){
+            const message=this.mensajes[i];
+            if(message.user!==this.userName){
+              if(this.mensajes[i].state===1){
+                this.mensajes[i].state=2;
+                this.dbMessages.setItem(message.id,{
+                  ...this.mensajes[i],
+                  state:2
+                }).catch(error=>console.log(error));
+              }else{
+                break;
+              }
+            }
+          }
+        }else if(messagesResp.status===1){//Cuando se agrega un mensaje con state 0
+          messagesResp.resp.forEach(message=>{
+            if(message.user!==this.userName){
+              this.dbChat.getItem(this.idChat)
+              .then(chat=>{
+                console.log("asd")
+                this.db.setItemChat(this.idChat,{...chat,newMessages:0});
+              },err=>console.log(err));
+              this.db.deleteMessage(message.id,this.idChat);
+            }else{
+              const audio=document.querySelector(".sendMessageSound") as HTMLMediaElement;
+              audio.play();
+            }
+          });
+          if(messagesResp.resp.length>1){
+            const orderResp=this.chatService.orderMessages(messagesResp.resp);
+            Array.prototype.push.apply(this.mensajes,orderResp);
+          }else{
+            Array.prototype.push.apply(this.mensajes,messagesResp.resp);
+          }
+        }else if(messagesResp.status===5){//Cuando se agrega un mensaje nuevo
+          messagesResp.resp.forEach(message=>{
+            if(message.idChat && message.user===this.userName){
+              let index=this.mensajes.findIndex(mensaje=>mensaje.id===message.id);
+              this.mensajes.splice(index, 1);
+            }else{
+              if(message.user!==this.userName){
+                this.dbChat.getItem(this.idChat)
+                .then(chat=>{
+                  this.db.setItemChat(this.idChat,{
+                    ...chat,
+                    lastMessage:message.message,
+                    newMessages:0
+                  });
+                },err=>console.log(err));
+                this.db.deleteMessage(message.id,this.idChat);
+              }else{
+                const audio=document.querySelector(".sendMessageSound") as HTMLMediaElement;
+                audio.play();
+              }
+            }
+          });
+          if(messagesResp.resp.length>1){
+            const orderResp=this.chatService.orderMessages(messagesResp.resp);
+            Array.prototype.push.apply(this.mensajes,orderResp);
+          }else{
+            Array.prototype.push.apply(this.mensajes,messagesResp.resp);
+          }
+        }else if(messagesResp.status===4){
+          this.blockChat=true;
+        }else{
+          console.log(messagesResp.resp)
+          messagesResp.resp.forEach(message=>{
+            if(message.user===this.userName){
+              let deletePer=false;
+              for (let i = this.mensajes.length -1; i > 0; i--){
+                if(this.mensajes[i].id===message.id){
+                  deletePer=true;
+                }
+                if(deletePer===true){
+                  if(this.mensajes[i].state===1){
+                    this.mensajes[i].state=2;
+                    this.dbMessages.setItem(message.id,{
+                      ...this.mensajes[i],
+                      state:2
+                    }).then(resp=>console.log(resp))
+                    .catch(error=>console.log(error));
+                    break;
+                  }else{
+                    deletePer=false;
+                    break;
+                  }
+                }
+              }
+            }
+          });
+        }
+      })
+    })
   }
 
   loadData(event) {

@@ -4,7 +4,7 @@ import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IUser } from './../../interfaces/user.interface';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
 import { MenuController, AlertController } from '@ionic/angular';
 import * as firebase from 'firebase';
 import { DbService } from 'src/app/services/db.service';
@@ -31,7 +31,8 @@ export class HomePage implements OnInit{
     private route:ActivatedRoute,
     private router:Router,
     public alertController: AlertController,
-    private translate:TranslateService
+    private translate:TranslateService,
+    private ngZone:NgZone
   ) {
 
   }
@@ -57,7 +58,6 @@ export class HomePage implements OnInit{
         this.orderChats();
         this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
         .then(user=>{
-          console.log(user)
           this.user={
             id:firebase.default.auth().currentUser.uid,
             data:{...user}
@@ -67,11 +67,13 @@ export class HomePage implements OnInit{
         //Nos subscribimos a los chats de manera local
         this.db.getItemsChat()
         .subscribe(resp=>{
-          let chat=resp as IChat;
-          this.chatsObj[chat.id]={
-            ...chat
-          }
-          this.orderChats();
+          this.ngZone.run(()=>{
+            let chat=resp as IChat;
+            this.chatsObj[chat.id]={
+              ...chat
+            }
+            this.orderChats();
+          })
         });
 
         this.db.obtenerUsuario()
@@ -81,7 +83,6 @@ export class HomePage implements OnInit{
             data:{...user}
           };
           if(this.chatsFirebase<this.user?.data?.chats?.length){
-            console.log("Entró al if")
             for(let index=this.chats.length; index<user.chats.length; index++){
               console.log(user.chats[user.chats.length-1],user.chats.length-1);
               this.db.addNewConecction(user.chats[user.chats.length-1],user.chats.length-1);

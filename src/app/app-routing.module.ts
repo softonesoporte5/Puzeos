@@ -1,3 +1,4 @@
+import { AuthenticationGuard } from './guards/authentication.guard';
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
@@ -7,12 +8,18 @@ const routes: Routes = [
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then( m => m.AuthModule),
-    ...canActivate(()=>redirectLoggedInTo(['/chat']))
+    data:{
+      module:"auth"
+    },
+    canActivate:[AuthenticationGuard]
   },
   {
     path: 'chat',
     loadChildren:()=>import('./chat/chat.module').then(m=>m.ChatModule),
-    ...canActivate(()=>redirectUnauthorizedTo(['/auth/register']))
+    data:{
+      module:"chat"
+    },
+    canActivate:[AuthenticationGuard]
   },
   {
     path:'',

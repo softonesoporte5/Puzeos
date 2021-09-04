@@ -28,6 +28,7 @@ export class DbService{
   arrMessages={};
   dbMessages:ILocalForage[]=[];
   dbNotSendMessages:ILocalForage;
+  newMessages={};
 
   constructor(
     private firestore:AngularFirestore,
@@ -36,35 +37,38 @@ export class DbService{
     this.dbChats=this.loadStore("chats");
     this.dbUsers=this.loadStore("users");
     this.dbNotSendMessages=this.loadStore("notSendMessage");
-    if(firebase.default.auth().currentUser?.uid){
-      this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
-      .then((user:IUserData)=>{
-        if(user){
-          this.user=user;
+    firebase.default.auth().onAuthStateChanged(userInfo=>{
+      if(userInfo){
+      this.dbUsers.getItem(userInfo.uid)
+        .then((user:IUserData)=>{
+          if(user){
+            this.user=user;
 
-          //Creamos las conexiones locales y de firebase para cada chat
-          this.messagesSubscriptions={}
-          this.user.chats.forEach((chatID,index)=>{
-            this.addNewConecction(chatID,index);
-          });
-        }
-      },err=>console.log(err));
-
-      this.obtenerUsuario()
-      .subscribe(user=>{
-        if(user.imageUrl){
-          this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
-          .then((userData:IUserData)=>{
-            this.dbUsers.setItem(firebase.default.auth().currentUser.uid,{
-              ...user,
-              imageUrlLoc:userData.imageUrlLoc
+            //Creamos las conexiones locales y de firebase para cada chat
+            this.messagesSubscriptions={}
+            this.user.chats.forEach((chatID,index)=>{
+              this.addNewConecction(chatID,index);
             });
-          });
-        }else{
-          this.dbUsers.setItem(firebase.default.auth().currentUser.uid,user);
-        }
-      });
-    }
+          }
+        },err=>console.log(err));
+
+        this.obtenerUsuario()
+        .subscribe(user=>{
+          if(user.imageUrl){
+            this.dbUsers.getItem(userInfo.uid)
+            .then((userData:IUserData)=>{
+              this.dbUsers.setItem(userInfo.uid,{
+                ...user,
+                imageUrlLoc:userData.imageUrlLoc
+              });
+            });
+          }else{
+            this.dbUsers.setItem(userInfo.uid,user);
+          }
+        });
+      }
+    });
+
 
     this.appService.getNetworkStatus()
     .subscribe(()=>{
@@ -210,7 +214,7 @@ export class DbService{
 
   }
 
-  loadStore(name: string){
+  loadStore(name: string): ILocalForage{
     return localForage.createInstance({
       name        : localForage._config.name,
       storeName   : name
@@ -268,15 +272,15 @@ export class DbService{
     .then((resp:IChat)=>{
       if(resp){
         if(message.user!==this.user.userName){
-          if(resp.newMessages){
-            resp.newMessages++;
+          if(this.newMessages[idChat]){
+            this.newMessages[idChat]++;
           }else{
-            resp.newMessages=1;
+            this.newMessages[idChat]=1;
           }
         }
         this.setItemChat(idChat,{
           ...resp,
-          newMessages:resp.newMessages,
+          newMessages:this.newMessages[idChat] || 0,
           lastMessage:message.message,
           timestamp:message.timestamp,
         });

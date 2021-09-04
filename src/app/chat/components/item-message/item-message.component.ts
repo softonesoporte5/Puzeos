@@ -74,7 +74,7 @@ export class ItemMessageComponent implements AfterViewInit, OnInit
             let maxScroll=resp.scrollHeight-resp.offsetHeight;
             let scrollTop=resp.scrollTop;
 
-            if(maxScroll-scrollTop<120 || resp.scrollTop<10){
+            if(maxScroll-scrollTop<120 || resp.scrollTop<10 || this.userName===this.message.user){
               this.content.scrollToBottom();
             }
           },220);
@@ -85,7 +85,6 @@ export class ItemMessageComponent implements AfterViewInit, OnInit
     let scrollText=document.querySelector(`#${this.message.id} ion-card-content > span`);
     //console.log(scrollText.clientHeight,scrollText.scrollHeight)
     if(scrollText.clientHeight!==scrollText.scrollHeight){
-
       scrollText.classList.add("put-text");
     }
   }
