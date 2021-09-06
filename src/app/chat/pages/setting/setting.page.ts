@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core';
 import { ISettings } from './../../interfaces/settings.interface';
 import { Component, OnInit } from '@angular/core';
 
@@ -12,7 +13,9 @@ export class SettingPage implements OnInit {
   languageSelect:string;
   searchLanguageSelect:string;
 
-  constructor() {
+  constructor(
+    private translate: TranslateService
+  ) {
     this.languageSelect=localStorage.getItem("language");
     this.searchLanguageSelect=localStorage.getItem("searchLanguage");
   }
@@ -41,6 +44,10 @@ export class SettingPage implements OnInit {
   setLanguage(){
     if(this.languageSelect){
       localStorage.setItem("language",this.languageSelect);
+      this.translate.use(this.languageSelect);
+      this.translate.get("Global.ChangeLanguage").subscribe(resp=>{
+        alert(resp);
+      });
     }
   }
 

@@ -4,6 +4,7 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Rout
 import { Observable } from 'rxjs';
 import {DbService} from '../services/db.service';
 import * as firebase from 'firebase';
+import { StoreNames } from '../enums/store-names.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,7 @@ export class AuthenticationGuard implements CanActivate {
 
       return new Promise((resolve,rejeact)=>{
         firebase.default.auth().onAuthStateChanged((user) => {
-          const localDb=this.db.loadStore("users");
+          const localDb=this.db.loadStore(StoreNames.Users);
           localDb.getItem(user?.uid)
           .then(resp=>{
             if(route.data.module==="chat"){

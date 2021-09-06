@@ -1,6 +1,10 @@
 ion-chip{
   --color:#fff;
-  text-shadow: 0 0 5px #000;
+  //text-shadow: 0 0 5px #000;
+  ion-label{
+    font-weight: 500;
+    margin-right: 6px;
+  }
 }
 
 .flex{
@@ -18,7 +22,6 @@ ion-chip{
 }
 
 ion-input{
-  border: solid 1px grey;
   border-radius: 4px;
   padding-left: 1.8rem !important;
 }
@@ -27,12 +30,35 @@ form{
   margin-bottom: 10px;
   display: flex;
   align-items: center;
+  position: sticky;
+  top:-1px;
+  z-index: 2;
+  background-color: var(--white);
+
   ion-icon{
     position: absolute;
     margin-left: 6px;
     width: 1.5rem;
     height: 1.5rem;
     color: gray;
+  }
+}
+
+.loc__guide{
+  display: flex;
+  align-items: center;
+  h5{
+    display: flex;
+    align-items: center;
+    margin: 0;
+    font-size: 13px;
+    ion-icon{
+      margin-top: 2px;
+    }
+  }
+
+  img{
+    max-width: 53px;
   }
 }
 

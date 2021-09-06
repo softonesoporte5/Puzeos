@@ -1,0 +1,9 @@
+0:videojuegos
+1:musica
+2:programacion
+3:entretenimiento
+4:diseño
+5:deportes
+6:movimientos o grupos
+7:tecnologias
+8:ciencias

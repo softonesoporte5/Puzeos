@@ -1,3 +1,4 @@
+import { FirestoreService } from './../../../services/firestore.service';
 import { TranslateService } from '@ngx-translate/core';
 import { AlertController, ToastController } from '@ionic/angular';
 import { FormGroup, Validators, FormBuilder, AbstractControl } from '@angular/forms';
@@ -10,6 +11,7 @@ import { searchsUser } from './../../interfaces/searchsUser.interface';
 import { AngularFirestore, DocumentSnapshot } from '@angular/fire/firestore';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as firebase from 'firebase';
+import { StoreNames } from 'src/app/enums/store-names.enum';
 
 interface IItem{
   id:string,
@@ -17,7 +19,8 @@ interface IItem{
     title:string
   },
   color:string,
-  chatsCreated?:number
+  chatsCreated?:number,
+  iconName: string
 }
 
 @Component({
@@ -42,6 +45,7 @@ export class AgregarPage implements OnInit, OnDestroy {
   tagId:string;
   title:string;
   selectValue:string;
+  iconNames=["game-controller", "musical-notes", "terminal", "tv", "color-palette", "football", "people", "hardware-chip", "flask"];
 
   constructor(
     private fireStore:AngularFirestore,
@@ -50,11 +54,12 @@ export class AgregarPage implements OnInit, OnDestroy {
     private fb:FormBuilder,
     private alertController: AlertController,
     private translate:TranslateService,
-    public toastController: ToastController
+    public toastController: ToastController,
+    private firestoreService: FirestoreService
   ) { }
 
   ngOnInit() {
-    this.dbUsers=this.db.loadStore("users");
+    this.dbUsers=this.db.loadStore(StoreNames.Users);
     let searchLanguage=localStorage.getItem("searchLanguage");
     if(searchLanguage){
       this.searchLanguage=searchLanguage;
@@ -75,7 +80,8 @@ export class AgregarPage implements OnInit, OnDestroy {
               title:data.title,
             },
             color:this.colorRGB(),
-            chatsCreated:data.chatsCreated?data.chatsCreated:0
+            chatsCreated:data.chatsCreated?data.chatsCreated:0,
+            iconName:this.iconNames[data.iconName]
           });
         });
         this.items=tags.sort((a, b)=>{
@@ -127,7 +133,7 @@ export class AgregarPage implements OnInit, OnDestroy {
       if(user.buscando.state && !this.searchLanguage){
         this.searchLanguage='.';
       }
-      this.userSubscription=this.db.obtenerUsuario()
+      this.userSubscription=this.firestoreService.getUser()
       .subscribe(user=>{
         this.user={
           id:firebase.default.auth().currentUser.uid,

@@ -2,6 +2,7 @@ import { IMessage, IMessageSearch } from './../../interfaces/message.interface';
 import { DbService } from 'src/app/services/db.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { Component, OnInit } from '@angular/core';
+import { StoreNames } from 'src/app/enums/store-names.enum';
 
 @Component({
   selector: 'app-saved-messages',
@@ -18,7 +19,7 @@ export class SavedMessagesPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.dbSavedMessage=this.db.loadStore("savedMessages");
+    this.dbSavedMessage=this.db.loadStore(StoreNames.SavedMessages);
 
     this.dbSavedMessage.iterate(values=>{
       this.messages.push(values);

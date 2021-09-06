@@ -1,3 +1,4 @@
+import { FirestoreService } from './../../../services/firestore.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IChat } from './../../interfaces/chat.interface';
@@ -8,6 +9,7 @@ import { Component, NgZone, OnInit } from '@angular/core';
 import { MenuController, AlertController } from '@ionic/angular';
 import * as firebase from 'firebase';
 import { DbService } from 'src/app/services/db.service';
+import { StoreNames } from 'src/app/enums/store-names.enum';
 
 @Component({
   selector: 'app-home',
@@ -32,14 +34,15 @@ export class HomePage implements OnInit{
     private router:Router,
     public alertController: AlertController,
     private translate:TranslateService,
-    private ngZone:NgZone
+    private ngZone:NgZone,
+    private firestoreService: FirestoreService
   ) {
 
   }
 
   ngOnInit() {
-    this.dbChats=this.db.loadStore('chats');
-    this.dbUsers=this.db.loadStore("users");
+    this.dbChats=this.db.loadStore(StoreNames.Chats);
+    this.dbUsers=this.db.loadStore(StoreNames.Users);
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then(user=>{
@@ -76,7 +79,7 @@ export class HomePage implements OnInit{
           })
         });
 
-        this.db.obtenerUsuario()
+        this.firestoreService.getUser()
         .subscribe(user=>{
           this.user={
             id:firebase.default.auth().currentUser.uid,

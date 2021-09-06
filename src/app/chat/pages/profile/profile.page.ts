@@ -11,6 +11,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { Component, OnInit } from '@angular/core';
 import { IUser } from '../../interfaces/user.interface';
 import * as firebase from 'firebase';
+import { StoreNames } from 'src/app/enums/store-names.enum';
 
 @Component({
   selector: 'app-profile',
@@ -35,7 +36,7 @@ export class ProfilePage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.dbUsers=this.db.loadStore("users");
+    this.dbUsers=this.db.loadStore(StoreNames.Users);
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then((resp:IUserData)=>{

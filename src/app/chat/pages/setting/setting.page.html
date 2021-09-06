@@ -37,7 +37,7 @@
 
     <ion-item lines="full">
       <ion-icon name="chatbubbles" slot="start"></ion-icon>
-      <ion-label class="ion-text-wrap">Idioma de conversaciones</ion-label>
+      <ion-label class="ion-text-wrap">{{'SettingPage.ConversationLanguage' | translate}}</ion-label>
       <ion-select [(ngModel)]="searchLanguageSelect" (ionChange)="setSearchLanguage()">
         <ion-select-option value="en">English</ion-select-option>
         <ion-select-option value="es">Español (Spanish)</ion-select-option>

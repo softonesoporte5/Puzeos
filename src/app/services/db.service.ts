@@ -1,10 +1,12 @@
+import { FirestoreService } from './firestore.service';
+import { StoreNames } from './../enums/store-names.enum';
 import { AppService } from './../app.service';
 import { IMessagesResp } from './../chat/interfaces/messagesResp.interface';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { IUserData } from './../chat/interfaces/user.interface';
 import { IMessage } from './../chat/interfaces/message.interface';
 import { IChat } from './../chat/interfaces/chat.interface';
-import { Subject, Observable } from 'rxjs';
+import { Subject } from 'rxjs';
 import { ILocalForage } from './../chat/interfaces/localForage.interface';
 import { Injectable } from '@angular/core';
 const localForage = require("localforage") as ILocalForage;
@@ -33,10 +35,12 @@ export class DbService{
   constructor(
     private firestore:AngularFirestore,
     private appService:AppService,
+    private firestoreService: FirestoreService
   ) {
-    this.dbChats=this.loadStore("chats");
-    this.dbUsers=this.loadStore("users");
-    this.dbNotSendMessages=this.loadStore("notSendMessage");
+    this.dbChats=this.loadStore(StoreNames.Chats);
+    this.dbUsers=this.loadStore(StoreNames.Users);
+    this.dbNotSendMessages=this.loadStore(StoreNames.NotSendMessage);
+
     firebase.default.auth().onAuthStateChanged(userInfo=>{
       if(userInfo){
       this.dbUsers.getItem(userInfo.uid)
@@ -52,7 +56,8 @@ export class DbService{
           }
         },err=>console.log(err));
 
-        this.obtenerUsuario()
+        //Sincronizamos la info del usuario de firebase con la local
+        this.firestoreService.getUser()
         .subscribe(user=>{
           if(user.imageUrl){
             this.dbUsers.getItem(userInfo.uid)
@@ -69,7 +74,6 @@ export class DbService{
       }
     });
 
-
     this.appService.getNetworkStatus()
     .subscribe(()=>{
       this.syncMessages();
@@ -82,9 +86,8 @@ export class DbService{
     this.arrMessages[chatID]=[];
 
     const actions=()=>{
-      const ref=this.firestore.collection("messages")
-      .doc(chatID).collection<IMessage>("messages")
-      .ref;
+      const ref= this.firestoreService.getMessagesRef(chatID);
+
       ref.onSnapshot(resp=>{
         let arrMensajes:IMessage[]=[];
         const datos=resp.docChanges();
@@ -211,10 +214,12 @@ export class DbService{
     }else{
       actions();
     }
-
   }
 
-  loadStore(name: string): ILocalForage{
+  /**
+   * @param name - Enum StoreNames o un string para los store de los mensajes en formato 'messages+idChat'
+  */
+  loadStore(name: StoreNames | string): ILocalForage{
     return localForage.createInstance({
       name        : localForage._config.name,
       storeName   : name
@@ -261,10 +266,6 @@ export class DbService{
     }).then(()=>{
       this.sync=false;
     })
-  }
-
-  obtenerUsuario(){
-    return this.firestore.collection("users").doc(firebase.default.auth().currentUser.uid).valueChanges() as Observable<IUserData>;
   }
 
   addMessage(message:IMessage,idChat:string,dbChat:ILocalForage,dbMessages:ILocalForage){

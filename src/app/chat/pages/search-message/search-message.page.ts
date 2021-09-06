@@ -1,11 +1,12 @@
 import { IChat } from './../../interfaces/chat.interface';
 import { IUserData } from './../../interfaces/user.interface';
 import { IMessage, IMessageSearch } from './../../interfaces/message.interface';
-import { dbNames, ILocalForage } from './../../interfaces/localForage.interface';
+import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from './../../../services/db.service';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import * as firebase from 'firebase';
+import { StoreNames } from 'src/app/enums/store-names.enum';
 
 @Component({
   selector: 'app-search-message',
@@ -34,8 +35,8 @@ export class SearchMessagePage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.dbUsers=this.db.loadStore(dbNames.USERS);
-    this.dbChats=this.db.loadStore("chats");
+    this.dbUsers=this.db.loadStore(StoreNames.Users);
+    this.dbChats=this.db.loadStore(StoreNames.Chats);
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then(resp=>{

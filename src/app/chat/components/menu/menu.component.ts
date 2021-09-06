@@ -7,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import * as firebase from 'firebase';
 import { TranslateService } from '@ngx-translate/core';
+import { StoreNames } from 'src/app/enums/store-names.enum';
 
 @Component({
   selector: 'app-menu',
@@ -26,7 +27,7 @@ export class MenuComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.dbUsers=this.db.loadStore("users");
+    this.dbUsers=this.db.loadStore(StoreNames.Users);
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then((resp:IUserData)=>{

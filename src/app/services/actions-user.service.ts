@@ -7,6 +7,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { DbService } from 'src/app/services/db.service';
 import {  ToastController, PopoverController, AlertController } from '@ionic/angular';
 import * as firebase from 'firebase';
+import { StoreNames } from '../enums/store-names.enum';
 
 const localForage = require("localforage") as ILocalForage;
 
@@ -35,8 +36,8 @@ export class ActionsUserService {
 
   deleteChatInDevice(blocked?:boolean){
     this.loadingService.present("Eliminando chat");
-    this.dbChats=this.db.loadStore("chats");
-    this.dbUser=this.db.loadStore("users");
+    this.dbChats=this.db.loadStore(StoreNames.Chats);
+    this.dbUser=this.db.loadStore(StoreNames.Users);
 
     this.dbUser.getItem(this.idUser)
     .then((resp:IUserData)=>{
@@ -86,8 +87,8 @@ export class ActionsUserService {
 
   blockedUserInDevice(){
     this.loadingService.present("Bloqueando usuario");
-    this.dbChats=this.db.loadStore("chats");
-    this.dbUser=this.db.loadStore("users");
+    this.dbChats=this.db.loadStore(StoreNames.Chats);
+    this.dbUser=this.db.loadStore(StoreNames.Users);
 
     this.dbUser.getItem(this.idUser)
     .then((resp:IUserData)=>{

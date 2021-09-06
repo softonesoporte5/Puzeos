@@ -9,6 +9,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import * as firebase from 'firebase';
 import { Plugins, Capacitor, FilesystemDirectory } from '@capacitor/core';
 import { FirebaseStorageService } from 'src/app/services/firebase-storage.service';
+import { StoreNames } from 'src/app/enums/store-names.enum';
 const {Filesystem} = Plugins;
 
 @Component({
@@ -37,7 +38,7 @@ export class ItemChatComponent implements OnInit {
     let arrUser=this.chat.userNames.filter(userName=>userName!==this.chatUser);
     this.chatName=arrUser[0];
 
-    this.dbUsers=this.db.loadStore("users");
+    this.dbUsers=this.db.loadStore(StoreNames.Users);
 
     const date=new Date();
     const date2=new Date(this.chat.timestamp);

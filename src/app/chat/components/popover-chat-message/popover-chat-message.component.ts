@@ -4,6 +4,7 @@ import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
 import { Component, OnInit } from '@angular/core';
 import { NavParams, ToastController, PopoverController } from '@ionic/angular';
+import { StoreNames } from 'src/app/enums/store-names.enum';
 
 @Component({
   selector: 'app-popover-chat-message',
@@ -28,7 +29,7 @@ export class PopoverChatMessageComponent implements OnInit {
   ngOnInit() {
     this.message=this.navParams.data.message;
     this.idChat=this.navParams.data.idChat;
-    this.dbSavedMessages=this.db.loadStore("savedMessages");
+    this.dbSavedMessages=this.db.loadStore(StoreNames.SavedMessages);
     this.dbSavedMessages.getItem(this.message.id)
     .then(resp=>{
       if(resp) this.saved=false;

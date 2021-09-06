@@ -16,7 +16,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="!buscando; else contBuscando" class="ion-padding">
+<ion-content *ngIf="!buscando; else contBuscando" class="ion-padding-horizontal">
   <span *ngIf="user?.data.chats.length<5">
     <ion-list>
       <ion-list-header>{{'AgregarPage.Popular' | translate}}</ion-list-header>
@@ -41,17 +41,30 @@
       <ion-input
         [placeholder]="'AgregarPage.SearchPlaceholder' | translate"
         maxlength="50"
+        class="ion-padding-vertical"
         formControlName="searchTxt"
       ></ion-input>
     </form>
 
-    <ion-chip
-      *ngFor="let item of items; trackBy:trackItems"
-      (click)="buscarCompa(item.id, item.data.title)"
-      [style]="'--background:'+item.color+';'"
-    >
-      <ion-label>{{item.data.title}}</ion-label>
-    </ion-chip>
+    <span class="loc__guide">
+      <img src="../../../../assets/badge-exam.png" />
+      <h5>
+        <ion-icon name="arrow-back"></ion-icon>
+        número de chats creados
+      </h5>
+    </span>
+    <div class="css-grid">
+      <ion-chip
+        *ngFor="let item of items; trackBy:trackItems"
+        (click)="buscarCompa(item.id, item.data.title)"
+        [style]="'--background:'+item.color+';'"
+        color="secondary"
+      >
+        <ion-icon *ngIf="item.iconName" [name]="item.iconName"></ion-icon>
+        <ion-label>{{item.data.title}}</ion-label>
+        <ion-badge mode="ios" color="secondary">{{item.chatsCreated}}</ion-badge>
+      </ion-chip>
+    </div>
 
     <p *ngIf="items.length===0">{{'AgregarPage.NotFound' | translate}}</p>
   </span>

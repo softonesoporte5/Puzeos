@@ -1,5 +1,8 @@
 <ion-content class="ion-padding">
-  <firebase-ui [language]="language"></firebase-ui>
+  <firebase-ui
+    [language]="language"
+    (signInSuccessWithAuthResult)="checkUserState($event)"
+  ></firebase-ui>
 
   <ion-item>
     <ion-label style="color:gray">{{'Global.Language' | translate}}</ion-label>

@@ -30,7 +30,8 @@
     "ActiveChats":"active chats",
     "SavedMessages":"Saved messages",
     "BlockedUsers":"Blocked users",
-    "ToAccept":"Accept"
+    "ToAccept":"Accept",
+    "ChangeLanguage": "The language will change when you enter the app again."
   },
   "Error":{
     "NotMatchPasswords":"Passwords do not match",
@@ -73,7 +74,7 @@
   },
   "AgregarPage":{
     "Title":"Add a chat",
-    "Popular":"Popular Topics",
+    "Popular":"Popular Topics (Chats created)",
     "SearchPlaceholder":"What do you want to chat about?",
     "ApplyFor":"Apply for!!",
     "AllTheThemes":"All the themes",
@@ -106,6 +107,7 @@
     "BlockUser":"Block user"
   },
   "SettingPage":{
-    "DarkMode":"Activate dark mode"
+    "DarkMode":"Activate dark mode",
+    "ConversationLanguage": "Conversation language"
   }
 }

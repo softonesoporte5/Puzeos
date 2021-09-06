@@ -30,7 +30,8 @@
     "ActiveChats":"chats activos",
     "SavedMessages":"Mensajes guardados",
     "BlockedUsers":"Usuarios bloqueados",
-    "ToAccept":"Aceptar"
+    "ToAccept":"Aceptar",
+    "ChangeLanguage": "El idioma va a cambiar cuando vuelva a entrar a la app."
   },
   "Error":{
     "NotMatchPasswords":"Las constraseñas no coinciden",
@@ -73,7 +74,7 @@
   },
   "AgregarPage":{
     "Title":"Agrega un chat",
-    "Popular":"Temas populares",
+    "Popular":"Temas populares (Chats creados)",
     "SearchPlaceholder":"¿Sobre qué quieres chatear?",
     "ApplyFor":"Solicitar!",
     "AllTheThemes":"Todos los temas",
@@ -106,6 +107,7 @@
     "BlockUser":"Bloquear usuario"
   },
   "SettingPage":{
-    "DarkMode":"Activar modo oscuro"
+    "DarkMode":"Activar modo oscuro",
+    "ConversationLanguage": "Idioma de conversaciones"
   }
 }

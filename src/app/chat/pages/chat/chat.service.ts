@@ -7,6 +7,7 @@ import { IMessage } from './../../interfaces/message.interface';
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import * as firebase from 'firebase';
+import { StoreNames } from 'src/app/enums/store-names.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +32,7 @@ export class ChatService{
       this.networkStatus=resp;
     });
 
-    this.dbNotSendMessages=this.db.loadStore("notSendMessage");
+    this.dbNotSendMessages=this.db.loadStore(StoreNames.NotSendMessage);
    }
 
   orderMessages(mesagges:IMessage[]){

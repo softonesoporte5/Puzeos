@@ -238,6 +238,11 @@ export class RegisterPage implements OnInit {
     if(this.miFormulario.get('language').value){
       this.translate.use(this.miFormulario.get('language').value);
       localStorage.setItem("language",this.miFormulario.get('language').value);
+      this.translate.use(this.languageSelect);
+      this.translate.get("Global.ChangeLanguage").subscribe(resp=>{
+        this.presentToastWithOptions(resp);
+      });
+
     }
   }
 }

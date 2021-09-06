@@ -15,6 +15,7 @@ import { PopoverController, ModalController, IonInfiniteScroll, IonContent } fro
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
 import { Capacitor } from '@capacitor/core';
 import { IUser } from '../../interfaces/user.interface';
+import { StoreNames } from 'src/app/enums/store-names.enum';
 
 @Component({
   selector: 'app-chat',
@@ -55,9 +56,9 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
   ) { }
 
   ngOnInit(){
-    this.dbUsers=this.db.loadStore("users");
+    this.dbUsers=this.db.loadStore(StoreNames.Users);
     this.idChat=this.route.snapshot.paramMap.get("id");
-    this.dbChat=this.db.loadStore("chats");
+    this.dbChat=this.db.loadStore(StoreNames.Chats);
     this.dbMessages=this.db.loadStore("messages"+this.idChat);
 
     this.route.queryParams

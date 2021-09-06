@@ -7,6 +7,7 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { Injectable } from '@angular/core';
 import * as firebase from 'firebase';
 import { IUser } from '../chat/interfaces/user.interface';
+import { StoreNames } from '../enums/store-names.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +27,7 @@ export class FirebaseStorageService {
   ) {
     this.appService.getNetworkStatus()
     .subscribe(resp=>this.networkState=resp);
-    this.dbNotSendMessages=this.db.loadStore("notSendMessage");
+    this.dbNotSendMessages=this.db.loadStore(StoreNames.NotSendMessage);
   }
 
   uploadAudio(audio:IAudioBlob,userName:string,idChat:string,localUrl:string){
@@ -106,7 +107,7 @@ export class FirebaseStorageService {
 
   async uploadFile(data:string,userName:string, type:string, localUrl:string, idChat:string, extraData:{}={},ext:string, messageTxt:string){
     const date=new Date().valueOf();
-    const randomId=Math.round(Math.random()*1000)+''+date;
+    const randomId="a"+Math.round(Math.random()*1000)+''+date;
     const refUrl=`${idChat}/send/${randomId}.${ext}`;
 
     let base64Length = data.length - (data.indexOf(',') + 1);
@@ -188,7 +189,7 @@ export class FirebaseStorageService {
 
   async uploadPhoto(photo:string, user:IUser, localUrl?:string, registerPage:boolean=false){
     const date=new Date().valueOf();
-    const randomId=Math.round(Math.random()*1000)+date;
+    const randomId="a"+Math.round(Math.random()*1000)+date;
     const refUrl=`${user.id}/images/${randomId}.jpeg`;
     const ref = this.storage.ref(refUrl);
 

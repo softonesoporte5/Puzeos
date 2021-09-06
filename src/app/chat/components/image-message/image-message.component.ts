@@ -8,7 +8,7 @@ import { IMessage } from './../../interfaces/message.interface';
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { FirebaseStorageService } from 'src/app/services/firebase-storage.service';
 import { ModalController } from '@ionic/angular';
-import { Plugins, FilesystemDirectory, FilesystemEncoding } from '@capacitor/core';
+import { Plugins } from '@capacitor/core';
 const {Filesystem} = Plugins;
 import { Capacitor } from '@capacitor/core';
 

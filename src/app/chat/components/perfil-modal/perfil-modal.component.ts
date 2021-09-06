@@ -12,6 +12,7 @@ import { IUser, IUserData } from './../../interfaces/user.interface';
 import { ModalController, NavParams } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { Capacitor, Plugins, FilesystemDirectory } from '@capacitor/core';
+import { StoreNames } from 'src/app/enums/store-names.enum';
 const {Filesystem} = Plugins;
 
 @Component({
@@ -45,7 +46,7 @@ export class PerfilModalComponent implements OnInit {
     this.chat=this.navParams.get("chat");
     this.messages=this.navParams.get("messages");
     this.dbMessages=this.db.loadStore("messages"+this.chat.id);
-    this.dbUsers=this.db.loadStore("users");
+    this.dbUsers=this.db.loadStore(StoreNames.Users);
 
     this.firestore.collection("users")
     .doc(this.user.id)
@@ -98,15 +99,6 @@ export class PerfilModalComponent implements OnInit {
         }
       }
     });
-
-    /*let arrMessages:IMessage[];
-    this.dbMessages.iterate((values:IMessage)=>{
-      if(values.type!=="text" && values.type!=="voice"){
-        arrMessages.push(values);
-      }
-    }).then(()=>{
-      this.messages=this.orderMessages(arrMessages);
-    })*/
 
     if(this.user.data.imageUrlLoc){
       this.imgPath=Capacitor.convertFileSrc(this.user.data.imageUrlLoc);

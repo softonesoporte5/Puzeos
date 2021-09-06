@@ -5,6 +5,7 @@ import { DbService } from './../../../services/db.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { Component, OnInit } from '@angular/core';
 import * as firebase from 'firebase';
+import { StoreNames } from 'src/app/enums/store-names.enum';
 
 @Component({
   selector: 'app-blocked-users',
@@ -24,7 +25,7 @@ export class BlockedUsersPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.dbUsers=this.db.loadStore("users");
+    this.dbUsers=this.db.loadStore(StoreNames.Users);
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then((resp:IUserData)=>{
