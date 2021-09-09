@@ -17,7 +17,12 @@
     "PrivacyPolicy2":"Política de privacidad"
   },
   "LoginPage":{
-    "H4Text":"¿No tienes una cuenta?"
+    "H4Text":"¿No tienes una cuenta?",
+    "Slide1": "Bienvenido",
+    "Slide1Message": "En Puzeos puedes chatear con otras personas en base a un tema de conversación",
+    "Slide2": "Chatea",
+    "Slide2Message": "Conecta con personas que quieren conversar sobre lo mismo que tú",
+    "ContinueButton": "Empezar a chatear"
   },
   "Global":{
     "Language":"Idioma",

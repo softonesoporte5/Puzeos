@@ -1,4 +1,4 @@
-<ion-content class="ion-padding">
+<ion-content class="ion-padding" *ngIf="!welcome">
   <firebase-ui
     [language]="language"
     (signInSuccessWithAuthResult)="checkUserState($event)"
@@ -11,5 +11,34 @@
       <ion-select-option value="es">Español</ion-select-option>
     </ion-select>
   </ion-item>
+</ion-content>
+
+<ion-content fullscreen class="ion-padding" scroll-y="false" *ngIf="welcome" >
+  <ion-slides pager="true">
+    <ion-slide>
+      <div class="slide">
+        <img src="../../../../assets/logo.png"/>
+        <h2>{{'LoginPage.Slide1' | translate}}</h2>
+        <p>{{'LoginPage.Slide1Message' | translate}}</p>
+      </div>
+    </ion-slide>
+
+    <ion-slide>
+      <img src="../../../../assets/img-welcome.png" style="margin-bottom:0;">
+      <h2>{{'LoginPage.Slide2' | translate}}</h2>
+      <p>{{'LoginPage.Slide2Message' | translate}}</p>
+    </ion-slide>
+  </ion-slides>
+  <div class="loc__centrar">
+    <ion-button color="secondary" (click)="skipIntro()">{{'LoginPage.ContinueButton' | translate}}</ion-button>
+    <ion-item style="margin-top:2rem;">
+      <ion-label style="color:gray">{{'Global.Language' | translate}}</ion-label>
+      <ion-select [(ngModel)]="language" (ionChange)="setLanguage()">
+        <ion-select-option value="en">English</ion-select-option>
+        <ion-select-option value="es">Español</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </div>
+
 </ion-content>
 

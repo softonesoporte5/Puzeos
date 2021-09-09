@@ -17,7 +17,12 @@
     "PrivacyPolicy2":"Privacy Policy"
   },
   "LoginPage":{
-    "H4Text":"You do not have an account?"
+    "H4Text":"You do not have an account?",
+    "Slide1": "Welcome",
+    "Slide1Message": "In Puzeos you can chat with other people based on a topic of conversation",
+    "Slide2": "Chat",
+    "Slide2Message": "Connect with people who want to talk about the same thing as you",
+    "ContinueButton": "Start chatting"
   },
   "Global":{
     "Language":"Language",
