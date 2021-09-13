@@ -1,8 +1,11 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import {Firestore} from "@google-cloud/firestore";
 
 admin.initializeApp();
+const firestore = new Firestore();
 // firebase deploy --only functions
+
 
 exports.newMessage=functions.firestore
     .document("/messages/{idChat}/messages/{idMessage}")
@@ -44,54 +47,39 @@ exports.AddChat=functions.firestore
       return sendNotification(messagee);
     });
 
+exports.onUserStatusChanged = functions.database.ref("/status/{uid}").onUpdate(
+    async (change, context) => {
+      // Get the data written to Realtime Database
+      const eventStatus = change.after.val();
+
+      // Then use other event data to create a reference to the
+      // corresponding Firestore document.
+      const userStatusFirestoreRef = firestore
+          .doc(`status/${context.params.uid}`);
+
+      // It is likely that the Realtime Database change that triggered
+      // this event has already been overwritten by a fast change in
+      // online / offline status, so we'll re-read the current data
+      // and compare the timestamps.
+      const statusSnapshot = await change.after.ref.once("value");
+      const status = statusSnapshot.val();
+      functions.logger.log(status, eventStatus);
+      // If the current timestamp for this data is newer than
+      // the data that triggered this event, we exit this function.
+      if (status.last_changed > eventStatus.last_changed) {
+        return null;
+      }
+
+      // Otherwise, we convert the last_changed field to a Date
+      eventStatus.last_changed = new Date(eventStatus.last_changed);
+
+      // ... and write it to Firestore.
+      return userStatusFirestoreRef.set(eventStatus);
+    });
 const sendNotification= (notification: any)=>{
   return new Promise((resolve)=>{
     sendNotificationOneSignal(notification);
     resolve("");
-    /*
-    const message: admin.messaging.MulticastMessage={
-      data: notification.data,
-      tokens: notification.tokens,
-      notification: notification.notification,
-      android: {
-        notification: {
-          icon: "ic_stat_name",
-          color: "#ffffff",
-        },
-      },
-      apns: {
-        payload: {
-          aps: {
-            sound: {
-              critical: true,
-              name: "default",
-              volume: 1,
-            },
-          },
-        },
-      },
-    };
-
-    admin.messaging().sendMulticast(message)
-        .then((response)=>{
-          if (response.failureCount>0) {
-            const failedTokens: unknown[]=[];
-            response.responses.forEach((resp, idx)=>{
-              if (!resp.success) {
-                failedTokens.push(notification.tokens[idx]);
-              }
-            });
-            // Eliminar tokens
-          } else {
-            console.log("Send Notification success");
-          }
-          resolve(true);
-          return;
-        }, (err)=> {
-          console.log("Error al enviar FCM", err);
-          resolve(false);
-          return;
-        });*/
   });
 };
 
