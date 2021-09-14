@@ -21,7 +21,6 @@ export class AppComponent {
     private fireDb: AngularFireDatabase,
     private firestore: AngularFirestore
   ) {
-    this.initializeApp();
     this.notificationService.inicializar();
 
     const settings = JSON.parse(localStorage.getItem("settings")) as ISettings;
@@ -59,64 +58,33 @@ export class AppComponent {
     const usersRef = firestore.collection('users'); // Get a reference to the Users collection;
     const onlineRef = fireDb.database.ref('.info/connected'); // Get a reference to the list of connections
 
-    firebase.default.auth().onAuthStateChanged((userInfo)=>{
-      const {uid}=userInfo;
-      console.log(uid)
-      var userStatusDatabaseRef = this.fireDb.database.ref('/status/' + uid);
-      var isOfflineForDatabase = {
-          state: 'offline',
-          last_changed: firebase.default.database.ServerValue.TIMESTAMP,
-      };
+    firebase.default.auth().onAuthStateChanged(userInfo=>{
+      if(userInfo){
+        onlineRef.on('value', snapshot => {
+          // Set the Firestore User's online status to true
+          usersRef
+            .doc(userInfo.uid)
+            .update({
+              online: true,
+            });
 
-      var isOnlineForDatabase = {
-          state: 'online',
-          last_changed: firebase.default.database.ServerValue.TIMESTAMP,
-      };
+          fireDb.database.ref(`/status/${userInfo.uid}`).set('online');
+        });
 
-      this.fireDb.database.ref('.info/connected').on('value', function(snapshot) {
-        console.log("fas")
-          // If we're not currently connected, don't do anything.
-          if (snapshot.val() == false) {
-              return;
-          };
-
-          userStatusDatabaseRef.onDisconnect().set(isOfflineForDatabase).then(function() {
-            console.log("Entró")
-              userStatusDatabaseRef.set(isOnlineForDatabase);
-          });
-      });
-      let userStatusFirestoreRef =this.firestore.doc('/status/' + uid);
-
-      let isOfflineForFirestore = {
-          state: 'offline',
-          last_changed: firebase.default.firestore.FieldValue.serverTimestamp(),
-      };
-
-      let isOnlineForFirestore = {
-          state: 'online',
-          last_changed: firebase.default.firestore.FieldValue.serverTimestamp(),
-      };
-
-      this.fireDb.database.ref('.info/connected').on('value', function(snapshot) {
-          if (snapshot.val() == false) {
-              userStatusFirestoreRef.set(isOfflineForFirestore);
-              return;
-          };
-
-          userStatusDatabaseRef.onDisconnect().set(isOfflineForDatabase).then(function() {
-              userStatusDatabaseRef.set(isOnlineForDatabase);
-
-              // We'll also add Firestore set here for when we come online.
-              userStatusFirestoreRef.set(isOnlineForFirestore);
-          });
-      });
+        fireDb.database
+        .ref(`/status/${userInfo.uid}`)
+        .onDisconnect() // Set up the disconnect hook
+        .set('offline') // The value to be set for this key when the client disconnects
+        .then(() => {
+            // Set the Firestore User's online status to true
+            usersRef
+              .doc(userInfo.uid)
+              .update({
+                online: true,
+              });
+            fireDb.database.ref(`/status/${userInfo.uid}`).set('online');
+        });
+      }
     });
-
-  }
-
-  initializeApp() {
-    // CapacitorFirebaseDynamicLinks.addListener('deepLinkOpen', (data: { url: string }) => {
-    //   console.log("asdwq")
-    // })
   }
 }

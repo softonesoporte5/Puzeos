@@ -1,3 +1,4 @@
+import { DateStringPipe } from './../../../pipes/date-string.pipe';
 import { FooterChatComponent } from './../../components/footer-chat/footer-chat.component';
 import { SharedModule } from './../../../shared/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
@@ -55,7 +56,8 @@ import { NoKeyboardModule } from 'ionic-no-keyboard';
     PerfilModalComponent,
     VideoMessageComponent,
     DocumentComponent,
-    FooterChatComponent
+    FooterChatComponent,
+    DateStringPipe
   ]
 })
 export class ChatPageModule {}

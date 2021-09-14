@@ -17,4 +17,6 @@ export class IUserData{
   createDate:any;
   descripcion?:string;
   notAddUsers?:{};
+  online?:boolean;
+  last_changed?:any;
 }

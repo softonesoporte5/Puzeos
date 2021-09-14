@@ -28,9 +28,9 @@ export class MenuComponent implements OnInit {
 
   ngOnInit() {
     this.dbUsers=this.db.loadStore(StoreNames.Users);
-
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then((resp:IUserData)=>{
+      console.log(resp)
       this.user={
         data:{...resp},
         id:firebase.default.auth().currentUser.uid

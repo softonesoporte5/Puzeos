@@ -19,6 +19,7 @@ import { FileOpener } from '@ionic-native/file-opener/ngx';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { Chooser } from '@ionic-native/chooser/ngx';
 import { OneSignal } from '@ionic-native/onesignal/ngx';
+import { DateStringPipe } from './pipes/date-string.pipe';
 
 @NgModule({
   declarations: [AppComponent],

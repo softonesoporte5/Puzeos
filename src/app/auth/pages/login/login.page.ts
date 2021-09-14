@@ -55,11 +55,14 @@ export class LoginPage implements OnInit {
   checkUserState(data: FirebaseUISignInSuccessWithAuthResult){
     this.loadingService.present();
     try{
+      console.log(data.authResult.user.uid);
       let subscribe=this.firestore.collection("users").doc(data.authResult.user.uid).get()
       .subscribe(resp=>{
         subscribe.unsubscribe();
         this.loadingService.dismiss();
-        if(!resp.exists){
+        console.log(resp);
+        const userData=resp.data() as IUserData;
+        if(!resp.exists && userData.userName){
           this.router.navigate(['auth/register']);
         }else{
           const userData=resp.data() as IUserData;

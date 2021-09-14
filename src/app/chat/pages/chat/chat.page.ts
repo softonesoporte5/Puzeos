@@ -8,7 +8,7 @@ import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit, NgZone, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit, NgZone } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import * as firebase from 'firebase';
 import { PopoverController, ModalController, IonInfiniteScroll, IonContent } from '@ionic/angular';
@@ -34,6 +34,7 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
   mensajes:IMessage[]=[];
   mensajesSubscribe:Subscription;
   scrollReplySubscribe:Subscription;
+  stateSubscription: Subscription;
   showScrollButton=false;
   routeQuery:Params;
   user:IUser;
@@ -43,6 +44,7 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
   @ViewChild('content') content: IonContent;
   @ViewChild(IonInfiniteScroll) infiniteScroll: IonInfiniteScroll;
   posM=0;
+  state:{online:boolean,last_changed:any};
 
   constructor(
     private route:ActivatedRoute,
@@ -51,8 +53,7 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
     private db:DbService,
     private chatService:ChatService,
     private modal:ModalController,
-    private ngZone:NgZone,
-    private ref: ChangeDetectorRef,
+    private ngZone:NgZone
   ) { }
 
   ngOnInit(){
@@ -84,6 +85,17 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
               this.imgPath="assets/person.jpg";
             }
           });
+
+          this.stateSubscription=this.firestore.collection("users").doc(key).valueChanges()
+          .subscribe((resp:IUserData)=>{
+            if(resp.online || resp.last_changed){
+              this.state={
+                online:resp.online,
+                last_changed:resp.last_changed.toDate()
+              }
+
+            }
+          })
         }
       }
     }).catch(err=>console.log(err));
@@ -218,6 +230,9 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
     }
     if(this.scrollReplySubscribe){
       this.scrollReplySubscribe.unsubscribe();
+    }
+    if(this.stateSubscription){
+      this.stateSubscription.unsubscribe();
     }
     if(this.syncInterval){
       clearInterval(this.syncInterval);
