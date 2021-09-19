@@ -12,15 +12,17 @@ import { AngularFirestore, DocumentSnapshot } from '@angular/fire/firestore';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as firebase from 'firebase';
 import { StoreNames } from 'src/app/enums/store-names.enum';
+import { faPaw, faGrinStars } from '@fortawesome/free-solid-svg-icons';
 
 interface IItem{
   id:string,
   data:{
-    title:string
+    title:string,
+    imgName: string
   },
-  color:string,
   chatsCreated?:number,
-  iconName: string
+  iconName: string ,
+  fontIcon: boolean
 }
 
 @Component({
@@ -45,7 +47,8 @@ export class AgregarPage implements OnInit, OnDestroy {
   tagId:string;
   title:string;
   selectValue:string;
-  iconNames=["game-controller", "musical-notes", "terminal", "tv", "color-palette", "football", "people", "hardware-chip", "flask"];
+  iconNames=["game-controller", "musical-notes", "terminal", "tv", "color-palette", "football", "people", "hardware-chip", "flask", "","apps"];
+  fontIcons=[faPaw, faGrinStars];
 
   constructor(
     private fireStore:AngularFirestore,
@@ -74,14 +77,27 @@ export class AgregarPage implements OnInit, OnDestroy {
       .then(items=>{
         items.forEach(item=>{
           const data=item.data() as any;
+          let iconName: string;
+          let fontIcon=false;
+          if(String(data.iconName)){
+            if(String(data.iconName).includes('a')){
+              console.log(this.fontIcons[data.iconName.replace('a','')])
+              iconName=data.iconName.replace('a','');
+              fontIcon=true;
+            }else{
+              iconName=this.iconNames[data.iconName];
+              fontIcon=false;
+            }
+          }
           tags.push({
             id:item.id,
             data:{
               title:data.title,
+              imgName: data.title.replace(/ /g,'-').replace(':','')
             },
-            color:this.colorRGB(),
             chatsCreated:data.chatsCreated?data.chatsCreated:0,
-            iconName:this.iconNames[data.iconName]
+            iconName: iconName,
+            fontIcon: fontIcon
           });
         });
         this.items=tags.sort((a, b)=>{
@@ -153,14 +169,6 @@ export class AgregarPage implements OnInit, OnDestroy {
 
   ngOnDestroy(){
     this.userSubscription.unsubscribe();
-  }
-
-  colorRGB(){
-    function generarNumero(numero:number){
-      return (Math.random()*numero).toFixed(0);
-    }
-    var coolor = "("+generarNumero(255)+"," + generarNumero(255) + "," + generarNumero(190) +")";
-    return "rgb" + coolor;
   }
 
   actualizarEstadoBusquedaUser(estado:boolean, tagId:string=''){

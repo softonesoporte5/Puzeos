@@ -7,6 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { AgregarPageRoutingModule } from './agregar-routing.module';
 
 import { AgregarPage } from './agregar.page';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { AgregarPage } from './agregar.page';
     IonicModule,
     AgregarPageRoutingModule,
     ReactiveFormsModule,
-    SharedModule
+    SharedModule,
+    FontAwesomeModule
   ],
   declarations: [AgregarPage]
 })

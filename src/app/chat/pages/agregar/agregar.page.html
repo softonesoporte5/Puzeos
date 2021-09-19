@@ -16,57 +16,84 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content *ngIf="!buscando; else contBuscando" class="ion-padding-horizontal">
-  <span *ngIf="user?.data.chats.length<5">
+<ion-content *ngIf="!buscando; else contBuscando" class="ion-no-padding">
+  <span>
     <ion-list>
-      <ion-list-header>{{'AgregarPage.Popular' | translate}}</ion-list-header>
+      <ion-list-header class="loc__padding">{{'AgregarPage.Popular' | translate}}</ion-list-header>
+
       <ion-item
+        lines="none"
+        class="loc__item-popular ion-no-padding ion-no-margin"
         detail="true"
-        *ngFor="let tag of popularTags"
+        *ngFor="let tag of popularTags; let i=index"
         (click)="buscarCompa(tag.id, tag.data.title)"
+        [style]="'background-image: url(../../../../assets/tags-img/'+tag.data.imgName+'.jpg);'"
       >
-        <ion-label>{{tag.data.title}}</ion-label>
-        <ion-note slot="end" color="primary">{{tag.chatsCreated}}</ion-note>
+        <div class="opacity">
+          <ion-icon
+            slot="start"
+            *ngIf="tag.iconName && !tag.fontIcon"
+            [name]="tag.iconName"
+          ></ion-icon>
+          <fa-icon
+            *ngIf="tag.iconName && tag.fontIcon"
+            [icon]="fontIcons[tag.iconName]"
+          ></fa-icon>
+          <span>
+            <ion-label>{{tag.data.title}} <span>#{{i+1}}</span></ion-label>
+            <small>Chats creados: {{tag.chatsCreated}}</small>
+          </span>
+        </div>
       </ion-item>
+
     </ion-list>
 
-    <ion-list-header>{{'AgregarPage.AllTheThemes' | translate}}</ion-list-header>
+    <ion-list-header class="loc__padding">{{'AgregarPage.AllTheThemes' | translate}}</ion-list-header>
 
-    <form
-      [formGroup]="miFormulario"
-      autocomplete="off"
-      class="loc__form"
-    >
-      <ion-icon name="search-sharp"></ion-icon>
-      <ion-input
-        [placeholder]="'AgregarPage.SearchPlaceholder' | translate"
-        maxlength="50"
-        class="ion-padding-vertical"
-        formControlName="searchTxt"
-      ></ion-input>
-    </form>
-
-    <span class="loc__guide">
-      <img src="../../../../assets/badge-exam.png" />
-      <h5>
-        <ion-icon name="arrow-back"></ion-icon>
-        número de chats creados
-      </h5>
-    </span>
-    <div class="css-grid">
-      <ion-chip
-        *ngFor="let item of items; trackBy:trackItems"
-        (click)="buscarCompa(item.id, item.data.title)"
-        [style]="'--background:'+item.color+';'"
-        color="secondary"
+    <div>
+      <form
+        [formGroup]="miFormulario"
+        autocomplete="off"
+        class="loc__form"
       >
-        <ion-icon *ngIf="item.iconName" [name]="item.iconName"></ion-icon>
-        <ion-label>{{item.data.title}}</ion-label>
-        <ion-badge mode="ios" color="secondary">{{item.chatsCreated}}</ion-badge>
-      </ion-chip>
-    </div>
+        <ion-icon name="search-sharp"></ion-icon>
+        <ion-input
+          [placeholder]="'AgregarPage.SearchPlaceholder' | translate"
+          maxlength="50"
+          class="ion-padding-vertical"
+          formControlName="searchTxt"
+        ></ion-input>
+      </form>
 
-    <p *ngIf="items.length===0">{{'AgregarPage.NotFound' | translate}}</p>
+      <div class="css-grid">
+        <ion-item
+          lines="none"
+          class="loc__item-popular ion-no-padding ion-no-margin"
+          detail="true"
+          *ngFor="let item of items; trackBy:trackItems; let i=index"
+          (click)="buscarCompa(item.id, item.data.title)"
+          [style]="'background-image: url(../../../../assets/tags-img/'+item.data.imgName+'.jpg);'"
+        >
+          <div class="opacity">
+            <ion-icon
+              slot="start"
+              *ngIf="item.iconName && !item.fontIcon"
+              [name]="item.iconName"
+            ></ion-icon>
+            <fa-icon
+              *ngIf="item.iconName && item.fontIcon"
+              [icon]="fontIcons[item.iconName]"
+            ></fa-icon>
+            <span>
+              <ion-label>{{item.data.title}} <span>#{{i+1}}</span></ion-label>
+              <small>Chats creados: {{item.chatsCreated}}</small>
+            </span>
+          </div>
+        </ion-item>
+      </div>
+
+      <p *ngIf="items.length===0">{{'AgregarPage.NotFound' | translate}}</p>
+    </div>
   </span>
 </ion-content>
 

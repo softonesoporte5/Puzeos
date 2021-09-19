@@ -64,6 +64,7 @@
 
   --audio-controls-color:#f1e0e0;
   --white:#fff;
+  --gradiante: linear-gradient(135deg, white 0%, rgba(255, 255, 255, 0.78) 45%, rgba(91, 88, 88, 0.38) 71%, rgba(91, 88, 88, 0.35) 87%, rgba(1, 1, 1, 0) 100%);
 }
 
 body.dark{
@@ -130,6 +131,7 @@ body.dark{
   --ion-color-light-shade: #1e2023;
   --ion-color-light-tint: #383a3e;
   --white:#121212;
+  --gradiante: linear-gradient(135deg, black 0%, rgb(0 0 0 / 78%) 45%, rgb(169 163 163 / 38%) 71%, rgb(163 159 159 / 35%) 87%, rgb(255 255 255 / 0%) 100%);
 
 }
 

@@ -20,6 +20,7 @@ import { ImageCropperModule } from 'ngx-image-cropper';
 import { Chooser } from '@ionic-native/chooser/ngx';
 import { OneSignal } from '@ionic-native/onesignal/ngx';
 import { DateStringPipe } from './pipes/date-string.pipe';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
   declarations: [AppComponent],
@@ -36,9 +37,11 @@ import { DateStringPipe } from './pipes/date-string.pipe';
     AngularFirestoreModule,
     AngularFireStorageModule,
     ImageCropperModule,
+
     TranslateModule.forRoot({
       defaultLanguage: 'en'
-    })
+    }),
+    FontAwesomeModule
   ],
   providers: [
     FileOpener,
