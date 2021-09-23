@@ -1,3 +1,4 @@
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from './shared/shared.module';
 import { TranslateModule } from '@ngx-translate/core';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
@@ -27,6 +28,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
   entryComponents: [],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     IonicModule.forRoot(),
     AuthModule,
     SharedModule,

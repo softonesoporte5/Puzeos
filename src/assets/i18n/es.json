@@ -1,28 +1,19 @@
 {
   "RegisterPage":{
-    "UserNamePlaceholder": "Ingrese su nombre de usuario",
-    "EmailLabel": "Correo electrónico",
-    "EmailPlaceholder": "Ingrese su email",
-    "PasswordLabel": "Contraseña",
-    "PasswordPlaceholder": "Ingrese su contraseña",
-    "PasswordLabel_2": "Confirmar contraseña",
-    "PasswordPlaceholder_2": "Confirme su contraseña",
-    "DescriptionLabel":"Descripción (opcional)",
-    "DescriptionPlaceholder":"Agrega una descripción corta",
-    "Continue":"Continuar",
-    "SignIn": "Registrarse",
-    "H4Text":"¿Tienes una cuenta?",
-    "Login":"Registrarse o iniciar sesión",
-    "PrivacyPolicy":"Al registrarte aceptas nuestra",
-    "PrivacyPolicy2":"Política de privacidad"
+    "ApodoMessage": "Ingresa un apodo y escoge un avatar",
+    "YourNickname": "Tu apodo",
+    "DescriptionMessage": "Ingresa una descripción corta, este paso es opcional",
+    "Continue": "Continuar"
   },
   "LoginPage":{
-    "H4Text":"¿No tienes una cuenta?",
-    "Slide1": "Bienvenido",
-    "Slide1Message": "En Puzeos puedes chatear con otras personas en base a un tema de conversación",
-    "Slide2": "Chatea",
-    "Slide2Message": "Conecta con personas que quieren conversar sobre lo mismo que tú",
-    "ContinueButton": "Empezar a chatear"
+    "PrivacyPolicy":"Al continuar aceptas nuestra",
+    "PrivacyPolicy2":"Política de privacidad",
+    "Title1": "Escoge un tema de conversación y empieza a chatear!",
+    "Title2": "Encuentra un dúo en videojuegos",
+    "Title3": "Habla sobre la música que te gusta",
+    "Title4": "Haz amigos",
+    "ContinueWithout": "Continuar sin registrarse",
+    "ContinueWithPhone":"Continuar con número de teléfono"
   },
   "Global":{
     "Language":"Idioma",
@@ -39,17 +30,16 @@
     "ChangeLanguage": "El idioma va a cambiar cuando vuelva a entrar a la app."
   },
   "Error":{
-    "NotMatchPasswords":"Las constraseñas no coinciden",
-    "ConfirmPasswordRequired":"El campo 'Confirmar contraseña' es requerido",
-    "MinLengthPassword": "La contraseña debe tener al menos 9 caracteres",
-    "MinLengthEmail":"El correo debe tener al menos 6 caracteres",
-    "InvalidEmail":"Introduzca una dirección de correo válida",
-    "MinUserName":"El nombre de usuario debe tener al menos 8 caracteres",
-    "EmailRequired":"El correo es requerido",
-    "PasswordRequired":"La contraseña es requerida",
-    "UserNameRequired":"El nombre de usuario es requerido",
-    "UserNotFound":"Ningún usuario asociado a este correo",
-    "WrongPassword":"Contraseña incorrecta"
+    "NicknameRequired": "El apodo es requerido",
+    "MinNickname": "El apodo debe de ser de 3 caracteres mínimo",
+    "AvatarRequired": "Selecciona un avatar",
+    "NotRegisterUser": "No se pudo registrar al usuario",
+    "SaveImage": "Ha ocurrido un error al tratar de guardar la imágen",
+    "Error": "Ha ocurrido un error",
+    "ContinueError": "Ha ocurrido un error al tratar de continuar",
+    "NotOTP": "No se pudo enviar el código de verificación",
+    "PhoneRequired": "El número de teléfono es requerido",
+    "IncorrectCode": "Código de verificación incorrecto"
   },
   "MenuComponent":{
     "CreateGroup":"Crear grupo",
@@ -72,10 +62,11 @@
     "SearchMessage":"Buscar mensaje"
   },
   "HomePage":{
-    "Welcome":"Bienvenido a Puzeos",
-    "WelcomeMessage":"Pulsa en el botón de + para conversar con otra persona sobre un tema.",
-    "Skip":"Omitir",
-    "LimitMessage":"Solo se pueden tener 5 chats activos a la vez, este límite será removido en futuras actualizaciones"
+    "NotHaveChats": "Aún no tienes chats",
+    "StartLooking": "Empezar a buscar",
+    "AlertTitle": "Tu cuenta no está conectada a un número de teléfono",
+    "AlertMessage": "Puedes perderla si desinstalas la aplicación o borras los datos",
+    "Connect": "Conectar"
   },
   "AgregarPage":{
     "Title":"Agrega un chat",
@@ -113,6 +104,12 @@
   },
   "SettingPage":{
     "DarkMode":"Activar modo oscuro",
-    "ConversationLanguage": "Idioma de conversaciones"
+    "ConversationLanguage": "Idioma de conversaciones",
+    "ConnectAccound": "Conecta tu cuenta",
+    "EnterPhone": "Introduce tu número de teléfono",
+    "Check": "Verificar",
+    "HeaderAlert": "Ingresa el código de verificación",
+    "InputPhoneLabel": "Código de verificación",
+    "SmallMessage": "Al tocar Verificar, podría enviarse un SMS. Es posible que se apliquen cargos de mensajería y uso de datos."
   }
 }

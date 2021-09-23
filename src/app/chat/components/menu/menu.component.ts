@@ -30,13 +30,14 @@ export class MenuComponent implements OnInit {
     this.dbUsers=this.db.loadStore(StoreNames.Users);
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then((resp:IUserData)=>{
-      console.log(resp)
       this.user={
         data:{...resp},
         id:firebase.default.auth().currentUser.uid
       }
       if(resp.imageUrlLoc){
         this.imgPath=Capacitor.convertFileSrc(resp.imageUrlLoc);
+      }else{
+        this.imgPath='../../../../assets/avatar/avatar_'+resp.avatarId+'.jpg'
       }
     }).catch(err=>console.log(err));
   }

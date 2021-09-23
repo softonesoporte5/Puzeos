@@ -30,6 +30,32 @@
 <app-menu></app-menu>
 
 <ion-content color="light" id="content">
+
+  <ion-item class="ion-no-padding no-bg-color" lines="none" *ngIf="user?.data.chats?.length===0">
+    <div class="loc__no-chats">
+      <div>
+        <span>{{'HomePage.NotHaveChats' | translate}}</span>
+
+        <ion-button
+          shape="round"
+          expand="full"
+          class="continue-btn loc__btn"
+          routerLink="/chat/agregar"
+        >
+          {{'HomePage.StartLooking' | translate}}
+        </ion-button>
+      </div>
+    </div>
+  </ion-item>
+
+  <ion-item class="ion-no-padding no-bg-color" lines="none" *ngIf="!connectedAccount">
+    <div class="loc__alert-message">
+      <h5>{{'HomePage.AlertTitle' | translate}}</h5>
+      <h6>{{'HomePage.AlertMessage' | translate}}</h6>
+      <span routerLink="/chat/setting">{{'HomePage.Connect' | translate}}</span>
+    </div>
+  </ion-item>
+
   <app-item-chat
     *ngFor="let chat of chats; trackBy:trackItems"
     [chat]="chat"
@@ -42,7 +68,7 @@
     slot="fixed"
     color="secondary"
   >
-    <ion-fab-button (click)="agregarRoute()">
+    <ion-fab-button routerLink="/chat/agregar">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>
@@ -50,11 +76,3 @@
   <!-- <small>{{user?.data.chats?.length}}/5 {{'Global.ActiveChats' | translate}}</small> -->
 </ion-content>
 
-<div class="loc__guia" *ngIf="welcome && chatsFirebase===0">
-  <h1>{{'HomePage.Welcome' | translate}} :D</h1>
-  <p>{{'HomePage.WelcomeMessage' | translate}}</p>
-  <img src="../../../../assets/img-welcome.png" alt="Imágen">
-  <ion-button color="primary" routerLink="chat/" (click)="welcome=false">
-    {{'HomePage.Skip' | translate}}
-  </ion-button>
-</div>

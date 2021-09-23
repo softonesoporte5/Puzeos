@@ -19,4 +19,5 @@ export class IUserData{
   notAddUsers?:{};
   online?:boolean;
   last_changed?:any;
+  avatarId:number;
 }

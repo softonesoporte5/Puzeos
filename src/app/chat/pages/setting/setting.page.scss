@@ -1,0 +1,32 @@
+.loc__phone{
+  padding:0 10px;
+  span{
+    display: flex;
+    align-items: center;
+    padding-left: 6px;
+  }
+
+  .cont-code{
+    width: 6rem;
+    margin-right: 6px;
+  }
+
+  .cont-number-phone{
+    flex: 1;
+  }
+
+  ion-button{
+    margin: 1rem 5px 0 0;
+  }
+
+  ion-row{
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+}
+
+.loc__tel-input{
+  display: block;
+  min-width: calc(100vw - 20px);
+}
+

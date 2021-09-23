@@ -18,38 +18,7 @@
 
 <ion-content *ngIf="!buscando; else contBuscando" class="ion-no-padding">
   <span>
-    <ion-list>
-      <ion-list-header class="loc__padding">{{'AgregarPage.Popular' | translate}}</ion-list-header>
-
-      <ion-item
-        lines="none"
-        class="loc__item-popular ion-no-padding ion-no-margin"
-        detail="true"
-        *ngFor="let tag of popularTags; let i=index"
-        (click)="buscarCompa(tag.id, tag.data.title)"
-        [style]="'background-image: url(../../../../assets/tags-img/'+tag.data.imgName+'.jpg);'"
-      >
-        <div class="opacity">
-          <ion-icon
-            slot="start"
-            *ngIf="tag.iconName && !tag.fontIcon"
-            [name]="tag.iconName"
-          ></ion-icon>
-          <fa-icon
-            *ngIf="tag.iconName && tag.fontIcon"
-            [icon]="fontIcons[tag.iconName]"
-          ></fa-icon>
-          <span>
-            <ion-label>{{tag.data.title}} <span>#{{i+1}}</span></ion-label>
-            <small>Chats creados: {{tag.chatsCreated}}</small>
-          </span>
-        </div>
-      </ion-item>
-
-    </ion-list>
-
     <ion-list-header class="loc__padding">{{'AgregarPage.AllTheThemes' | translate}}</ion-list-header>
-
     <div>
       <form
         [formGroup]="miFormulario"
@@ -90,6 +59,13 @@
             </span>
           </div>
         </ion-item>
+
+        <ion-infinite-scroll threshold="50px" position="bottom" (ionInfinite)="loadData($event)">
+          <ion-infinite-scroll-content
+            loadingSpinner="bubbles"
+            loadingText="Loading more data...">
+          </ion-infinite-scroll-content>
+        </ion-infinite-scroll>
       </div>
 
       <p *ngIf="items.length===0">{{'AgregarPage.NotFound' | translate}}</p>

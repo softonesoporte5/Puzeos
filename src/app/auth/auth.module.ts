@@ -8,7 +8,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
-import {ExtendedFirebaseUIAuthConfig, firebase, firebaseui, FirebaseUIModule} from 'firebaseui-angular-i18n';
+import {ExtendedFirebaseUIAuthConfig, firebase, FirebaseUIModule} from 'firebaseui-angular-i18n';
 
 const firebaseUiAuthConfig: ExtendedFirebaseUIAuthConfig = {
   signInFlow: 'redirect',

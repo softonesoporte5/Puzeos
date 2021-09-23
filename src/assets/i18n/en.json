@@ -1,28 +1,19 @@
 {
   "RegisterPage":{
-    "UserNamePlaceholder": "Enter your username",
-    "EmailLabel": "Email",
-    "EmailPlaceholder": "Enter your email",
-    "PasswordLabel": "Password",
-    "PasswordPlaceholder": "Enter your password",
-    "PasswordLabel_2": "Confirm your password",
-    "PasswordPlaceholder_2": "Confirm your password",
-    "DescriptionLabel":"Description (optional)",
-    "DescriptionPlaceholder":"Add a short description",
-    "Continue":"Continue",
-    "SignIn": "Sign in",
-    "H4Text":"You have an account?",
-    "Login":"Register or Login",
-    "PrivacyPolicy":"By registering you accept our",
-    "PrivacyPolicy2":"Privacy Policy"
+    "ApodoMessage": "Enter a nickname and choose an avatar",
+    "YourNickname": "Your nickname",
+    "DescriptionMessage": "Enter a short description, this step is optional",
+    "Continue": "Continue"
   },
   "LoginPage":{
-    "H4Text":"You do not have an account?",
-    "Slide1": "Welcome",
-    "Slide1Message": "In Puzeos you can chat with other people based on a topic of conversation",
-    "Slide2": "Chat",
-    "Slide2Message": "Connect with people who want to talk about the same thing as you",
-    "ContinueButton": "Start chatting"
+    "PrivacyPolicy":"By continuing you accept our",
+    "PrivacyPolicy2":"Privacy Policy",
+    "Title1": "Pick a topic of conversation and start chatting!",
+    "Title2": "Find a duo in video games",
+    "Title3": "Talk about the music you like",
+    "Title4": "Make friends",
+    "ContinueWithout": "Continue without registering",
+    "ContinueWithPhone":"Continue with phone number"
   },
   "Global":{
     "Language":"Language",
@@ -39,17 +30,16 @@
     "ChangeLanguage": "The language will change when you enter the app again."
   },
   "Error":{
-    "NotMatchPasswords":"Passwords do not match",
-    "ConfirmPasswordRequired":"The 'Confirm password' field is required",
-    "MinLengthPassword": "Password must be at least 9 characters",
-    "MinLengthEmail":"The email must be at least 6 characters long",
-    "InvalidEmail":"Please enter a valid email",
-    "MinUserName":"Username must be at least 8 characters long",
-    "EmailRequired":"Email is required",
-    "PasswordRequired":"Password is required",
-    "UserNameRequired":"Username is required",
-    "UserNotFound":"No user associated with this email",
-    "WrongPassword":"Incorrect password"
+    "NicknameRequired": "Nickname is required",
+    "MinNickname": "The nickname must be at least 3 characters long",
+    "AvatarRequired": "Select an avatar",
+    "NotRegisterUser": "User could not be registered",
+    "SaveImage": "An error occurred while trying to save the image",
+    "Error": "An error has occurred",
+    "ContinueError": "An error occurred while trying to continue",
+    "NotOTP": "Verification code could not be sent",
+    "PhoneRequired": "The phone number is required",
+    "IncorrectCode": "Incorrect verification code"
   },
   "MenuComponent":{
     "CreateGroup":"Create group",
@@ -72,10 +62,11 @@
     "SearchMessage":"Search message"
   },
   "HomePage":{
-    "Welcome":"Welcome to Puzeos",
-    "WelcomeMessage":"Press the + button to chat with another person about a topic.",
-    "Skip":"Skip",
-    "LimitMessage":"You can only have 5 chats active at a time, this limit will be removed in future updates"
+    "NotHaveChats": "You don't have chats yet",
+    "StartLooking": "Start looking",
+    "AlertTitle": "Your account is not connected to a phone number",
+    "AlertMessage": "You can lose it if you uninstall the application or delete the data",
+    "Connect": "Connect"
   },
   "AgregarPage":{
     "Title":"Add a chat",
@@ -113,6 +104,12 @@
   },
   "SettingPage":{
     "DarkMode":"Activate dark mode",
-    "ConversationLanguage": "Conversation language"
+    "ConversationLanguage": "Conversation language",
+    "ConnectAccound": "Connect your account",
+    "EnterPhone": "Enter your phone number",
+    "Check": "Check",
+    "HeaderAlert": "Enter the verification code",
+    "InputPhoneLabel": "Verification code",
+    "SmallMessage": "Tapping Verify could send an SMS. Data usage and messaging charges may apply."
   }
 }

@@ -97,7 +97,6 @@ export class ItemChatComponent implements OnInit {
                             }).then(()=>{
                               console.log(resp.uri)
                               this.urlImg=Capacitor.convertFileSrc(resp.uri);
-                              console.log(this.urlImg)
                               storageSubscribe.unsubscribe();
                               httpSubscribe.unsubscribe();
                             }).catch(err=>console.log(err));
@@ -112,6 +111,8 @@ export class ItemChatComponent implements OnInit {
           }else{
             if(userData.imageUrlLoc){
               this.urlImg=Capacitor.convertFileSrc(userData.imageUrlLoc);
+            }else{
+              this.urlImg='../../../../assets/avatar/avatar_'+userData.avatarId+'.jpg'
             }
           }
         },err=>console.log(err));

@@ -49,6 +49,8 @@ export class ProfilePage implements OnInit {
       this.numBlockedUsers=Object.keys(resp.blockedUsers).length;
       if(resp.imageUrlLoc){
         this.imgPath=Capacitor.convertFileSrc(resp.imageUrlLoc);
+      }else{
+        this.imgPath='../../../../assets/avatar/avatar_'+resp.avatarId+'.jpg'
       }
     }).catch(err=>console.log(err));
 

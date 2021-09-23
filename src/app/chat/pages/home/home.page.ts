@@ -1,6 +1,5 @@
 import { FirestoreService } from './../../../services/firestore.service';
-import { TranslateService } from '@ngx-translate/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { IChat } from './../../interfaces/chat.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IUser } from './../../interfaces/user.interface';
@@ -24,16 +23,14 @@ export class HomePage implements OnInit{
   dbChats:ILocalForage;
   dbUsers:ILocalForage;
   chatsObj={};
-  welcome=false;
+  connectedAccount=false;
 
   constructor(
     private menu: MenuController,
     private firestore:AngularFirestore,
     private db:DbService,
     private route:ActivatedRoute,
-    private router:Router,
     public alertController: AlertController,
-    private translate:TranslateService,
     private ngZone:NgZone,
     private firestoreService: FirestoreService
   ) {
@@ -107,6 +104,12 @@ export class HomePage implements OnInit{
       }).catch(err=>console.log(err));
     });
 
+    if(firebase.default.auth().currentUser.phoneNumber){
+      this.connectedAccount=true;
+    }else{
+      this.connectedAccount=false;
+    }
+
     this.route.queryParams
     .subscribe(params => {
       if(params.deleteChat && this.chatsObj[params.deleteChat]){
@@ -129,10 +132,6 @@ export class HomePage implements OnInit{
         .add(message);
 
         this.orderChats();
-      }
-
-      if(params.welcome){
-        this.welcome=true;
       }
     });
   }
@@ -167,31 +166,6 @@ export class HomePage implements OnInit{
 
   trackItems(index: number, chat: IChat) {
     return chat.id;
-  }
-
-  agregarRoute(){
-    if(this.user.data.chats.length<5){
-      this.router.navigate(['/chat/agregar']);
-    }else{
-      let alertTxt='';
-      this.translate.get("HomePage.LimitMessage").subscribe(resp=>{
-        this.presentAlert(resp+" :D");
-      });
-    }
-  }
-
-  async presentAlert(message:string) {
-    let txt='';
-    this.translate.get("Global.ToAccept").subscribe(resp=>{txt=resp});
-    const alert = await this.alertController.create({
-      message: message,
-      buttons: [
-        {
-          text: txt,
-        }
-      ]
-    });
-    await alert.present();
   }
 }
 

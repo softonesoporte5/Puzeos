@@ -36,12 +36,26 @@ a{
   z-index: -1;
   height: 100%;
   width: 100vw;
-  background-repeat: repeat;
-  background-size: contain;
-  background-image: url('./assets/fondo.jpg');
-  top:0;
+  top: 0;
   left: 0;
-  opacity: 0.2;
+  background: var(--fondo-color);
+  div{
+    background-repeat: repeat;
+    background-size: contain;
+    background-image: url(./assets/fondo.jpg);
+    height: 100%;
+    width: 100%;
+    position: relative;
+    opacity: 0.07;
+  }
+}
+
+.continue-btn{
+  margin-bottom: 23px;
+  text-transform: initial;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0px;
 }
 
 .d-flex-center{
@@ -142,4 +156,104 @@ app-chat{
 .translucido{
   width: 13rem;
   height: 13rem;
+}
+
+.no-bg-color{
+  background-color: transparent;
+  --background: transparent;
+}
+
+
+/*****************************************************
+	Custom styling example bellow.
+*****************************************************/
+
+.iti {
+	display: block !important;
+	margin-bottom: 20px;
+}
+
+.iti .dropdown-menu.country-dropdown {
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+	border-color: #c7cace;
+	margin-top: -1px;
+}
+
+.iti .iti__country-list {
+	box-shadow: none;
+	font-size: 14px;
+	margin-left: 0;
+	width: 244px;
+	max-height: 170px;
+}
+
+.iti__flag-container.open + input {
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+
+.iti .search-container input {
+	font-size: 14px;
+	border-color: #c7cace;
+	border-radius: 0;
+	padding: 5px 10px;
+}
+
+.iti .search-container input:focus {
+	outline: none;
+}
+
+@media screen and (max-width: 479px) {
+	.iti .iti__country-list {
+		width: 88.3vw;
+	}
+}
+
+ngx-intl-tel-input input {
+	height: 44px;
+	margin-bottom: 20px;
+	padding: 10px;
+	border-style: solid;
+	border-width: 1px;
+  background-color: var(--white);
+	border-radius: 4px;
+	font-size: 18px;
+  width: 100%;
+}
+
+ngx-intl-tel-input.ng-invalid.ng-touched input {
+	border: 1px solid #c0392b;
+  width: 100%;
+  background-color: var(--white);
+}
+
+ngx-intl-tel-input input:hover {
+	box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.24);
+}
+
+ngx-intl-tel-input input:focus {
+	outline: none !important;
+	border-color: #3498db;
+	box-shadow: 0 0 0 0 #000;
+}
+
+ngx-intl-tel-input input::-webkit-input-placeholder {
+	color: #bac2c7;
+}
+
+ngx-intl-tel-input input:-ms-input-placeholder {
+	color: #bac2c7;
+}
+
+ngx-intl-tel-input input::-ms-input-placeholder {
+	color: #bac2c7;
+}
+
+ngx-intl-tel-input input::placeholder {
+	color: #bac2c7;
+}
+
+ngx-intl-tel-input input[disabled] {
+	background-color: #e5eaf1;
 }

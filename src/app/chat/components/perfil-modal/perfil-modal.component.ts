@@ -59,7 +59,7 @@ export class PerfilModalComponent implements OnInit {
           ...userData,
           createDate:date.valueOf()
         });
-        this.imgPath="assets/person.jpg";
+        this.imgPath='assets/avatar/avatar_'+this.user.data.avatarId+'.jpg'
       }else{
         if(userData.imageUrl!==this.user.data.imageUrl){
 
@@ -103,7 +103,7 @@ export class PerfilModalComponent implements OnInit {
     if(this.user.data.imageUrlLoc){
       this.imgPath=Capacitor.convertFileSrc(this.user.data.imageUrlLoc);
     }else{
-      this.imgPath="assets/person.jpg";
+      this.imgPath='assets/avatar/avatar_'+this.user.data.avatarId+'.jpg'
     }
   }
 

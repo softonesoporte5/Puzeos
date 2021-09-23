@@ -26,14 +26,16 @@ export class RegisterPage implements OnInit {
   imgPath='../../../../assets/person.jpg';
   activeSlide=0;
   languageSelect:string;
+  continue=false;
 
   miFormulario:FormGroup=this.fb.group({
-    name:['',[Validators.required,Validators.minLength(8)]],
+    apodo:['', [Validators.required, Validators.minLength(3)]],
+    avatar:[null, [Validators.required]],
     descripcion:['',[Validators.maxLength(80)]],
-    language:[localStorage.getItem("language")?localStorage.getItem("language"):'es'],
   });
 
-  get name(){ return this.miFormulario.get('name'); }
+  get apodo(){ return this.miFormulario.get('apodo'); }
+  get avatar(){ return this.miFormulario.get('avatar'); }
   get descripcion(){ return this.miFormulario.get('descripcion'); }
 
   constructor(
@@ -70,21 +72,46 @@ export class RegisterPage implements OnInit {
     toast.present();
   }
 
-  async enviar(){
+  selectAvatar(ele:HTMLDivElement, id:number){
+    if(id===0){
+      if(this.imgPath!=='../../../../assets/person.jpg'){
+        this.avatar.setValue(id);
+        document.querySelectorAll(".loc__grid>div")
+        .forEach(ele=>ele.classList.remove("loc__avatar-selected"));
+
+        ele.classList.add("loc__avatar-selected");
+      }
+    }else{
+      this.avatar.setValue(id);
+      document.querySelectorAll(".loc__grid>div")
+      .forEach(ele=>ele.classList.remove("loc__avatar-selected"));
+
+      ele.classList.add("loc__avatar-selected");
+    }
+  }
+
+  continueRegister(){
     if(this.miFormulario.invalid){
       let mensaje:string='';
       //Alertar sobre errores
-      if(this.name?.errors?.minlength){
-        this.translate.get("Error.MinUserName").subscribe(resp=>mensaje=resp);
+      this.continue=false;
+      if(this.apodo?.errors?.minlength){
+        this.translate.get("Error.MinNickname").subscribe(resp=>mensaje=resp);
       }
-      if(this.name?.errors?.required){
-        this.translate.get("Error.UserNameRequired").subscribe(resp=>mensaje=resp);
+      if(this.apodo?.errors?.required){
+        this.translate.get("Error.NicknameRequired").subscribe(resp=>mensaje=resp);
       }
-
+      if(this.avatar?.errors?.required){
+        this.translate.get("Error.AvatarRequired").subscribe(resp=>mensaje=resp);
+      }
       this.presentToastWithOptions(mensaje);
       return ;
+    }else{
+      this.continue=true;
     }
+  }
 
+  async enviar(){
     //Mostrar sniper de carga
     this.loadingService.present();
 
@@ -92,11 +119,11 @@ export class RegisterPage implements OnInit {
     this.dbUsers=this.db.loadStore("users");
 
     //Agregar a firebaseStorage
-    if(this.imgPath!=='../../../../assets/person.jpg'){
+    if(this.avatar.value===0){
       const user={
         id:firebase.default.auth().currentUser.uid,
         data:{
-          userName:this.name.value,
+          userName:this.apodo.value,
         }
       };
 
@@ -109,7 +136,7 @@ export class RegisterPage implements OnInit {
           console.log(urlImage)
           // Guardamos la imagen de manera local
           this.fireStore.collection("users").doc(firebase.default.auth().currentUser.uid).set({//Agregamos el usuario a FireStorage
-            userName:this.name.value,
+            userName:this.apodo.value,
             chats:[],
             token:this.notificationService.token,
             createDate:firebase.default.firestore.FieldValue.serverTimestamp(),
@@ -121,10 +148,11 @@ export class RegisterPage implements OnInit {
             blockedUsers:{},
             notAddUsers:{},
             imageUrl:urlImage,
-            imageUrlLoc:localImg
+            imageUrlLoc:localImg,
+            avatarId: this.avatar.value
           }).then(resp=>{
             this.dbUsers.setItem(firebase.default.auth().currentUser.uid,{
-              userName:this.name.value,
+              userName:this.apodo.value,
               chats:[],
               token:this.notificationService.token,
               descripcion:this.descripcion.value,
@@ -135,7 +163,8 @@ export class RegisterPage implements OnInit {
               blockedUsers:{},
               notAddUsers:{},
               imageUrl:urlImage,
-              imageUrlLoc:localImg
+              imageUrlLoc:localImg,
+              avatarId: this.avatar.value
             }).then(()=>{
               this.loadingService.dismiss();
               this.router.navigate(['chat'], { queryParams: {welcome:true}})
@@ -146,17 +175,23 @@ export class RegisterPage implements OnInit {
             });
           }).catch(err=>{
             this.loadingService.dismiss();
-            this.presentToastWithOptions("No se pudo registrar al usuario");
+            if(this.avatar?.errors?.required){
+              this.translate.get("Error.NotRegisterUser").subscribe(resp=>{
+                this.presentToastWithOptions(resp);
+              });
+            }
           })
         }).catch(err=>{
           this.loadingService.dismiss();
-          this.presentToastWithOptions("Ha ocurrido un error al tratar de guarda la imágen");
+          this.translate.get("Error.SaveImage").subscribe(resp=>{
+            this.presentToastWithOptions(resp);
+          });
           console.log(err);
         })
       }
     }else{
       this.fireStore.collection("users").doc(firebase.default.auth().currentUser.uid).set({//Agregamos el usuario a FireStorage
-        userName:this.name.value,
+        userName:this.apodo.value,
         chats:[],
         token:this.notificationService.token,
         createDate:firebase.default.firestore.FieldValue.serverTimestamp(),
@@ -166,10 +201,11 @@ export class RegisterPage implements OnInit {
         },
         descripcion:this.descripcion.value,
         blockedUsers:{},
-        notAddUsers:{}
+        notAddUsers:{},
+        avatarId: this.avatar.value
       }).then(resp=>{
         this.dbUsers.setItem(firebase.default.auth().currentUser.uid,{
-          userName:this.name.value,
+          userName:this.apodo.value,
           chats:[],
           token:this.notificationService.token,
           descripcion:this.descripcion.value,
@@ -178,7 +214,8 @@ export class RegisterPage implements OnInit {
             tagId:''
           },
           blockedUsers:{},
-          notAddUsers:{}
+          notAddUsers:{},
+          avatarId: this.avatar.value
         }).then(()=>{
           this.loadingService.dismiss();
           this.router.navigate(['chat'], { queryParams: {welcome:true}})
@@ -189,7 +226,9 @@ export class RegisterPage implements OnInit {
         });
       }).catch(err=>{
         this.loadingService.dismiss();
-        this.presentToastWithOptions("No se pudo registrar al usuario");
+        this.translate.get("Error.NotRegisterUser").subscribe(resp=>{
+          this.presentToastWithOptions(resp);
+        });
       })
     }
   }
@@ -210,7 +249,14 @@ export class RegisterPage implements OnInit {
           icon: 'camera-sharp',
           handler: () => {
             this.authService.selectImage(CameraSource.Camera)
-            .then(resp=>this.imgPath=resp);
+            .then(resp=>{
+              this.imgPath=resp;
+              this.avatar.setValue(0);
+              document.querySelectorAll(".loc__grid>div")
+              .forEach(ele=>ele.classList.remove("loc__avatar-selected"));
+
+              document.querySelectorAll(".loc__grid>div")[0].classList.add("loc__avatar-selected");
+            });
           }
         },
         {
@@ -218,7 +264,14 @@ export class RegisterPage implements OnInit {
           icon: 'image-sharp',
           handler: () => {
             this.authService.selectImage(CameraSource.Photos)
-            .then(resp=>this.imgPath=resp);
+            .then(resp=>{
+              this.imgPath=resp;
+              this.avatar.setValue(0);
+              document.querySelectorAll(".loc__grid>div")
+              .forEach(ele=>ele.classList.remove("loc__avatar-selected"));
+
+              document.querySelectorAll(".loc__grid>div")[0].classList.add("loc__avatar-selected");
+            });
           }
         },
         {
@@ -227,22 +280,13 @@ export class RegisterPage implements OnInit {
           icon: 'trash',
           handler: () => {
             this.imgPath='../../../../assets/person.jpg';
+            this.avatar.setValue(null);
+            document.querySelectorAll(".loc__grid>div")
+              .forEach(ele=>ele.classList.remove("loc__avatar-selected"));
           }
         }
       ]
     });
     await actionSheet.present();
-  }
-
-  setLanguage(){
-    if(this.miFormulario.get('language').value){
-      this.translate.use(this.miFormulario.get('language').value);
-      localStorage.setItem("language",this.miFormulario.get('language').value);
-      this.translate.use(this.languageSelect);
-      this.translate.get("Global.ChangeLanguage").subscribe(resp=>{
-        this.presentToastWithOptions(resp);
-      });
-
-    }
   }
 }

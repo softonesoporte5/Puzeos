@@ -82,7 +82,7 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
             if(this.user.data.imageUrlLoc){
               this.imgPath=Capacitor.convertFileSrc(this.user.data.imageUrlLoc);
             }else{
-              this.imgPath="assets/person.jpg";
+              this.imgPath='assets/avatar/avatar_'+user.avatarId+'.jpg'
             }
           });
 

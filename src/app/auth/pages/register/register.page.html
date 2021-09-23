@@ -1,104 +1,87 @@
-<div class="fondo"></div>
+<div class="fondo">
+  <div></div>
+</div>
 
-<ngx-snackbar
-  [position]="'top-center'"
-  [max]="1"
-  [timeout]="7000"
-  [background]="'#eb445a'"
-  [color]="'#fff'"
-  [accent]="'#cf3c4f'">
-</ngx-snackbar>
+<ion-content fullscreen class="ion-padding" *ngIf="!continue">
 
-<ion-content class="ion-padding">
+  <h1 class="loc__title-register">{{'RegisterPage.ApodoMessage' | translate}}</h1>
+  <form [formGroup]="miFormulario">
 
-  <h1 class="ion-text-center mb-10">
-    <img
-      src="../../../../assets/logo.png"
-      alt="Logo"
-      class="auth__logo"
+    <input
+      type="text"
+      class="loc__register-input"
+      [placeholder]="'RegisterPage.YourNickname' | translate"
+      formControlName="apodo"
     >
-    Puzeos
-  </h1>
-  <ion-row class="mb-10 ion-justify-content-center ion-padding-top ion-align-items-center auth__cont-img-options">
-    <span class="cont-img">
-      <img
-        [src]="imgPath"
-        alt="Profile"
-        class="auth__img-profile"
-      >
-      <ion-icon name="camera" (click)="presentActionSheet()"></ion-icon>
-    </span>
-  </ion-row>
-  <form
-    [formGroup]="miFormulario"
-    action=""
-    autocomplete="off"
-    (ngSubmit)="enviar()"
-  >
-    <div
-      color="primary"
-      class="ion-padding-vertical sombra ion-padding auth__cont mb-10"
-    >
-          <ion-item>
-            <ion-icon name="person" slot="start"></ion-icon>
-            <ion-label position="floating">{{ 'Global.UserName' | translate }}</ion-label>
-            <ion-input
-              type="text"
-              id="name"
-              class="auth__input"
-              [placeholder]="'RegisterPage.UserNamePlaceholder' | translate "
-              formControlName="name"
-            ></ion-input>
-          </ion-item>
 
-          <ion-item>
-            <ion-icon name="information-circle" slot="start"></ion-icon>
-            <ion-label position="floating">{{ 'RegisterPage.DescriptionLabel' | translate }}</ion-label>
-            <ion-input
-              type="text"
-              id="email"
-              class="auth__input"
-              [placeholder]="'RegisterPage.DescriptionPlaceholder' | translate"
-              maxlength="80"
-              formControlName="descripcion"
-            ></ion-input>
-          </ion-item>
-
-          <ion-item>
-            <ion-label>{{'Global.Language' | translate}}</ion-label>
-            <ion-select formControlName="language" value="es" (ionChange)="setLanguage()">
-              <ion-select-option value="en">English</ion-select-option>
-              <ion-select-option value="es">Español</ion-select-option>
-            </ion-select>
-          </ion-item>
-          <br>
-          <small>
-            {{'RegisterPage.PrivacyPolicy' | translate}}
-            <a style="color:rgb(136, 208, 236);" href="https://docs.google.com/document/d/1XHJjxROjaA0F-ZO1wfhMDtM6noHxYip2F9bjKsXfFFc/edit?usp=sharing">
-              <small>{{'RegisterPage.PrivacyPolicy2' | translate}}</small>
-            </a>
-          </small>
+    <div class="loc__grid">
+      <div #avatar0 (click)="selectAvatar(avatar0, 0)">
+        <span class="cont-img">
+          <img
+            [src]="imgPath"
+            alt="Profile"
+            class="auth__img-profile"
+          >
+          <ion-icon name="camera" (click)="presentActionSheet()"></ion-icon>
+        </span>
+      </div>
+      <div #avatar1 (click)="selectAvatar(avatar1, 1)">
+        <img src="../../../../assets/avatar/avatar_1.jpg" alt="">
+      </div>
+      <div #avatar2 (click)="selectAvatar(avatar2, 2)">
+        <img src="../../../../assets/avatar/avatar_2.jpg" alt="">
+      </div>
+      <div #avatar3 (click)="selectAvatar(avatar3, 3)">
+        <img src="../../../../assets/avatar/avatar_3.jpg" alt="">
+      </div>
+      <div #avatar4 (click)="selectAvatar(avatar4, 4)">
+        <img src="../../../../assets/avatar/avatar_4.jpg" alt="">
+      </div>
+      <div #avatar5 (click)="selectAvatar(avatar5, 5)">
+        <img src="../../../../assets/avatar/avatar_5.jpg" alt="">
+      </div>
+      <div #avatar6 (click)="selectAvatar(avatar6, 6)">
+        <img src="../../../../assets/avatar/avatar_6.jpg" alt="">
+      </div>
+      <div #avatar7 (click)="selectAvatar(avatar7, 7)">
+        <img src="../../../../assets/avatar/avatar_7.jpg" alt="">
+      </div>
+      <div #avatar8 (click)="selectAvatar(avatar8, 8)">
+        <img src="../../../../assets/avatar/avatar_8.jpg" alt="">
+      </div>
     </div>
 
     <ion-button
-      expand="block"
-      class="ion-text-capitalize center-child"
-      color="secondary"
-      (click)="enviar()"
+      shape="round"
+      expand="full"
+      class="continue-btn"
+      (click)="continueRegister()"
+      type="submit"
     >
-      <span>
-        {{'RegisterPage.SignIn' | translate}}
-      </span>
+      {{'RegisterPage.Continue' | translate}}
     </ion-button>
-
-    <ion-text color="tertiary">
-      <h4 class="ion-text-center">{{'RegisterPage.H4Text' | translate}}</h4>
-    </ion-text>
-    <a
-      [routerLink]="['/auth/login']"
-      class="ion-text-center auth__enlace"
-    >{{'RegisterPage.Login' | translate}}</a>
-
   </form>
 </ion-content>
 
+<ion-content fullscreen class="ion-padding" *ngIf="continue">
+
+  <h1 class="loc__title-register">{{'RegisterPage.DescriptionMessage' | translate}}</h1>
+  <form [formGroup]="miFormulario">
+    <input
+      type="text"
+      class="loc__register-input"
+      placeholder="Descripción corta"
+      style="margin-bottom: 2rem;"
+      maxlength="80"
+      formControlName="descripcion"
+    >
+    <ion-button
+      shape="round"
+      expand="full"
+      class="continue-btn"
+      (click)="enviar()"
+    >
+      {{'RegisterPage.Continue' | translate}}
+    </ion-button>
+  </form>
+</ion-content>

@@ -35,7 +35,8 @@ export class AgregarPage implements OnInit, OnDestroy {
   miFormulario:FormGroup=this.fb.group({
     searchTxt:['', [Validators.required, Validators.minLength(1)]]
   });
-  items:IItem[]=[];
+  allItems: IItem[]=[];
+  items: IItem[]=[];
   user:IUser;
   buscando:boolean=false;
   userSubscription:Subscription;
@@ -69,8 +70,8 @@ export class AgregarPage implements OnInit, OnDestroy {
     }
     //Almacenar los tags en el sessionStorage para que no cargen cada vez
     if(sessionStorage.getItem("tags")){
-      this.items=JSON.parse(sessionStorage.getItem("tags"));
-      this.popularTags=this.items.slice(0,5);
+      this.allItems=JSON.parse(sessionStorage.getItem("tags"))
+      this.items=this.allItems.slice(0,20);
     }else{
       let tags=[];
       this.fireStore.collection("tags").ref.get()
@@ -100,7 +101,7 @@ export class AgregarPage implements OnInit, OnDestroy {
             fontIcon: fontIcon
           });
         });
-        this.items=tags.sort((a, b)=>{
+        this.allItems=tags.sort((a, b)=>{
           if (a.chastCreated < b.chatsCreated) {
             return 1;
           }
@@ -109,8 +110,8 @@ export class AgregarPage implements OnInit, OnDestroy {
           }
           return 0;
         });
-        sessionStorage.setItem("tags",JSON.stringify(this.items));
-        this.popularTags=this.items.slice(0,5);
+        this.items=this.allItems.slice(0,20);
+        sessionStorage.setItem("tags",JSON.stringify(this.allItems));
       }).catch(error=>{
         console.log(error);
       });
@@ -119,22 +120,22 @@ export class AgregarPage implements OnInit, OnDestroy {
     let search='';
 
     this.searchTxt.statusChanges.subscribe(()=>{
-      this.items=JSON.parse(sessionStorage.getItem("tags"));
+      this.allItems=JSON.parse(sessionStorage.getItem("tags"));
       search=this.searchTxt.value.normalize('NFD').replace(/[\u0300-\u036f]/g,"");
       search=search.toLocaleLowerCase();
       this.search=search;
 
-      if(this.searchTxt.value.trim()!==''){
-        let items=[];
-        this.items.forEach((item:IItem) => {
-          let itemTxt=item.data.title.normalize('NFD').replace(/[\u0300-\u036f]/g,"");
-          itemTxt=itemTxt.toLocaleLowerCase();
-          if(itemTxt.indexOf(search)!==-1){
-            items.push(item);
-          }
-        });
-        this.items=items;
-      }
+      let items=[];
+      this.allItems.forEach((item:IItem) => {
+        let itemTxt=item.data.title.normalize('NFD').replace(/[\u0300-\u036f]/g,"");
+        itemTxt=itemTxt.toLocaleLowerCase();
+        if(itemTxt.indexOf(search)!==-1){
+          items.push(item);
+        }
+      });
+      this.allItems=items;
+      console.log(items)
+      this.items=this.allItems.slice(0,20);
     })
 
     //Comprobamos si el usuario está buscando
@@ -412,5 +413,14 @@ export class AgregarPage implements OnInit, OnDestroy {
       position: 'top'
     });
     toast.present();
+  }
+
+  loadData(event) {
+    this.items=this.allItems.slice(0, this.items.length+20);
+    event.target.complete();
+
+    if (this.items.length===this.allItems.length && !this.searchTxt.value) {
+      event.target.disabled = true;
+    }
   }
 }

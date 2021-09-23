@@ -1,4 +1,8 @@
-<ion-content class="ion-padding" *ngIf="!welcome">
+<div class="fondo">
+  <div></div>
+</div>
+
+<ion-content class="ion-padding" *ngIf="continuePhone">
   <firebase-ui
     [language]="language"
     (signInSuccessWithAuthResult)="checkUserState($event)"
@@ -6,34 +10,40 @@
 
   <ion-item>
     <ion-label style="color:gray">{{'Global.Language' | translate}}</ion-label>
-    <ion-select [(ngModel)]="language">
+    <ion-select [(ngModel)]="language" value="es" (ionChange)="setLanguage()">
       <ion-select-option value="en">English</ion-select-option>
       <ion-select-option value="es">Español</ion-select-option>
     </ion-select>
   </ion-item>
 </ion-content>
 
-<ion-content fullscreen class="ion-padding" scroll-y="false" *ngIf="welcome" >
-  <ion-slides pager="true">
-    <ion-slide>
-      <div class="slide">
-        <img src="../../../../assets/logo.png"/>
-        <h2>{{'LoginPage.Slide1' | translate}}</h2>
-        <p>{{'LoginPage.Slide1Message' | translate}}</p>
-      </div>
-    </ion-slide>
+<ion-content fullscreen class="ion-padding mx" *ngIf="!continuePhone" >
 
-    <ion-slide>
-      <img src="../../../../assets/img-welcome.png" style="margin-bottom:0;">
-      <h2>{{'LoginPage.Slide2' | translate}}</h2>
-      <p>{{'LoginPage.Slide2Message' | translate}}</p>
-    </ion-slide>
-  </ion-slides>
+  <div class="text-animation" >
+    <div class="js-animation">
+      <h1>{{'LoginPage.Title1' | translate}}</h1>
+      <h1 class="d-none">{{'LoginPage.Title2' | translate}}</h1>
+      <h1 class="d-none">{{'LoginPage.Title3' | translate}}</h1>
+      <h1 class="d-none">{{'LoginPage.Title4' | translate}}</h1>
+    </div>
+  </div>
+
+  <ion-button shape="round" expand="full" class="continue-btn" (click)="skipRegister()">
+    {{'LoginPage.ContinueWithout' | translate}}
+  </ion-button>
+
+  <span class="d-center">
+    <h6 class="loc__num-btn" (click)="continuePhone=true">{{'LoginPage.ContinueWithPhone' | translate}}</h6>
+  </span>
+
+  <span class="d-center">
+    <small>{{'LoginPage.PrivacyPolicy' | translate}} <a href="">{{'LoginPage.PrivacyPolicy2' | translate}}</a></small>
+  </span>
+
   <div class="loc__centrar">
-    <ion-button color="secondary" (click)="skipIntro()">{{'LoginPage.ContinueButton' | translate}}</ion-button>
     <ion-item style="margin-top:2rem;">
       <ion-label style="color:gray">{{'Global.Language' | translate}}</ion-label>
-      <ion-select [(ngModel)]="language" (ionChange)="setLanguage()">
+      <ion-select [(ngModel)]="language" value="es" (ionChange)="setLanguage()">
         <ion-select-option value="en">English</ion-select-option>
         <ion-select-option value="es">Español</ion-select-option>
       </ion-select>

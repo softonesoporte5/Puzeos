@@ -65,3 +65,55 @@ small{
   text-align: center;
   color:gray;
 }
+
+.loc__no-chats{
+  padding: 50px 24px 15px 24px;
+  width: 100%;
+  >div{
+    border-radius: 13px;
+    background-color: #79D3FF;
+    padding: 36px 24px 0px 24px;
+    float: left;
+    width: 100%;
+  }
+
+  ion-button{
+    height: 48px;
+  }
+
+  span{
+    font-size: 20px;
+    font-weight: 400;
+    color: #fff;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 24px;
+    display: block;
+  }
+}
+
+.loc__alert-message{
+  border-radius: 5px;
+  margin: 1rem 24px;
+  padding: 1rem;
+  border: 1px solid rgba(101,109,119,.16);
+  border-left: .25rem solid #d63939;
+  box-shadow: rgb(35 46 60 / 4%) 0 2px 4px 0;
+  background-color: var(--white);
+
+  h5{
+    font-size: 15px;
+    color: #d63939;
+    margin: 0;
+  }
+
+  h6{
+    font-size: 14px;
+  }
+
+  span{
+    text-decoration: underline;
+    font-weight: 400;
+    color: #707070;
+  }
+}

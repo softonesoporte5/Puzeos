@@ -48,5 +48,37 @@
       </ion-select>
     </ion-item>
   </ion-list>
-
+  <div class="loc__phone" *ngIf="!connectedAccount">
+    <form [formGroup]="form">
+      <h5>
+        {{'SettingPage.ConnectAccound' | translate}}
+      </h5>
+      <h6>{{'SettingPage.EnterPhone' | translate}}</h6>
+        <ngx-intl-tel-input
+          [cssClass]="'custom'"
+          [preferredCountries]="[CountryISO.UnitedStates]"
+          [enableAutoCountrySelect]="false"
+          [enablePlaceholder]="true"
+          [searchCountryFlag]="false"
+          [selectFirstCountry]="false"
+          [selectedCountryISO]="CountryISO.UnitedStates"
+          [maxLength]="'15'"
+          [phoneValidation]="true"
+          [numberFormat]="PhoneNumberFormat.National"
+          name="phone"
+          formControlName="phone"
+        ></ngx-intl-tel-input>
+      <ion-row>
+        <ion-button (click)="verifyPhone()">
+          {{'SettingPage.Check' | translate}}
+        </ion-button>
+      </ion-row>
+      <div id="recaptcha-container"></div>
+      <ion-row>
+        <small>
+          {{'SettingPage.SmallMessage' | translate}}
+        </small>
+      </ion-row>
+    </form>
+  </div>
 </ion-content>
