@@ -1,12 +1,12 @@
-import { ILocalForage } from './../chat/interfaces/localForage.interface';
+import { ILocalForage } from './../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
 import { AppService } from './../app.service';
-import { IAudioBlob } from './../chat/interfaces/audioBlob.interface';
+import { IAudioBlob } from './../interfaces/audioBlob.interface';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { Injectable } from '@angular/core';
 import * as firebase from 'firebase';
-import { IUser } from '../chat/interfaces/user.interface';
+import { IUser } from '../interfaces/user.interface';
 import { StoreNames } from '../enums/store-names.enum';
 
 @Injectable({

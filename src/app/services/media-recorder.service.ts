@@ -1,6 +1,6 @@
 import { AppService } from './../app.service';
 import { FirebaseStorageService } from 'src/app/services/firebase-storage.service';
-import { IAudioBlob } from './../chat/interfaces/audioBlob.interface';
+import { IAudioBlob } from './../interfaces/audioBlob.interface';
 import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { IMediaRecorder, MediaRecorder } from 'extendable-media-recorder';

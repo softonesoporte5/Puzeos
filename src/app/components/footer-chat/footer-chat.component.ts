@@ -1,11 +1,11 @@
+import { ChatService } from './../../chat/pages/chat/chat.service';
+import { MediaRecorderService } from './../../services/media-recorder.service';
 import { Subscription } from 'rxjs';
-import { ChatService } from './../../pages/chat/chat.service';
 import { TranslateService } from '@ngx-translate/core';
 import { IUser } from './../../interfaces/user.interface';
 import { IonItemSliding, AlertController, IonTextarea, Platform } from '@ionic/angular';
 import { FormGroup, Validators, FormBuilder, AbstractControl } from '@angular/forms';
 import { IMessage } from './../../interfaces/message.interface';
-import { MediaRecorderService } from './../../../services/media-recorder.service';
 import { Component, Input, OnInit, ViewChild, OnDestroy, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { KeyboardInfo, PluginListenerHandle, Plugins } from '@capacitor/core';
 

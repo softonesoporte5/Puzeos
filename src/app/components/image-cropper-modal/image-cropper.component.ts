@@ -1,7 +1,7 @@
-import { AuthService } from './../../../auth/auth.service';
+import { AuthService } from './../../auth/auth.service';
+import { CameraService } from './../../services/camera.service';
 import { ModalController, NavParams } from '@ionic/angular';
 import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
-import { CameraService } from './../../../services/camera.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 
 @Component({

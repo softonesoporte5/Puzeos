@@ -1,11 +1,11 @@
-import { IUserData } from './../../interfaces/user.interface';
-import { IMessagesResp } from './../../interfaces/messagesResp.interface';
-import { PerfilModalComponent } from './../../components/perfil-modal/perfil-modal.component';
+import { PerfilModalComponent } from './../../../components/perfil-modal/perfil-modal.component';
+import { IMessagesResp } from './../../../interfaces/messagesResp.interface';
+import { IUser, IUserData } from './../../../interfaces/user.interface';
+import { IChat } from './../../../interfaces/chat.interface';
+import { ILocalForage } from './../../../interfaces/localForage.interface';
+import { IMessage } from './../../../interfaces/message.interface';
 import { Subscription, Subject } from 'rxjs';
 import { ChatService } from './chat.service';
-import { IMessage } from './../../interfaces/message.interface';
-import { IChat } from './../../interfaces/chat.interface';
-import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit, NgZone } from '@angular/core';
@@ -14,7 +14,6 @@ import * as firebase from 'firebase';
 import { PopoverController, ModalController, IonInfiniteScroll, IonContent } from '@ionic/angular';
 import { PopoverChatComponent } from 'src/app/components/popover-chat/popover-chat.component';
 import { Capacitor } from '@capacitor/core';
-import { IUser } from '../../interfaces/user.interface';
 import { StoreNames } from 'src/app/enums/store-names.enum';
 
 @Component({

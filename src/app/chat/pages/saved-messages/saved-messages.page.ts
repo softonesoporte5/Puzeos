@@ -1,6 +1,6 @@
-import { IMessage, IMessageSearch } from './../../interfaces/message.interface';
+import { IMessageSearch } from './../../../interfaces/message.interface';
+import { ILocalForage } from './../../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
-import { ILocalForage } from './../../interfaces/localForage.interface';
 import { Component, OnInit } from '@angular/core';
 import { StoreNames } from 'src/app/enums/store-names.enum';
 

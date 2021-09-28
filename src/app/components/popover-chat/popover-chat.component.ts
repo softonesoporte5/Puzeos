@@ -1,5 +1,5 @@
 import { ActionsUserService } from './../../services/actions-user.service';
-import { ILocalForage } from './../../chat/interfaces/localForage.interface';
+import { ILocalForage } from './../../interfaces/localForage.interface';
 import { Component, OnInit } from '@angular/core';
 import { NavParams} from '@ionic/angular';
 

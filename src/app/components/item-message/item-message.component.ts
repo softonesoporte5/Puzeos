@@ -1,4 +1,4 @@
-import { ChatService } from './../../pages/chat/chat.service';
+import { ChatService } from './../../chat/pages/chat/chat.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IonContent, PopoverController } from '@ionic/angular';
 import { IMessage } from './../../interfaces/message.interface';

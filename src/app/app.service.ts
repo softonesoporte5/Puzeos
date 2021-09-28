@@ -1,6 +1,6 @@
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireStorage } from '@angular/fire/storage';
-import { IMessage } from './chat/interfaces/message.interface';
+import { IMessage } from './interfaces/message.interface';
 import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Plugins, FilesystemDirectory } from '@capacitor/core';

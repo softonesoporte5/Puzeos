@@ -1,8 +1,8 @@
-import { AppService } from './../../../app.service';
+import { AppService } from './../../app.service';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { IUserData } from './../../interfaces/user.interface';
-import { DbService } from './../../../services/db.service';
+import { DbService } from './../../services/db.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IChat } from './../../interfaces/chat.interface';
 import { Component, Input, OnInit } from '@angular/core';

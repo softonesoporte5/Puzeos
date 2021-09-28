@@ -1,4 +1,4 @@
-import { DbService } from './../../../services/db.service';
+import { DbService } from './../../services/db.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { IUser, IUserData } from './../../interfaces/user.interface';
 import { AngularFireAuth } from '@angular/fire/auth';

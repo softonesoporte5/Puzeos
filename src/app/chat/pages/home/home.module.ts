@@ -1,7 +1,7 @@
 import { SharedModule } from './../../../shared/shared.module';
-import { ImageCropperModalComponent } from './../../components/image-cropper-modal/image-cropper.component';
-import { ItemChatComponent } from './../../components/item-chat/item-chat.component';
-import { MenuComponent } from './../../components/menu/menu.component';
+import { ImageCropperModalComponent } from './../../../components/image-cropper-modal/image-cropper.component';
+import { ItemChatComponent } from './../../../components/item-chat/item-chat.component';
+import { MenuComponent } from './../../../components/menu/menu.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';

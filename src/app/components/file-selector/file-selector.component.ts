@@ -1,7 +1,7 @@
+import { FileSystemService } from './../../services/file-system.service';
+import { FirebaseStorageService } from './../../services/firebase-storage.service';
 import { TranslateService } from '@ngx-translate/core';
-import { FileSystemService } from '../../../services/file-system.service';
 import { ActionSheetController } from '@ionic/angular';
-import { FirebaseStorageService } from './../../../services/firebase-storage.service';
 import { Component, OnInit, Input } from '@angular/core';
 import { Chooser } from '@ionic-native/chooser/ngx';
 

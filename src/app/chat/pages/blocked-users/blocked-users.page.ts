@@ -1,8 +1,8 @@
-import { IUserData } from './../../interfaces/user.interface';
+import { ILocalForage } from './../../../interfaces/localForage.interface';
+import { IUserData } from './../../../interfaces/user.interface';
 import { LoadingService } from './../../../services/loading.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { DbService } from './../../../services/db.service';
-import { ILocalForage } from './../../interfaces/localForage.interface';
 import { Component, OnInit } from '@angular/core';
 import * as firebase from 'firebase';
 import { StoreNames } from 'src/app/enums/store-names.enum';

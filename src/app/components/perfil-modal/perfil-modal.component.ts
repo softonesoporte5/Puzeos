@@ -1,19 +1,18 @@
 import { IMessage } from './../../interfaces/message.interface';
-import { FileSystemService } from './../../../services/file-system.service';
+import { FileSystemService } from './../../services/file-system.service';
 import { IChat } from './../../interfaces/chat.interface';
-import { ActionsUserService } from './../../../services/actions-user.service';
-import { AppService } from './../../../app.service';
+import { ActionsUserService } from './../../services/actions-user.service';
+import { AppService } from './../../app.service';
 import { HttpClient, HttpEventType } from '@angular/common/http';
-import { FirebaseStorageService } from './../../../services/firebase-storage.service';
+import { FirebaseStorageService } from './../../services/firebase-storage.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { IUser, IUserData } from './../../interfaces/user.interface';
 import { ModalController, NavParams } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
-import { Capacitor, Plugins, FilesystemDirectory } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
 import { StoreNames } from 'src/app/enums/store-names.enum';
-const {Filesystem} = Plugins;
 
 @Component({
   selector: 'app-perfil-modal',

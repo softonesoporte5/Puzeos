@@ -1,5 +1,5 @@
-import { IUserData } from './../chat/interfaces/user.interface';
-import { ILocalForage } from './../chat/interfaces/localForage.interface';
+import { IUserData } from './../interfaces/user.interface';
+import { ILocalForage } from './../interfaces/localForage.interface';
 import { LoadingService } from './loading.service';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';

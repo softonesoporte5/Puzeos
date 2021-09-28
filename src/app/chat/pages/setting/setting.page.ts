@@ -1,9 +1,9 @@
+import { ISettings } from './../../../interfaces/settings.interface';
 import { LoadingService } from './../../../services/loading.service';
 import { ToastController, AlertController } from '@ionic/angular';
 import { FormBuilder, Validators } from '@angular/forms';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { TranslateService } from '@ngx-translate/core';
-import { ISettings } from './../../interfaces/settings.interface';
 import { Component, OnInit } from '@angular/core';
 import * as firebase from 'firebase';
 import { SearchCountryField, CountryISO, PhoneNumberFormat } from 'ngx-intl-tel-input';

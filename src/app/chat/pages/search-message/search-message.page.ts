@@ -1,7 +1,8 @@
-import { IChat } from './../../interfaces/chat.interface';
-import { IUserData } from './../../interfaces/user.interface';
-import { IMessage, IMessageSearch } from './../../interfaces/message.interface';
-import { ILocalForage } from './../../interfaces/localForage.interface';
+import { IChat } from './../../../interfaces/chat.interface';
+import { IMessageSearch } from './../../../interfaces/message.interface';
+import { IUserData } from './../../../interfaces/user.interface';
+import { ILocalForage } from './../../../interfaces/localForage.interface';
+import { IMessage } from './../../../interfaces/message.interface';
 import { DbService } from './../../../services/db.service';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';

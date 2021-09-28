@@ -1,9 +1,9 @@
+import { IUser } from './../../../interfaces/user.interface';
+import { IMessage } from './../../../interfaces/message.interface';
+import { ILocalForage } from './../../../interfaces/localForage.interface';
 import { Subject } from 'rxjs';
 import { DbService } from 'src/app/services/db.service';
 import { AppService } from './../../../app.service';
-import { IUser } from './../../interfaces/user.interface';
-import { ILocalForage } from './../../interfaces/localForage.interface';
-import { IMessage } from './../../interfaces/message.interface';
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import * as firebase from 'firebase';

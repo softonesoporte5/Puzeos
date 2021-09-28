@@ -1,15 +1,14 @@
+import { ImageModalComponent } from './../../../components/image-modal/image-modal.component';
+import { ImageCropperModalComponent } from './../../../components/image-cropper-modal/image-cropper.component';
+import { ILocalForage } from './../../../interfaces/localForage.interface';
+import { IUser, IUserData } from './../../../interfaces/user.interface';
 import { TranslateService } from '@ngx-translate/core';
-import { ImageModalComponent } from './../../components/image-modal/image-modal.component';
-import { ImageCropperModalComponent } from './../../components/image-cropper-modal/image-cropper.component';
 import { CameraService } from './../../../services/camera.service';
 import { AlertController, ActionSheetController, ModalController } from '@ionic/angular';
 import { Capacitor, CameraSource } from '@capacitor/core';
-import { IUserData } from './../../interfaces/user.interface';
-import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from './../../../services/db.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Component, OnInit } from '@angular/core';
-import { IUser } from '../../interfaces/user.interface';
 import * as firebase from 'firebase';
 import { StoreNames } from 'src/app/enums/store-names.enum';
 

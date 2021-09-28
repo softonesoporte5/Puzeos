@@ -1,8 +1,9 @@
+import { IUser } from './../../../interfaces/user.interface';
+import { ILocalForage } from './../../../interfaces/localForage.interface';
 import { FileSystemService } from './../../../services/file-system.service';
 import { FirebaseStorageService } from './../../../services/firebase-storage.service';
 import { AuthService } from './../../auth.service';
 import { NotificationServiceService } from './../../../services/notification-service.service';
-import { ILocalForage } from './../../../chat/interfaces/localForage.interface';
 import { DbService } from './../../../services/db.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { LoadingService } from './../../../services/loading.service';
@@ -12,7 +13,6 @@ import { ToastController, ActionSheetController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import * as firebase from 'firebase';
 import { CameraSource } from '@capacitor/core';
-import { IUser } from 'src/app/chat/interfaces/user.interface';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({

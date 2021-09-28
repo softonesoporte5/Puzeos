@@ -1,5 +1,5 @@
-import { IMessage } from './../chat/interfaces/message.interface';
-import { IUserData } from './../chat/interfaces/user.interface';
+import { IMessage } from './../interfaces/message.interface';
+import { IUserData } from './../interfaces/user.interface';
 import { Observable } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';

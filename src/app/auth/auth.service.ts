@@ -1,4 +1,4 @@
-import { ImageCropperModalComponent } from './../chat/components/image-cropper-modal/image-cropper.component';
+import { ImageCropperModalComponent } from './../components/image-cropper-modal/image-cropper.component';
 import { ModalController, ActionSheetController } from '@ionic/angular';
 import { Subject, Subscription } from 'rxjs';
 import { Injectable } from '@angular/core';

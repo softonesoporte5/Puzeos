@@ -1,10 +1,10 @@
 import { Subscription } from 'rxjs';
-import { FileSystemService } from './../../../services/file-system.service';
+import { FileSystemService } from './../../services/file-system.service';
 import { IMessage } from './../../interfaces/message.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { ImageModalComponent } from './../image-modal/image-modal.component';
-import { AppService } from './../../../app.service';
+import { AppService } from './../../app.service';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { FirebaseStorageService } from 'src/app/services/firebase-storage.service';
 import { ModalController } from '@ionic/angular';

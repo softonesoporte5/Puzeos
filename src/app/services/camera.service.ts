@@ -3,7 +3,7 @@ import { Subject, Subscription } from 'rxjs';
 import { FirebaseStorageService } from './firebase-storage.service';
 import { Injectable } from '@angular/core';
 import { Plugins, CameraResultType, CameraSource } from '@capacitor/core';
-import { IUser } from '../chat/interfaces/user.interface';
+import { IUser } from '../interfaces/user.interface';
 
 const { Camera } = Plugins;
 

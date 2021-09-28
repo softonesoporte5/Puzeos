@@ -1,6 +1,6 @@
-import { AppService } from './../../../app.service';
+import { AppService } from './../../app.service';
+import { FirebaseStorageService } from './../../services/firebase-storage.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
-import { FirebaseStorageService } from './../../../services/firebase-storage.service';
 import { IMessage } from './../../interfaces/message.interface';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import {Howl} from 'howler';

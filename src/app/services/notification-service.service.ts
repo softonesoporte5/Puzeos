@@ -1,15 +1,7 @@
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
-import {
-  Plugins,
-  PushNotification,
-  PushNotificationToken,
-  PushNotificationActionPerformed,
-} from '@capacitor/core';
 import { Platform } from '@ionic/angular';
 import { OneSignal } from '@ionic-native/onesignal/ngx';
-
-const { PushNotifications } = Plugins
 
 @Injectable({
   providedIn: 'root'

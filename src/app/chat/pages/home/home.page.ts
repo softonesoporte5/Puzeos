@@ -1,8 +1,8 @@
+import { IChat } from './../../../interfaces/chat.interface';
+import { IUser } from './../../../interfaces/user.interface';
+import { ILocalForage } from './../../../interfaces/localForage.interface';
 import { FirestoreService } from './../../../services/firestore.service';
 import { ActivatedRoute } from '@angular/router';
-import { IChat } from './../../interfaces/chat.interface';
-import { ILocalForage } from './../../interfaces/localForage.interface';
-import { IUser } from './../../interfaces/user.interface';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Component, NgZone, OnInit } from '@angular/core';
 import { MenuController, AlertController } from '@ionic/angular';

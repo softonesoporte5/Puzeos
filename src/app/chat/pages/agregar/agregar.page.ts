@@ -1,13 +1,13 @@
+import { searchsUser } from './../../../interfaces/searchsUser.interface';
+import { ILocalForage } from './../../../interfaces/localForage.interface';
+import { IUser, IUserData } from './../../../interfaces/user.interface';
 import { FirestoreService } from './../../../services/firestore.service';
 import { TranslateService } from '@ngx-translate/core';
 import { AlertController, ToastController } from '@ionic/angular';
 import { FormGroup, Validators, FormBuilder, AbstractControl } from '@angular/forms';
-import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from './../../../services/db.service';
 import { Subscription } from 'rxjs';
-import { IUser, IUserData } from './../../interfaces/user.interface';
 import { Router } from '@angular/router';
-import { searchsUser } from './../../interfaces/searchsUser.interface';
 import { AngularFirestore, DocumentSnapshot } from '@angular/fire/firestore';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as firebase from 'firebase';

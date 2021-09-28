@@ -1,6 +1,6 @@
+import { IUserData } from './../../../interfaces/user.interface';
 import { ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
-import { IUserData } from './../../../chat/interfaces/user.interface';
 import { DbService } from 'src/app/services/db.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { LoadingService } from './../../../services/loading.service';

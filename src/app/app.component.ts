@@ -1,6 +1,6 @@
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
-import { ISettings } from './chat/interfaces/settings.interface';
+import { ISettings } from './interfaces/settings.interface';
 import { NotificationServiceService } from './services/notification-service.service';
 import { Component, } from '@angular/core';
 import { Plugins, AppState } from '@capacitor/core';

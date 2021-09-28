@@ -1,29 +1,27 @@
-import { FileSystemService } from './../../../services/file-system.service';
+import { FileSystemService } from './../../services/file-system.service';
+import { AppService } from './../../app.service';
 import { Subscription } from 'rxjs';
-import { ImageModalComponent } from './../image-modal/image-modal.component';
 import { ILocalForage } from './../../interfaces/localForage.interface';
-import { AppService } from './../../../app.service';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { IMessage } from './../../interfaces/message.interface';
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FirebaseStorageService } from 'src/app/services/firebase-storage.service';
-import { ModalController } from '@ionic/angular';
-import { Plugins } from '@capacitor/core';
+import {Plugins } from '@capacitor/core';
 const {Filesystem} = Plugins;
 import { Capacitor } from '@capacitor/core';
-
+import { FileOpener } from '@ionic-native/file-opener/ngx';
 
 @Component({
-  selector: 'app-image-message',
-  templateUrl: './image-message.component.html',
-  styleUrls: ['./image-message.component.scss'],
+  selector: 'app-document',
+  templateUrl: './document.component.html',
+  styleUrls: ['./document.component.scss'],
 })
-export class ImageMessageComponent implements OnInit, OnDestroy{
+export class DocumentComponent implements OnInit {
 
-  @Input() image:IMessage;
+  @Input() document:IMessage;
   @Input() userName:string;
   @Input() dbMessages:ILocalForage;
-  imageUrl:string;
+  documentUrl:string;
   downloaded:boolean=false;
   units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   size:string;
@@ -35,25 +33,26 @@ export class ImageMessageComponent implements OnInit, OnDestroy{
     private storageService:FirebaseStorageService,
     private http:HttpClient,
     private appService:AppService,
-    private modal:ModalController,
+    private fileOpener: FileOpener,
     private fileSystemService:FileSystemService
   ) { }
 
   ngOnInit(){
-    if(this.image.user===this.userName){
+    if(this.document.user===this.userName){
       //Obtener la URL del archivo
-      this.imageUrl=Capacitor.convertFileSrc(this.image.localRef);
+      this.size=this.niceBytes(this.document.size);
+      this.documentUrl=Capacitor.convertFileSrc(this.document.localRef);
     }else{
-      if(this.image.download===false){
-        this.size=this.niceBytes(this.image.size);
+      if(this.document.download===false){
+        this.size=this.niceBytes(this.document.size);
       }else{
-        this.imageUrl=Capacitor.convertFileSrc(this.image.localRef);
+        this.documentUrl=Capacitor.convertFileSrc(this.document.localRef);
       }
     }
 
-    if(this.storageService.uploads[this.image.id]){
+    if(this.storageService.uploads[this.document.id]){
       this.uploaded=true;
-      this.storageService.uploads[this.image.id].percentageChanges()
+      this.storageService.uploads[this.document.id].percentageChanges()
       .subscribe(resp=>{
         const progressBar=document.querySelector("svg.upload circle:nth-child(2)") as HTMLElement;
         progressBar.style.strokeDashoffset=`calc(60 - (60 * ${resp})/100)`;
@@ -61,41 +60,9 @@ export class ImageMessageComponent implements OnInit, OnDestroy{
     }
   }
 
-  ngOnDestroy() {
-    if(this.storageSubscribe){
-      this.storageSubscribe.unsubscribe();
-    }
-    if(this.httpSubscribe){
-      this.httpSubscribe.unsubscribe();
-    }
-  }
-
-  cancelUpload(){
-    if(this.storageService.uploads[this.image.id]){
-      this.uploaded=false;
-      this.storageService.uploads[this.image.id].cancel();
-    }
-  }
-
-  reUpload(){
-    this.uploaded=true;
-    Filesystem.readFile({
-      path:this.image.localRef
-    }).then(resp=>{
-      this.appService.reUploadFile(resp.data,this.image);
-      if(this.storageService.uploads[this.image.id]){
-        this.storageService.uploads[this.image.id].percentageChanges()
-        .subscribe(resp=>{
-          const progressBar=document.querySelector("svg.upload circle:nth-child(2)") as HTMLElement;
-          progressBar.style.strokeDashoffset=`calc(60 - (60 * ${resp})/100)`;
-        });
-      }
-    })
-  }
-
-  downloadImage(){
+  downloadDocument(){
     this.downloaded=true;
-    this.storageSubscribe=this.storageService.getUrlFile(this.image.ref)
+    this.storageSubscribe=this.storageService.getUrlFile(this.document.ref)
     .subscribe(downloadUrl=>{
       this.httpSubscribe=this.http.get(downloadUrl,{
         responseType:'blob',
@@ -104,7 +71,7 @@ export class ImageMessageComponent implements OnInit, OnDestroy{
       }).subscribe(async event=>{
 
         if(event.type===HttpEventType.DownloadProgress){
-          const progressBar=document.querySelector("svg.download circle:nth-child(2)") as HTMLElement;
+          const progressBar=document.querySelector("svg circle:nth-child(2)") as HTMLElement;
           progressBar.style.strokeDashoffset=`calc(60 - (60 * ${Math.round((100*event.loaded)/event.total)})/100)`;
         }else if(event.type===HttpEventType.Response){
           let base64;
@@ -116,40 +83,32 @@ export class ImageMessageComponent implements OnInit, OnDestroy{
           this.appService.convertBlobToBase64(event.body)
           .then((result:string | ArrayBuffer)=>{
             base64=result;
+            const ext="."+this.document.fileName?.slice(this.document.fileName.lastIndexOf("."));
 
-            this.fileSystemService.writeFile(base64,randomId+".jpeg", "Puzeos Images/")
+            this.fileSystemService.writeFile(base64,randomId+ext, "Puzeos Documents/")
             .then(respUrl=>{
               if(respUrl){
-                this.dbMessages.setItem(this.image.id,{
-                  ...this.image,
+                this.dbMessages.setItem(this.document.id,{
+                  ...this.document,
                   localRef:respUrl,
                   download:true
                 }).then(()=>{
-                  this.image.download=true
-                  this.imageUrl=Capacitor.convertFileSrc(respUrl);
+                  this.document.download=true
+                  this.documentUrl=Capacitor.convertFileSrc(respUrl);
 
                   this.storageSubscribe.unsubscribe();
                   this.httpSubscribe.unsubscribe();
                 }).catch(err=>console.log(err));
               }
-            });
+            })
           }).catch(err=>console.log(err));
         }
       });
     })
   }
 
-  openModal(){
-    this.modal.create({
-      component:ImageModalComponent,
-      componentProps:{
-        path:this.imageUrl,
-        type:this.image.type
-      }
-    }).then(modal=>modal.present());
-  }
-
-  cancelDownload(){
+  cancelDownload(evn){
+    evn.stopPropagation();
     this.downloaded=false;
     if(this.storageSubscribe){
       this.storageSubscribe.unsubscribe();
@@ -157,6 +116,38 @@ export class ImageMessageComponent implements OnInit, OnDestroy{
     if(this.httpSubscribe){
       this.httpSubscribe.unsubscribe();
     }
+  }
+
+  openDocument(){
+    console.log(this.document.mimeType)
+    this.fileOpener.open(this.document.localRef, this.document.mimeType)
+    .then(() => console.log('File is opened'))
+    .catch(e => console.log('Error opening file', e));
+  }
+
+  cancelUpload(evn){
+    evn.stopPropagation();
+
+    if(this.storageService.uploads[this.document.id]){
+      this.uploaded=false;
+      this.storageService.uploads[this.document.id].cancel();
+    }
+  }
+
+  reUpload(){
+    this.uploaded=true;
+    Filesystem.readFile({
+      path:this.document.localRef
+    }).then(resp=>{
+      this.appService.reUploadFile(resp.data,this.document);
+      if(this.storageService.uploads[this.document.id]){
+        this.storageService.uploads[this.document.id].percentageChanges()
+        .subscribe(resp=>{
+          const progressBar=document.querySelector("svg.upload circle:nth-child(2)") as HTMLElement;
+          progressBar.style.strokeDashoffset=`calc(60 - (60 * ${resp})/100)`;
+        });
+      }
+    })
   }
 
   niceBytes(x:number){

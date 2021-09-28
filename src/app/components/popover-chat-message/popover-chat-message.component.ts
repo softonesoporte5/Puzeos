@@ -1,4 +1,4 @@
-import { ChatService } from './../../pages/chat/chat.service';
+import { ChatService } from './../../chat/pages/chat/chat.service';
 import { IMessage } from './../../interfaces/message.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
