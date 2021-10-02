@@ -142,3 +142,17 @@ ion-item{
 .loc__padding{
   padding:0 1rem;
 }
+
+.loc__btn-type{
+  margin: 1rem 0;
+  background: var(--ion-color-primary);
+  color: white;
+  display: inline;
+  flex: 1;
+  height: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  flex-direction: column;
+}

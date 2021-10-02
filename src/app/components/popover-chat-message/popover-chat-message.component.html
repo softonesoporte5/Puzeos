@@ -9,6 +9,18 @@
     native="red"
     button
     mode="md"
+    *ngIf="this.group"
+    (click)="viewProfile()
+  ">
+    <ion-icon name="person-outline" slot="start"></ion-icon>
+    <ion-label>
+      Ver perfil
+    </ion-label>
+  </ion-item>
+  <ion-item
+    native="red"
+    button
+    mode="md"
     *ngIf="saved"
     (click)="save()
   ">

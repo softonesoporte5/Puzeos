@@ -5,7 +5,7 @@ import { IChat } from './../../../interfaces/chat.interface';
 import { ILocalForage } from './../../../interfaces/localForage.interface';
 import { IMessage } from './../../../interfaces/message.interface';
 import { Subscription, Subject } from 'rxjs';
-import { ChatService } from './chat.service';
+import { ChatService } from '../../../services/chat.service';
 import { DbService } from 'src/app/services/db.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Component, OnInit, ViewChild, OnDestroy, AfterViewInit, NgZone } from '@angular/core';
@@ -152,55 +152,7 @@ export class ChatPage implements OnInit, OnDestroy, AfterViewInit{
     }).catch(err=>console.log(err));
 
     this.scrollReplySubscribe=this.chatService.scrollReply$.subscribe(resp=>{
-      if(this.allMessages.length>0){
-        this.allMessages.find((message,index)=>{
-          if(message.id===resp){
-            if(this.mensajes.length>=this.allMessages.length-index){
-              const replyMessage:Element=document.querySelector("#"+resp);
-              replyMessage.scrollIntoView();
-              replyMessage.parentElement.animate([
-                {backgroundColor: "#87bcf3b8"},
-                {backgroundColor: "#87bcf300"}
-              ],{
-                duration:3000,
-                easing:"ease-out"
-              })
-
-            }else{
-              let rest=this.allMessages.length-this.mensajes.length-index;
-              this.mensajes.unshift(...this.allMessages.slice(index, this.allMessages.length-this.mensajes.length));
-              this.posM-=rest;
-              setTimeout(()=>{
-                const replyMessage:Element=document.querySelector("#"+resp);
-                replyMessage.scrollIntoView();
-                replyMessage.parentElement.animate([
-                  {backgroundColor: "#87bcf3b8"},
-                  {backgroundColor: "#87bcf300"}
-                ],{
-                  duration:3000,
-                  easing:"ease-out"
-                })
-              },220);
-            }
-            return;
-          }
-        });
-      }else{
-        this.mensajes.find((message)=>{
-          if(message.id===resp){
-            const replyMessage:Element=document.querySelector("#"+resp);
-              replyMessage.scrollIntoView();
-              replyMessage.parentElement.animate([
-                {backgroundColor: "#87bcf3b8"},
-                {backgroundColor: "#87bcf300"}
-              ],{
-                duration:3000,
-                easing:"ease-out"
-              });
-            return;
-          }
-        });
-      }
+      this.posM-=this.chatService.scrollReply(this.mensajes, resp, true);
     });
 
     this.ngZone.runOutsideAngular(()=>{

@@ -6,28 +6,27 @@ import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '
 import { PopoverChatMessageComponent } from '../popover-chat-message/popover-chat-message.component';
 
 @Component({
-  selector: 'app-item-message',
-  templateUrl: './item-message.component.html',
-  styleUrls: ['./item-message.component.scss'],
+  selector: 'app-item-message-group',
+  templateUrl: './item-message-group.component.html',
+  styleUrls: ['./item-message-group.component.scss'],
 })
-export class ItemMessageComponent implements AfterViewInit, OnInit
-{
+export class ItemMessageGroupComponent implements AfterViewInit, OnInit {
 
   @Input("message") message:IMessage;
   @Input("idChat") idChat:string;
   @Input("last") last?:boolean;
   @Input("content") content:IonContent;
-  @Input("userName") userName:string;
+  @Input("userId") userId:string;
   @Input("dbMessage") dbMessage?:ILocalForage;
   @Input("searchMessage") searchMessage?:string;
   @Input("idSearch") idSearch?:string;
   @ViewChild("messageItem") messageItem:ElementRef;
-
   maxScroll:number;
   scrollTop:number;
   lastDate:Date;
   showDate=false;
   stringDate:string;
+  beforeMessage=false;
 
   constructor(
     private popoverController: PopoverController,
@@ -36,7 +35,6 @@ export class ItemMessageComponent implements AfterViewInit, OnInit
 
   ngOnInit() {
     this.lastDate=this.chatService.lastDate;
-
     if(this.message.timestamp.toDateString()!==this.lastDate){
       this.chatService.setLastDate(this.message.timestamp.toDateString());
       this.showDate=true;
@@ -46,6 +44,11 @@ export class ItemMessageComponent implements AfterViewInit, OnInit
       }else{
         this.stringDate=this.message.timestamp.toLocaleDateString();
       }
+    }
+    if(this.chatService.beforeMessage===this.message.toUserId){
+      this.beforeMessage=true;
+    }else{
+      this.chatService.beforeMessage=this.message.toUserId;
     }
   }
 
@@ -63,7 +66,7 @@ export class ItemMessageComponent implements AfterViewInit, OnInit
           <span>${txt3}</span>
         `;
         setTimeout(()=>{
-          document.querySelector(`#${this.idSearch}`).scrollIntoView();
+          document.querySelector(`#e${this.idSearch}`).scrollIntoView();
         },220);
       }
     }else{
@@ -74,7 +77,7 @@ export class ItemMessageComponent implements AfterViewInit, OnInit
             let maxScroll=resp.scrollHeight-resp.offsetHeight;
             let scrollTop=resp.scrollTop;
 
-            if(maxScroll-scrollTop<120 || resp.scrollTop<10 || this.userName===this.message.user){
+            if(maxScroll-scrollTop<120 || resp.scrollTop<10 || this.userId===this.message.toUserId){
               this.content.scrollToBottom();
             }
           },220);
@@ -82,7 +85,7 @@ export class ItemMessageComponent implements AfterViewInit, OnInit
       }
     }
 
-    let scrollText=document.querySelector(`#${this.message.id} ion-card-content > span`);
+    let scrollText=document.querySelector(`#e${this.message.id} ion-card-content > span`);
     //console.log(scrollText.clientHeight,scrollText.scrollHeight)
     if(scrollText.clientHeight!==scrollText.scrollHeight){
       scrollText.classList.add("put-text");
@@ -93,7 +96,11 @@ export class ItemMessageComponent implements AfterViewInit, OnInit
     const popover = await this.popoverController.create({
       component: PopoverChatMessageComponent,
       event: ev,
-      componentProps:{"message":message,"idChat":this.idChat}
+      componentProps:{
+        "message":message,
+        "idChat":this.idChat,
+        "group": true
+      }
     });
     return await popover.present();
   }
@@ -105,5 +112,6 @@ export class ItemMessageComponent implements AfterViewInit, OnInit
   reply(){
     this.chatService.replyMessage$.next(this.message);
   }
+
 
 }

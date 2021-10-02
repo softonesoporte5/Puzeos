@@ -1,0 +1,41 @@
+<div *ngIf="showDate" class="loc__cont-date">
+  <ion-chip >
+    <ion-label>{{stringDate}}</ion-label>
+  </ion-chip>
+</div>
+
+<ion-card
+  [id]="'e'+message.id"
+  [class]="userId===message.toUserId?'enviado':''"
+>
+  <div *ngIf="message.reply" class="loc__reply" (click)="scrollToReply()">
+    <span class="userName truncar">
+      {{message.user}}
+    </span>
+    <span class="truncar">
+      {{message.reply.message}}
+    </span>
+  </div>
+
+
+  <ion-card-content
+    *ngIf="message.type==='text'"
+    (click)="presentPopoverMessage($event,message)"
+  >
+    <ion-text
+      class="loc__user-name"
+      *ngIf="!beforeMessage && userId!==message.toUserId"
+      [style.color]="message.color?message.color:'var(--ion-color-tertiary)'"
+    >
+      {{message.user}}
+    </ion-text>
+
+    <span #messageItem>
+      {{message.message}}
+    </span>
+
+    <ion-text color="tertiary" >
+      {{message.timestamp | date: 'shortTime'}}
+    </ion-text>
+  </ion-card-content>
+</ion-card>

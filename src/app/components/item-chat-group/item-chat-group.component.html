@@ -5,13 +5,12 @@
   <ion-label>
     <span class="agrupar">
       <span class="break">
-        {{chatName}}
+        {{chat.title}}
       </span>
       <ion-text color="tertiary date">{{dateString?dateString:chat.timestamp | date: 'shortTime'}}</ion-text>
     </span>
     <ion-text color="tertiary" class="agrupar">
       <p class="break">{{chat.lastMessage}}</p>
-      <ion-badge color="secondary" *ngIf="chat.newMessages && chat.newMessages!==0">{{chat.newMessages}}</ion-badge>
     </ion-text>
   </ion-label>
 </ion-item>

@@ -85,13 +85,14 @@ export class HomePage implements OnInit{
           if(this.chatsFirebase<this.user?.data?.chats?.length){
             for(let index=this.chats.length; index<user.chats.length; index++){
               console.log(user.chats[user.chats.length-1],user.chats.length-1);
-              this.db.addNewConecction(user.chats[user.chats.length-1],user.chats.length-1);
 
               this.firestore.collection("chats").doc(user.chats[index])
               .get()
               .subscribe((resp)=>{
                 console.log("Se reinició el chat o se agregó uno nuevo")
                 const chat=resp.data() as IChat;
+                this.db.addNewConecction(user.chats[user.chats.length-1],user.chats.length-1,chat.group);
+
                 this.db.setItemChat(user.chats[index],{
                   ...chat,
                   timestamp:chat.timestamp.toDate()

@@ -1,3 +1,4 @@
+import { PopoverChatMessageComponent } from './../components/popover-chat-message/popover-chat-message.component';
 import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import {TranslateLoader, TranslateModule} from '@ngx-translate/core';
@@ -37,17 +38,21 @@ const routes:Routes=[
     loadChildren: () => import('./pages/profile/profile.module').then( m => m.ProfilePageModule)
   },
   {
-    path:'**',
-    pathMatch:'full',
-    redirectTo:''
-  },
-  {
     path: 'setting',
     loadChildren: () => import('./pages/setting/setting.module').then( m => m.SettingPageModule)
   },
   {
     path: 'profile',
     loadChildren: () => import('./pages/profile/profile.module').then( m => m.ProfilePageModule)
+  },
+  {
+    path: 'group/id/:id',
+    loadChildren: () => import('./pages/chat-group/chat-group.module').then( m => m.ChatGroupPageModule)
+  },
+  {
+    path:'**',
+    pathMatch:'full',
+    redirectTo:''
   }
 ]
 

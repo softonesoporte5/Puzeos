@@ -1,9 +1,10 @@
-import { ChatService } from './../../chat/pages/chat/chat.service';
+import { PerfilGroupModalComponent } from './../perfil-group-modal/perfil-group-modal.component';
+import { ChatService } from '../../services/chat.service';
 import { IMessage } from './../../interfaces/message.interface';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { DbService } from 'src/app/services/db.service';
 import { Component, OnInit } from '@angular/core';
-import { NavParams, ToastController, PopoverController } from '@ionic/angular';
+import { NavParams, ToastController, PopoverController, ModalController } from '@ionic/angular';
 import { StoreNames } from 'src/app/enums/store-names.enum';
 
 @Component({
@@ -17,18 +18,22 @@ export class PopoverChatMessageComponent implements OnInit {
   dbSavedMessages:ILocalForage;
   saved:boolean=true;
   idChat:string;
+  group:boolean;
 
   constructor(
     private navParams: NavParams,
     public toastController: ToastController,
     private popoverController: PopoverController,
     private db:DbService,
-    private chatService:ChatService
+    private chatService:ChatService,
+    private modal:ModalController
   ) { }
 
   ngOnInit() {
     this.message=this.navParams.data.message;
     this.idChat=this.navParams.data.idChat;
+    this.group=this.navParams.data.group;
+
     this.dbSavedMessages=this.db.loadStore(StoreNames.SavedMessages);
     this.dbSavedMessages.getItem(this.message.id)
     .then(resp=>{
@@ -65,5 +70,14 @@ export class PopoverChatMessageComponent implements OnInit {
   reply(){
     this.chatService.replyMessage$.next(this.message);
     this.popoverController.dismiss();
+  }
+
+  viewProfile(){
+    this.modal.create({
+      component:PerfilGroupModalComponent,
+      componentProps:{
+        userId:this.message.toUserId
+      }
+    }).then(modal=>modal.present());
   }
 }

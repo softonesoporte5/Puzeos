@@ -1,9 +1,9 @@
-import { IUser } from './../../../interfaces/user.interface';
-import { IMessage } from './../../../interfaces/message.interface';
-import { ILocalForage } from './../../../interfaces/localForage.interface';
+import { IUser } from '../interfaces/user.interface';
+import { IMessage } from '../interfaces/message.interface';
+import { ILocalForage } from '../interfaces/localForage.interface';
 import { Subject } from 'rxjs';
 import { DbService } from 'src/app/services/db.service';
-import { AppService } from './../../../app.service';
+import { AppService } from '../app.service';
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import * as firebase from 'firebase';
@@ -21,6 +21,7 @@ export class ChatService{
   networkStatus:boolean=true;
   replyMessage$=new Subject<IMessage>();
   scrollReply$=new Subject<string>();
+  beforeMessage:string;
 
   constructor(
     private appService:AppService,
@@ -120,5 +121,58 @@ export class ChatService{
     this.lastDate=date;
   }
 
+  scrollReply(messages: IMessage[], resp:string, group:boolean){
+    let rest=0;
+    if(messages.length>0){
+      messages.find((message,index)=>{
+        if(message.id===resp){
+          const id=group?"#e"+resp:"#"+resp;
+
+          const replyMessage:Element=document.querySelector(id);
+          if(messages.length>=messages.length-index){
+            replyMessage.scrollIntoView();
+            replyMessage.parentElement.animate([
+              {backgroundColor: "#87bcf3b8"},
+              {backgroundColor: "#87bcf300"}
+            ],{
+              duration:3000,
+              easing:"ease-out"
+            })
+
+          }else{
+            rest=messages.length-messages.length-index;
+            messages.unshift(...messages.slice(index, messages.length-messages.length));
+            setTimeout(()=>{
+              replyMessage.scrollIntoView();
+              replyMessage.parentElement.animate([
+                {backgroundColor: "#87bcf3b8"},
+                {backgroundColor: "#87bcf300"}
+              ],{
+                duration:3000,
+                easing:"ease-out"
+              })
+            },220);
+          }
+          return rest;
+        }
+      });
+    }else{
+      messages.find((message)=>{
+        if(message.id===resp){
+          const replyMessage:Element=document.querySelector("#"+resp);
+            replyMessage.scrollIntoView();
+            replyMessage.parentElement.animate([
+              {backgroundColor: "#87bcf3b8"},
+              {backgroundColor: "#87bcf300"}
+            ],{
+              duration:3000,
+              easing:"ease-out"
+            });
+          return rest;
+        }
+      });
+    }
+    return rest;
+  }
 }
 

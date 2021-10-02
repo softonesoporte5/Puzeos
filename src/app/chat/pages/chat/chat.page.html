@@ -19,7 +19,7 @@
       >
       <span>
         <h6>{{user?.data.userName}}</h6>
-        <h6 style="font-size: 12px;" *ngIf="state?.online">En línea</h6>
+        <h6 style="font-size: 12px;" *ngIf="state?.online">Online</h6>
         <h6 style="font-size: 12px;" *ngIf="state?.online===false">últ. vez: {{state?.last_changed | dateString}}</h6>
       </span>
     </span>

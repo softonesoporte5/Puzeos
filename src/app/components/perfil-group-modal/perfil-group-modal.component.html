@@ -1,0 +1,41 @@
+<ion-content fullscreen color="light" *ngIf="user">
+  <ion-item class="close-fake" lines="none" text-center>
+    <ion-button (click)="close()">
+      <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+    </ion-button>
+  </ion-item>
+
+  <div class="loc__cont-info">
+    <img [src]="imgPath" alt="">
+    <ion-list class="loc__cont-des">
+      <h6>{{'ProfileModal.Info' | translate}}</h6>
+      <ion-item>
+        <p>{{user.userName}}</p>
+      </ion-item>
+      <ion-item>
+        <p>{{user.descripcion}}</p>
+      </ion-item>
+      <ion-item>
+        {{'ProfileModal.Join' | translate}} {{user.createDate | date}}
+      </ion-item>
+    </ion-list>
+
+    <ion-list class="loc__cont-des">
+      <h6>{{'ProfilePage.Info' | translate}}</h6>
+      <ion-item>
+        <p>{{user.chats.length}} {{'Global.ActiveChats' | translate}}</p>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>
+
+<ion-content fullscreen color="light" *ngIf="!user">
+  <ion-item class="close-fake" lines="none" text-center>
+    <ion-button (click)="close()">
+      <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+    </ion-button>
+  </ion-item>
+  <div class="loc__cont-loading">
+    <ion-spinner color="primary"></ion-spinner>
+  </div>
+</ion-content>

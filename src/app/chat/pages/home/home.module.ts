@@ -1,3 +1,4 @@
+import { ItemChatGroupComponent } from './../../../components/item-chat-group/item-chat-group.component';
 import { SharedModule } from './../../../shared/shared.module';
 import { ImageCropperModalComponent } from './../../../components/image-cropper-modal/image-cropper.component';
 import { ItemChatComponent } from './../../../components/item-chat/item-chat.component';
@@ -23,7 +24,13 @@ import { HttpClientModule} from '@angular/common/http';
     ImageCropperModule,
     SharedModule
   ],
-  declarations: [HomePage, MenuComponent, ItemChatComponent, ImageCropperModalComponent]
+  declarations: [
+    HomePage,
+    MenuComponent,
+    ItemChatComponent,
+    ImageCropperModalComponent,
+    ItemChatGroupComponent
+  ]
 })
 export class HomePageModule {}
 

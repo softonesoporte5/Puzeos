@@ -72,7 +72,6 @@ export class PerfilModalComponent implements OnInit {
                 let base64;
                 const date=new Date().valueOf();
                 const randomId=Math.round(Math.random()*1000)+date;
-                const reader=new FileReader;
 
                 this.appService.convertBlobToBase64(event.body)
                 .then((result:string | ArrayBuffer)=>{

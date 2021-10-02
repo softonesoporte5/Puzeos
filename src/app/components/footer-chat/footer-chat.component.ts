@@ -1,4 +1,4 @@
-import { ChatService } from './../../chat/pages/chat/chat.service';
+import { ChatService } from '../../services/chat.service';
 import { MediaRecorderService } from './../../services/media-recorder.service';
 import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';

@@ -56,11 +56,18 @@
     </div>
   </ion-item>
 
-  <app-item-chat
-    *ngFor="let chat of chats; trackBy:trackItems"
-    [chat]="chat"
-    [chatUser]="user.data.userName"
-  ></app-item-chat>
+  <span style="display: contents;" *ngFor="let chat of chats; trackBy:trackItems">
+    <app-item-chat
+      *ngIf="!chat.group"
+      [chat]="chat"
+      [chatUser]="user.data.userName"
+    ></app-item-chat>
+    <app-item-chat-group
+      *ngIf="chat.group"
+      [chat]="chat"
+      [chatUser]="user.data.userName"
+    ></app-item-chat-group>
+  </span>
 
   <ion-fab
     vertical="bottom"

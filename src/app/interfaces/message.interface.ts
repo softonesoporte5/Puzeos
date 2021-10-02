@@ -18,6 +18,8 @@ export interface IMessage{
   specialData?:any
   reply?:IMessage;
   preview?:string;
+  toUserId?:string;
+  color?:string;
 }
 
 export interface IMessageSearch{

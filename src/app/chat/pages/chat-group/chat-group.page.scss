@@ -1,0 +1,154 @@
+.chat__img{
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+}
+
+ion-back-button {
+  display: block;
+  ion-icon{
+    font-size: 37px;
+  }
+}
+
+.loc_contac-info{
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  img{
+    width: 40px;
+    height: 40px;
+    margin-right: 7px;
+    object-fit: cover;
+  }
+
+  h6{
+    font-size: 18px;
+    font-weight: 400;
+    margin: 0;
+    flex:1;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.loc__content{
+  overflow-y: scroll;
+  overflow-x: hidden;
+  position: relative;
+  margin-bottom: 10px;
+  --background:transparent;
+
+  ion-card{
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+}
+
+.loc__scroll{
+  position: absolute;
+}
+
+app-item-message-group{
+  width: 100%;
+  float: right;
+}
+
+app-footer-chat{
+  display: contents;
+}
+
+
+//as
+.loc_toolbar, .loc__reply{
+  padding-left:0.5rem;
+}
+
+.loc_icon-footer, .loc__reply ion-icon{
+  font-size: 25px;
+}
+
+ion-footer{
+  background-color: #ffffff;
+  ion-text{
+    padding:0.5rem;
+    width: 100%;
+    float: left;
+  }
+
+  .loc__reply{
+    border-bottom: 1px solid #d9d9d9;
+    padding: 7px 0.5rem;
+    display: flex;
+    align-items: center;
+    >span{
+      margin: 0 9px;
+      font-size: 13px;
+      flex:1;
+      padding-left: 8px;
+    }
+
+    .userName{
+      width: 100%;
+      margin: 0;
+      color: var(--ion-color-primary);
+      font-weight: 600;
+    }
+  }
+}
+
+.loc__delete-reply{
+  color:gray;
+  display: flex;
+}
+
+.chat__input{
+  flex:1;
+  margin:0 9px;
+  font-size: 16px;
+  max-height: 150px;
+  width: 94%;
+}
+
+:host ::ng-deep .categoryContainer{
+  position: fixed;
+  background-color: #f2f2f2;
+  z-index: 99;
+  width: 100%;
+
+}
+
+:host ::ng-deep emoji-picker>ion-content>ion-row{
+  >ion-col:nth-child(1){
+    &::after{
+      height: 75px;
+      content: " as";
+      width: 100%;
+      display: block;
+    }
+
+    .categoryContainer>div{
+      padding:0 10px;
+    }
+  }
+  >ion-col{
+    padding:0;
+  }
+
+  *{
+    height: min-content;
+  }
+}
+
+.emojiContainer{
+  background-color: #ffff;
+}
+
+.loc__scroll-bottom{
+  position: fixed;
+  bottom: 4rem;
+  right: 1.5rem;
+}

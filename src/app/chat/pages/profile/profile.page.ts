@@ -39,9 +39,8 @@ export class ProfilePage implements OnInit {
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then((resp:IUserData)=>{
-      const date=new Date();
       this.user={
-        data:{...resp,createDate:date.valueOf()},
+        data:resp,
         id:firebase.default.auth().currentUser.uid
       }
 

@@ -1,3 +1,4 @@
+import { CreateChatService } from './../../../services/create-chat.service';
 import { searchsUser } from './../../../interfaces/searchsUser.interface';
 import { ILocalForage } from './../../../interfaces/localForage.interface';
 import { IUser, IUserData } from './../../../interfaces/user.interface';
@@ -48,6 +49,7 @@ export class AgregarPage implements OnInit, OnDestroy {
   tagId:string;
   title:string;
   selectValue:string;
+  chatType=false;
   iconNames=["game-controller", "musical-notes", "terminal", "tv", "color-palette", "football", "people", "hardware-chip", "flask", "","apps"];
   fontIcons=[faPaw, faGrinStars];
 
@@ -59,7 +61,8 @@ export class AgregarPage implements OnInit, OnDestroy {
     private alertController: AlertController,
     private translate:TranslateService,
     public toastController: ToastController,
-    private firestoreService: FirestoreService
+    private firestoreService: FirestoreService,
+    private groupService: CreateChatService
   ) { }
 
   ngOnInit() {
@@ -82,7 +85,6 @@ export class AgregarPage implements OnInit, OnDestroy {
           let fontIcon=false;
           if(String(data.iconName)){
             if(String(data.iconName).includes('a')){
-              console.log(this.fontIcons[data.iconName.replace('a','')])
               iconName=data.iconName.replace('a','');
               fontIcon=true;
             }else{
@@ -186,16 +188,26 @@ export class AgregarPage implements OnInit, OnDestroy {
     });
   }
 
-  buscarCompa(tagId:string, title:string){//Añade al usuario en la coleccion de busquedas
+  setSearchData(tagId:string, title:string){
+    this.buscando=true;
+    this.tagId=tagId;
+    this.title=title;
+    if(this.searchLanguage){
+      this.chatType=true;
+    }
+  }
+
+  searchChat(chatType:number){//Añade al usuario en la coleccion de busquedas
     this.buscando=true;
 
-    if(this.searchLanguage){
-      let searchSubscribe=this.fireStore.collection("searchs").doc(tagId).get()
+    if(chatType===1){
+      this.chatType=false;
+      let searchSubscribe=this.fireStore.collection("searchs").doc(this.tagId).get()
       .subscribe((resp:DocumentSnapshot<searchsUser>)=>{
         searchSubscribe.unsubscribe();
         if(!resp){
-          this.actualizarEstadoBusquedaUser(true,tagId);
-          this.fireStore.collection("searchs").doc(tagId).update({
+          this.actualizarEstadoBusquedaUser(true,this.tagId);
+          this.fireStore.collection("searchs").doc(this.tagId).update({
             users:{
               [this.user.id]:{
                 userName:this.user.data.userName,
@@ -223,8 +235,8 @@ export class AgregarPage implements OnInit, OnDestroy {
             }
 
             if(values.length<1){//Comprobamos si no hay nadie buscando, en ese caso se inserta el usuario a la coleccion de busqueda
-              this.actualizarEstadoBusquedaUser(true,tagId);
-              this.fireStore.collection("searchs").doc(tagId).update({
+              this.actualizarEstadoBusquedaUser(true,this.tagId);
+              this.fireStore.collection("searchs").doc(this.tagId).update({
                 [`users.${this.user.id}`]:{
                   userName:this.user.data.userName,
                   token:this.user.data.token,
@@ -248,16 +260,16 @@ export class AgregarPage implements OnInit, OnDestroy {
                 this.user.data.token,
                 values[0].token
               ],
-              title,
-              tagId
+              this.title,
+              this.tagId
               );
-              this.fireStore.collection("searchs").doc(tagId).update({//Eliminamos al usuario de la tabla de busquedas
+              this.fireStore.collection("searchs").doc(this.tagId).update({//Eliminamos al usuario de la tabla de busquedas
                 [`users.${values[0].id}`]:firebase.default.firestore.FieldValue.delete()
               })
             }
           }else{
-            this.actualizarEstadoBusquedaUser(true,tagId);
-            this.fireStore.collection("searchs").doc(tagId).set({
+            this.actualizarEstadoBusquedaUser(true,this.tagId);
+            this.fireStore.collection("searchs").doc(this.tagId).set({
               users:{
                 [this.user.id]:{
                   userName:this.user.data.userName,
@@ -270,8 +282,7 @@ export class AgregarPage implements OnInit, OnDestroy {
         }
       });
     }else{
-      this.tagId=tagId;
-      this.title=title;
+      this.groupService.createGroup(this.tagId, this.user, this.title);
     }
   }
 
@@ -279,7 +290,7 @@ export class AgregarPage implements OnInit, OnDestroy {
     if(this.selectValue){
       localStorage.setItem("searchLanguage",this.selectValue);
       this.searchLanguage=this.selectValue;
-      this.buscarCompa(this.tagId, this.title);
+      this.chatType=true;
     }else{
       this.translate.get("AgregarPage.ToastMessage").subscribe(resp=>{
         this.presentToast(resp);
@@ -326,7 +337,6 @@ export class AgregarPage implements OnInit, OnDestroy {
             },
             chats:firebase.default.firestore.FieldValue.arrayUnion(chat.id)
           }).then(()=>{//Redireccionamos al home
-            console.log(tagId)
             this.fireStore.collection("tags").doc(tagId).update({
               chatsCreated: firebase.default.firestore.FieldValue.increment(1)
             });

@@ -81,7 +81,6 @@ export class ItemChatComponent implements OnInit {
                         const date=new Date().valueOf();
                         const randomId=Math.round(Math.random()*1000)+date;
                         const reader=new FileReader;
-                        console.log(reader)
 
                         this.appService.convertBlobToBase64(event.body)
                         .then((result:string | ArrayBuffer)=>{
@@ -95,7 +94,6 @@ export class ItemChatComponent implements OnInit {
                               ...dataUser,
                               imageUrlLoc:resp.uri,
                             }).then(()=>{
-                              console.log(resp.uri)
                               this.urlImg=Capacitor.convertFileSrc(resp.uri);
                               storageSubscribe.unsubscribe();
                               httpSubscribe.unsubscribe();

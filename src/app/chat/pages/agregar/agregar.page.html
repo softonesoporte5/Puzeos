@@ -40,7 +40,7 @@
           class="loc__item-popular ion-no-padding ion-no-margin"
           detail="true"
           *ngFor="let item of items; trackBy:trackItems; let i=index"
-          (click)="buscarCompa(item.id, item.data.title)"
+          (click)="setSearchData(item.id, item.data.title)"
           [style]="'background-image: url(../../../../assets/tags-img/'+item.data.imgName+'.jpg);'"
         >
           <div class="opacity">
@@ -76,6 +76,17 @@
 <ng-template #contBuscando>
   <ion-content class="ion-padding">
 
+    <div class="loc__cont-btn-type" *ngIf="chatType && searchLanguage">
+      <h4>{{title}}</h4>
+      <div class="loc__btn-type" (click)="searchChat(0)">
+        <h4>Chat grupal</h4>
+      </div>
+
+      <div class="loc__btn-type" (click)="searchChat(1)">
+        <h4>Chat individual</h4>
+      </div>
+    </div>
+
     <span *ngIf="!searchLanguage">
       <ion-text>
         {{'AgregarPage.SelectLanguage' | translate}}
@@ -106,7 +117,7 @@
       </div>
     </span>
 
-    <div class="flex" *ngIf="searchLanguage">
+    <div class="flex" *ngIf="user?.data.buscando.state">
       <span style="display: flex;">
         {{'AgregarPage.Searching' | translate}}
         <ion-spinner
