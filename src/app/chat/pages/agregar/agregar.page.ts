@@ -282,7 +282,7 @@ export class AgregarPage implements OnInit, OnDestroy {
         }
       });
     }else{
-      this.groupService.createGroup(this.tagId, this.user, this.title);
+      this.groupService.createGroup(this.tagId+this.searchLanguage, this.user, this.title);
     }
   }
 

@@ -24,6 +24,7 @@ import { ChatGroupPageRoutingModule } from './chat-group-routing.module';
 
 import { ChatGroupPage } from './chat-group.page';
 import { ItemMessageGroupComponent } from 'src/app/components/item-message-group/item-message-group.component';
+import { ChatModule } from '../../chat.module';
 
 @NgModule({
   imports: [
@@ -37,19 +38,14 @@ import { ItemMessageGroupComponent } from 'src/app/components/item-message-group
     ScrollingModule,
     ExperimentalScrollingModule,
     SharedModule,
-    NoKeyboardModule
+    NoKeyboardModule,
+    ChatModule
   ],
   declarations: [
     ChatGroupPage,
-    AudioComponent,
     PopoverGroupComponent,
     ItemMessageGroupComponent,
-    FileSelectorComponent,
-    ImageMessageComponent,
-    ImageModalComponent,
     PerfilGroupModalComponent,
-    VideoMessageComponent,
-    DocumentComponent,
   ]
 })
 export class ChatGroupPageModule {}

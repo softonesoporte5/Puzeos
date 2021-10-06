@@ -83,7 +83,9 @@
     "SelectLanguage":"Selecciona el idioma en el que quieres conversar, por ejemplo, si quieres conversar en inglés, selecciona 'English'.",
     "SelectTxt":"El idioma que selecciones se usará por defecto en las próximas búsquedas, ve a 'Configuración' para cambiarlo.",
     "Search":"Buscar",
-    "ToastMessage":"Selecciona un idioma para continuar"
+    "ToastMessage":"Selecciona un idioma para continuar",
+    "GroupChat": "Chat Grupal",
+    "IndividualChat": "Chat Individual"
   },
   "ChatPage":{
     "Message":"Mensaje",
@@ -94,7 +96,8 @@
     "Swipe":"Desliza para cancelar",
     "ImageOrVideo":"Imágen o video",
     "Document":"Documento",
-    "Audio":"Audio"
+    "Audio":"Audio",
+    "Members": "Miembros"
   },
   "ProfileModal":{
     "Info":"Nombre de usuario y descripción",

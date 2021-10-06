@@ -25,6 +25,7 @@ import { Ionic4EmojiPickerModule } from 'ionic4-emoji-picker';
 import { HttpClientModule } from '@angular/common/http';
 
 import { NoKeyboardModule } from 'ionic-no-keyboard';
+import { ChatModule } from '../../chat.module';
 
 
 @NgModule({
@@ -34,26 +35,15 @@ import { NoKeyboardModule } from 'ionic-no-keyboard';
     IonicModule,
     ChatPageRoutingModule,
     ReactiveFormsModule,
-    Ionic4EmojiPickerModule,
     HttpClientModule,
     ScrollingModule,
     ExperimentalScrollingModule,
     SharedModule,
-    NoKeyboardModule
+    NoKeyboardModule,
+    ChatModule
   ],
   declarations: [
     ChatPage,
-    AudioComponent,
-    PopoverChatMessageComponent,
-    ItemMessageComponent,
-    FileSelectorComponent,
-    ImageMessageComponent,
-    ImageModalComponent,
-    ScrollBottomComponent,
-    PerfilModalComponent,
-    VideoMessageComponent,
-    DocumentComponent,
-    FooterChatComponent,
     DateStringPipe
   ]
 })

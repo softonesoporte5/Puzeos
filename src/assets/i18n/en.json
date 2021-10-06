@@ -83,7 +83,9 @@
     "SelectLanguage":"Select the language in which you want to converse, for example, if you want to converse in English, select 'English'.",
     "SelectTxt":"The language you select will be used by default in the next searches, go to 'Settings' to change it.",
     "Search":"Search",
-    "ToastMessage":"Select a language to continue"
+    "ToastMessage":"Select a language to continue",
+    "GroupChat": "Group chat",
+    "IndividualChat": "Individual Chat"
   },
   "ChatPage":{
     "Message":"Message",
@@ -94,7 +96,8 @@
     "Swipe":"Swipe to cancel",
     "ImageOrVideo":"Image or video",
     "Document":"Document",
-    "Audio":"Audio"
+    "Audio":"Audio",
+    "Members": "Members"
   },
   "ProfileModal":{
     "Info":"Username and description",

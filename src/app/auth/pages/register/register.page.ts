@@ -107,6 +107,14 @@ export class RegisterPage implements OnInit {
       this.presentToastWithOptions(mensaje);
       return ;
     }else{
+      if(this.apodo.value.trim().length<=2){
+        this.translate.get("Error.MinNickname").subscribe(resp=>{
+          this.presentToastWithOptions(resp);
+        });
+        return;
+      }
+
+      this.apodo.setValue(this.apodo.value.trim());
       this.continue=true;
     }
   }

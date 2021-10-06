@@ -18,7 +18,7 @@ import { StoreNames } from 'src/app/enums/store-names.enum';
 export class LoginPage implements OnInit, AfterViewInit {
 
   continuePhone=false;
-  language="es";
+  language="en";
   @ViewChild("animation") animation: HTMLDivElement;
 
   constructor(
@@ -32,7 +32,7 @@ export class LoginPage implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
-    this.language=localStorage.getItem("language");
+    this.language=localStorage.getItem("language") || 'en';
   }
 
   ngAfterViewInit() {

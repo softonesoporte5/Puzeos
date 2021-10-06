@@ -19,7 +19,9 @@ export class CompleteRegisterGuard implements CanActivate {
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
 
       return new Promise((resolve,rejeact)=>{
+        console.log("f")
         firebase.default.auth().onAuthStateChanged((user) => {
+          console.log("aqe")
             if(user && user?.uid){
               resolve(true);
             }else{

@@ -10,7 +10,7 @@
 
   <ion-item>
     <ion-label style="color:gray">{{'Global.Language' | translate}}</ion-label>
-    <ion-select [(ngModel)]="language" value="es" (ionChange)="setLanguage()">
+    <ion-select [(ngModel)]="language" value="en" (ionChange)="setLanguage()">
       <ion-select-option value="en">English</ion-select-option>
       <ion-select-option value="es">Español</ion-select-option>
     </ion-select>
@@ -43,7 +43,7 @@
   <div class="loc__centrar">
     <ion-item style="margin-top:2rem;">
       <ion-label style="color:gray">{{'Global.Language' | translate}}</ion-label>
-      <ion-select [(ngModel)]="language" value="es" (ionChange)="setLanguage()">
+      <ion-select [(ngModel)]="language" value="en" (ionChange)="setLanguage()">
         <ion-select-option value="en">English</ion-select-option>
         <ion-select-option value="es">Español</ion-select-option>
       </ion-select>

@@ -34,6 +34,6 @@ function language(){
   if(idioma){
     return idioma;
   }else{
-    return 'es';
+    return 'en';
   }
 }

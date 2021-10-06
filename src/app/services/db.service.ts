@@ -38,7 +38,6 @@ export class DbService{
     private appService:AppService,
     private firestoreService: FirestoreService
   ) {
-    console.log("se construyo")
     this.dbChats=this.loadStore(StoreNames.Chats);
     this.dbUsers=this.loadStore(StoreNames.Users);
     this.dbNotSendMessages=this.loadStore(StoreNames.NotSendMessage);
@@ -49,8 +48,6 @@ export class DbService{
         .then((user:IUserData)=>{
           if(user){
             this.user=user;
-            console.log(user)
-
             //Creamos las conexiones locales y de firebase para cada chat
             this.messagesSubscriptions={}
             this.user.chats.forEach((chatID,index)=>{
@@ -61,7 +58,6 @@ export class DbService{
                 }
               }).catch(err=>console.log(err))
             });
-
             //Sincronizamos la info del usuario de firebase con la local
             this.firestoreService.getUser()
             .subscribe(user=>{

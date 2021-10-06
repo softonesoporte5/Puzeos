@@ -197,7 +197,7 @@ export class ProfilePage implements OnInit {
                 delete this.user.data.imageUrl;
                 delete this.user.data.imageUrlLoc;
                 this.dbUsers.setItem(this.user.id,{
-                  ...this.user,
+                  ...this.user.data,
                 })
               })
               .catch(err=>console.log(err));

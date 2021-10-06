@@ -213,7 +213,9 @@ export class ChatGroupPage implements OnInit, OnDestroy, AfterViewInit {
       .collection("messages").add({
         ...newMessage,
         timestamp:timestamp
-      });
+      }).catch(err=>{
+        console.log(err, newMessage)
+      })
 
       this.mensaje.setValue('');
       this.textarea.setFocus();
