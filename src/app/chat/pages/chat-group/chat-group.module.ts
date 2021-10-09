@@ -1,12 +1,6 @@
 import { PerfilGroupModalComponent } from './../../../components/perfil-group-modal/perfil-group-modal.component';
 import { PopoverGroupComponent } from './../../../components/popover-group/popover-group.component';
 import { SharedModule } from './../../../shared/shared.module';
-import { DocumentComponent } from './../../../components/document/document.component';
-import { VideoMessageComponent } from './../../../components/video-message/video-message.component';
-import { ImageModalComponent } from './../../../components/image-modal/image-modal.component';
-import { ImageMessageComponent } from './../../../components/image-message/image-message.component';
-import { FileSelectorComponent } from './../../../components/file-selector/file-selector.component';
-import { AudioComponent } from './../../../components/audio/audio.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -24,7 +18,7 @@ import { ChatGroupPageRoutingModule } from './chat-group-routing.module';
 
 import { ChatGroupPage } from './chat-group.page';
 import { ItemMessageGroupComponent } from 'src/app/components/item-message-group/item-message-group.component';
-import { ChatModule } from '../../chat.module';
+import { ChatsModule } from 'src/app/shared/chats.module';
 
 @NgModule({
   imports: [
@@ -39,7 +33,7 @@ import { ChatModule } from '../../chat.module';
     ExperimentalScrollingModule,
     SharedModule,
     NoKeyboardModule,
-    ChatModule
+    ChatsModule
   ],
   declarations: [
     ChatGroupPage,
