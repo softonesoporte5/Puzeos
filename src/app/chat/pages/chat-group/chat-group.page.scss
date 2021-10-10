@@ -152,3 +152,8 @@ ion-footer{
   bottom: 4rem;
   right: 1.5rem;
 }
+
+.no-disponible:before {
+  content: " ";
+  border-radius: 50%;
+}

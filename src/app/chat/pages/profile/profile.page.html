@@ -9,12 +9,18 @@
   </ion-item>
 
   <div class="loc__cont-info">
-    <img
-      [src]="imgPath"
-      alt="Imágen de perfil"
-      (click)="openModal()"
-      class="no-disponible"
-    >
+    <div class="loc__header">
+      <img
+        [src]="imgPath"
+        alt="Imágen de perfil"
+        (click)="openModal()"
+        class="no-disponible"
+      >
+      <div class="cont-primary-info">
+        <p>{{user?.data.userName}}</p>
+        <small>19 años</small>
+      </div>
+    </div>
     <ion-button
       class="loc__btn-img"
       color="secondary"
@@ -49,6 +55,4 @@
     </ion-list>
 
   </div>
-
-
 </ion-content>

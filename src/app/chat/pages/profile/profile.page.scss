@@ -42,6 +42,25 @@ ion-button{
   }
 }
 
+.loc__header{
+  position: relative;
+
+  .cont-primary-info{
+    background: #0000005c;
+    color: #fff;
+    position: absolute;
+    bottom: 0;
+    padding: 5px 16px;
+    width: 100%;
+
+    p{
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+}
+
 .loc__cont-des{
   margin-top: 6px;
   padding:0.8rem;

@@ -30,11 +30,17 @@
   }
 }
 
+.no-disponible:before {
+  content: " ";
+  border-radius: 50%;
+}
+
 ion-avatar{
   margin:0;
   width: 3rem;
   height: 3rem;
   margin-right: 5px;
+  position: relative;
 }
 
 ion-item{
