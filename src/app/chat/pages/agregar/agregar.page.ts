@@ -1,3 +1,4 @@
+import { ITopic } from './../../../interfaces/topic.interface';
 import { CreateChatService } from './../../../services/create-chat.service';
 import { searchsUser } from './../../../interfaces/searchsUser.interface';
 import { ILocalForage } from './../../../interfaces/localForage.interface';
@@ -15,17 +16,6 @@ import * as firebase from 'firebase';
 import { StoreNames } from 'src/app/enums/store-names.enum';
 import { faPaw, faGrinStars } from '@fortawesome/free-solid-svg-icons';
 
-interface IItem{
-  id:string,
-  data:{
-    title:string,
-    imgName: string
-  },
-  chatsCreated?:number,
-  iconName: string ,
-  fontIcon: boolean
-}
-
 @Component({
   selector: 'app-agregar',
   templateUrl: './agregar.page.html',
@@ -36,20 +26,22 @@ export class AgregarPage implements OnInit, OnDestroy {
   miFormulario:FormGroup=this.fb.group({
     searchTxt:['', [Validators.required, Validators.minLength(1)]]
   });
-  allItems: IItem[]=[];
-  items: IItem[]=[];
+  allItems: ITopic[]=[];
+  items: ITopic[]=[];
   user:IUser;
   buscando:boolean=false;
   userSubscription:Subscription;
   dbUsers:ILocalForage;
+  dbTopics: ILocalForage;
   searchTxt:AbstractControl=this.miFormulario.get("searchTxt");
   search:string;
-  popularTags:IItem[]=[];
+  popularTags:ITopic[]=[];
   searchLanguage:string;
   tagId:string;
   title:string;
   selectValue:string;
   chatType=false;
+  chatsUserId: string[]=[];
   iconNames=["game-controller", "musical-notes", "terminal", "tv", "color-palette", "football", "people", "hardware-chip", "flask", "","apps"];
   fontIcons=[faPaw, faGrinStars];
 
@@ -67,18 +59,31 @@ export class AgregarPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.dbUsers=this.db.loadStore(StoreNames.Users);
+    this.dbTopics=this.db.loadStore(StoreNames.Topics);
+
     let searchLanguage=localStorage.getItem("searchLanguage");
     if(searchLanguage){
       this.searchLanguage=searchLanguage;
     }
-    //Almacenar los tags en el sessionStorage para que no cargen cada vez
-    if(sessionStorage.getItem("tags")){
-      this.allItems=JSON.parse(sessionStorage.getItem("tags"))
-      this.items=this.allItems.slice(0,20);
-    }else{
-      let tags=[];
+
+    this.dbTopics.getItem("topics")
+    .then(tags=>{
+      if(tags){
+        this.allItems=tags.sort((a, b)=>{
+          if (a.chastCreated < b.chatsCreated) {
+            return 1;
+          }
+          if (a.chatsCreated > b.chatsCreated) {
+            return -1;
+          }
+          return 0;
+        });
+        this.items=this.allItems.slice(0,20);
+      }
+
       this.fireStore.collection("tags").ref.get()
       .then(items=>{
+        let tags=[];
         items.forEach(item=>{
           const data=item.data() as any;
           let iconName: string;
@@ -113,11 +118,12 @@ export class AgregarPage implements OnInit, OnDestroy {
           return 0;
         });
         this.items=this.allItems.slice(0,20);
-        sessionStorage.setItem("tags",JSON.stringify(this.allItems));
+        this.dbTopics.setItem("topics",this.allItems);
       }).catch(error=>{
         console.log(error);
       });
-    }
+    },err=>console.log(err));
+
 
     let search='';
 
@@ -128,7 +134,7 @@ export class AgregarPage implements OnInit, OnDestroy {
       this.search=search;
 
       let items=[];
-      this.allItems.forEach((item:IItem) => {
+      this.allItems.forEach((item:ITopic) => {
         let itemTxt=item.data.title.normalize('NFD').replace(/[\u0300-\u036f]/g,"");
         itemTxt=itemTxt.toLocaleLowerCase();
         if(itemTxt.indexOf(search)!==-1){
@@ -147,6 +153,12 @@ export class AgregarPage implements OnInit, OnDestroy {
         id:firebase.default.auth().currentUser.uid,
         data:{...user}
       };
+
+      this.dbUsers.iterate((value, key)=>{
+        if(this.user.id!==key){
+          this.chatsUserId.push(key);
+        }
+      });
 
       this.buscando=this.user.data.buscando.state;
       if(user.buscando.state && !this.searchLanguage){
@@ -225,7 +237,12 @@ export class AgregarPage implements OnInit, OnDestroy {
           }
           if(data){
             for(const key in data.users) {
-              if(!this.user.data.blockedUsers[key] && !this.user.data.notAddUsers[key] && data.users[key].language===this.searchLanguage){
+              if(
+                !this.user.data.blockedUsers[key] &&
+                !this.user.data.notAddUsers[key] &&
+                data.users[key].language===this.searchLanguage &&
+                this.chatsUserId.includes(key)
+              ){
                 values.unshift({
                   id:key,
                   userName:data.users[key].userName,
@@ -363,7 +380,7 @@ export class AgregarPage implements OnInit, OnDestroy {
     })
   }
 
-  trackItems(index: number, item: IItem) {
+  trackItems(index: number, item: ITopic) {
     return item.id;
   }
 

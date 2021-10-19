@@ -1,3 +1,4 @@
+import { ITopic } from './topic.interface';
 export interface IUser{
   id:string,
   data:IUserData
@@ -20,4 +21,10 @@ export class IUserData{
   online?:boolean;
   last_changed?:any;
   avatarId:number;
+  location:{
+    country: string,
+    countryCode: string
+  };
+  age: number;
+  favoriteTopics: ITopic[];
 }

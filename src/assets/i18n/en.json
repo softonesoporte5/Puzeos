@@ -3,7 +3,9 @@
     "ApodoMessage": "Enter a nickname and choose an avatar",
     "YourNickname": "Your nickname",
     "DescriptionMessage": "Enter a short description, this step is optional",
-    "Continue": "Continue"
+    "Continue": "Continue",
+    "AgeMessage": "Enter your age",
+    "Age": "Age"
   },
   "LoginPage":{
     "PrivacyPolicy":"By continuing you accept our",
@@ -27,7 +29,8 @@
     "SavedMessages":"Saved messages",
     "BlockedUsers":"Blocked users",
     "ToAccept":"Accept",
-    "ChangeLanguage": "The language will change when you enter the app again."
+    "ChangeLanguage": "The language will change when you enter the app again.",
+    "Years": "Years"
   },
   "Error":{
     "NicknameRequired": "Nickname is required",
@@ -39,7 +42,10 @@
     "ContinueError": "An error occurred while trying to continue",
     "NotOTP": "Verification code could not be sent",
     "PhoneRequired": "The phone number is required",
-    "IncorrectCode": "Incorrect verification code"
+    "IncorrectCode": "Incorrect verification code",
+    "AgeRequired": "Age is required",
+    "UpdateDescription": "An error occurred while trying to update the description",
+    "UpdateNickname": "An error occurred while trying to update the nickname"
   },
   "MenuComponent":{
     "CreateGroup":"Create group",
@@ -47,12 +53,18 @@
     "Setting":"Setting"
   },
   "ProfilePage":{
-    "Join":"He joined Puzeos on",
-    "Description":"Description",
-    "Info":"Other information",
-    "BlockedUsers":"blocked users",
-    "ChangeDescription":"Change description",
-    "ShortDescription":"Short description"
+    "AboutMe": "About me",
+    "EnterDescription": "Enter a description",
+    "EnterTopic": "Enter a topic of conversation",
+    "ConversationTopics": "Conversation topics",
+    "ChangeNickname": "Change nickname",
+    "NewNickname": "New nickname",
+    "ConfirmDelete": "Are you sure you want to remove your profile picture?"
+  },
+  "ReportPage": {
+    "DescriptionLabel": "Describe the problem or suggestion",
+    "AttachImage": "Attach image (Optional)",
+    "Title": "Report bug or make a suggestion"
   },
   "BlockedUsersPage":{
     "ToUnlock":"To unlock",

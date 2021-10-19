@@ -27,7 +27,8 @@ export class RegisterPage implements OnInit {
   activeSlide=0;
   languageSelect:string;
   continue=false;
-
+  ageArr=[]
+  age="";
   miFormulario:FormGroup=this.fb.group({
     apodo:['', [Validators.required, Validators.minLength(3)]],
     avatar:[null, [Validators.required]],
@@ -54,6 +55,11 @@ export class RegisterPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    let arr=[];
+    for(let i=13; i<99; i++){
+      arr.push(i);
+    }
+    this.ageArr=arr;
   }
 
   async presentToastWithOptions(mensaje:string){
@@ -120,10 +126,19 @@ export class RegisterPage implements OnInit {
   }
 
   async enviar(){
+    if(!this.age){
+      this.translate.get("Error.AgeRequired").subscribe(resp=>{
+        this.presentToastWithOptions(resp);
+        return;
+      });
+      return;
+    }
+
     //Mostrar sniper de carga
     this.loadingService.present();
 
-    //Crear usuario en Firebase
+    const ipApi= await fetch("http://ip-api.com/json/");
+    const country=await ipApi.json();
     this.dbUsers=this.db.loadStore("users");
 
     //Agregar a firebaseStorage
@@ -157,7 +172,12 @@ export class RegisterPage implements OnInit {
             notAddUsers:{},
             imageUrl:urlImage,
             imageUrlLoc:localImg,
-            avatarId: this.avatar.value
+            avatarId: this.avatar.value,
+            age:this.age,
+            location:{
+              country: country.country,
+              countryCode: country.countryCode
+            }
           }).then(resp=>{
             this.dbUsers.setItem(firebase.default.auth().currentUser.uid,{
               userName:this.apodo.value,
@@ -172,7 +192,12 @@ export class RegisterPage implements OnInit {
               notAddUsers:{},
               imageUrl:urlImage,
               imageUrlLoc:localImg,
-              avatarId: this.avatar.value
+              avatarId: this.avatar.value,
+              age:this.age,
+              location:{
+                country: country.country,
+                countryCode: country.countryCode
+              }
             }).then(()=>{
               this.loadingService.dismiss();
               this.router.navigate(['chat'], { queryParams: {welcome:true}})
@@ -210,7 +235,12 @@ export class RegisterPage implements OnInit {
         descripcion:this.descripcion.value,
         blockedUsers:{},
         notAddUsers:{},
-        avatarId: this.avatar.value
+        avatarId: this.avatar.value,
+        age:this.age,
+        location:{
+          country: country.country,
+          countryCode: country.countryCode
+        }
       }).then(resp=>{
         this.dbUsers.setItem(firebase.default.auth().currentUser.uid,{
           userName:this.apodo.value,
@@ -223,7 +253,12 @@ export class RegisterPage implements OnInit {
           },
           blockedUsers:{},
           notAddUsers:{},
-          avatarId: this.avatar.value
+          avatarId: this.avatar.value,
+          age:this.age,
+          location:{
+            country: country.country,
+            countryCode: country.countryCode
+          }
         }).then(()=>{
           this.loadingService.dismiss();
           this.router.navigate(['chat'], { queryParams: {welcome:true}})

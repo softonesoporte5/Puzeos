@@ -1,44 +1,132 @@
 .close-fake{
-  --background:#00000030;
   z-index: 9;
-  position: fixed;
   width: 100vw;
 
   ion-icon{
     font-size:2rem;
-    color:white;
+    color:#000;
   }
 }
-
 ion-button{
   --background: transparent;
   --box-shadow:none;
 }
 
+ion-header{
+  background-color: #fff;
+}
+
 .loc__cont-info{
-  top: 0;
-  left: 0;
   width: 100%;
-  img{
+  justify-content: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  >*{
     width: 100%;
+  }
+}
+
+  .loc__btn-img{
+    border-radius: 50%;
+    overflow: hidden;
+    width: 50px;
+    height: 50px;
+    margin-top: -25px;
+    margin-bottom: -25px;
+    margin-right: 0px;
+    z-index: 9;
+    position: absolute;
+    right: 1.5rem;
+  }
+
+.loc__header{
+  position: relative;
+  padding: 2rem 0.5rem 1rem 2rem;
+  display: flex;
+
+  img{
+    min-height: 5rem;
+    width: 6rem;
+    height: 6rem;
+    position: relative;
+    border-radius: 50%;
+  }
+
+  .cont-primary-info{
+    padding: 5px 16px;
+    flex: 1;
+
+    h2{
+      margin: 0;
+      font-size: 28px;
+      font-weight: 400;
+    }
+
+    h5{
+      margin: 0;
+      font-size: 16px;
+      font-weight: bold;
+      background: #fafafa;
+      padding: 4px 10px;
+      border-radius: 14px;
+      width: min-content;
+    }
   }
 }
 
 .loc__cont-des{
   margin-top: 6px;
-  padding:0.8rem;
+  padding: 1.3rem;
   padding-bottom: 0;
 
   h6{
     margin:0;
     margin-bottom: 6px;
     color:var(--ion-color-primary);
+    font-size: 14px;
   }
 
   ion-item{
-    font-size: 15px;
+    font-size: 16px;
+    --background: #fafafa;
+    --padding-top: 10px;
+    --padding-bottom: 10px;
+
+    p{
+      margin:0;
+    }
   }
 }
+
+ion-list ion-item:first-child{
+  border-radius: 8px 8px 0 0;
+}
+
+ion-list ion-item:last-child{
+  border-radius: 0 0 8px 8px;
+}
+
+.loc__btn-block{
+  margin-top:6px;
+  ion-icon{
+    margin-right: 6px;
+  }
+}
+
+.alertDescription{
+  --min-width:90vw;
+  --max-width:95vw;
+}
+
+.no-disponible::before{
+  content:' ';
+  background-image: url(../../../assets/person.jpg);
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+}
+
 
 .loc__btn-block{
   margin-top:6px;

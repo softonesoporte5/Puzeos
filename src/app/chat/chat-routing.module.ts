@@ -42,6 +42,10 @@ const routes:Routes=[
     loadChildren: () => import('./pages/setting/setting.module').then( m => m.SettingPageModule)
   },
   {
+    path: 'report',
+    loadChildren: () => import('./pages/report/report.module').then( m => m.ReportPageModule)
+  },
+  {
     path: 'profile',
     loadChildren: () => import('./pages/profile/profile.module').then( m => m.ProfilePageModule)
   },

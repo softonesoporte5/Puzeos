@@ -1,3 +1,4 @@
+import { TopicsModalComponent } from './../../../components/topics-modal/topics-modal.component';
 import { ImageModalComponent } from './../../../components/image-modal/image-modal.component';
 import { ImageCropperModalComponent } from './../../../components/image-cropper-modal/image-cropper.component';
 import { ILocalForage } from './../../../interfaces/localForage.interface';
@@ -23,6 +24,7 @@ export class ProfilePage implements OnInit {
   imgPath:string='../../../../assets/person.jpg';
   dbUsers:ILocalForage;
   numBlockedUsers=0;
+  pais:string;
 
   constructor(
     private firestore:AngularFirestore,
@@ -39,6 +41,7 @@ export class ProfilePage implements OnInit {
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then((resp:IUserData)=>{
+      if(!resp.favoriteTopics) resp.favoriteTopics=[];
       this.user={
         data:resp,
         id:firebase.default.auth().currentUser.uid
@@ -49,6 +52,12 @@ export class ProfilePage implements OnInit {
         this.imgPath=Capacitor.convertFileSrc(resp.imageUrlLoc);
       }else{
         this.imgPath='../../../../assets/avatar/avatar_'+resp.avatarId+'.jpg'
+      }
+
+      for(let i=0; i<3; i++){
+        if(!this.user.data.favoriteTopics[i]){
+          this.user.data.favoriteTopics[i]=null;
+        }
       }
     }).catch(err=>console.log(err));
 
@@ -101,7 +110,10 @@ export class ProfilePage implements OnInit {
                     descripcion:newDescription.value
                   });
                 })
-              },()=>{window.alert("Ocurrió un error al tratar de actualizar la descripción")});
+              },()=>{
+                this.translate.get("Error.UpdateDescription").subscribe(resp=>{
+                  window.alert(resp)});
+                });
             }
           }
         }
@@ -113,6 +125,71 @@ export class ProfilePage implements OnInit {
           type: 'text',
           max:80,
           placeholder: descriptionTxt,
+          value:this.user.data.descripcion,
+          handler:()=>{
+
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async changeApodo() {
+    let titleTxt='';
+    this.translate.get("ProfilePage.ChangeNickname").subscribe(resp=>titleTxt=resp);
+    let cancelTxt='';
+    this.translate.get("Global.Cancel").subscribe(resp=>cancelTxt=resp);
+    let saveTxt='';
+    this.translate.get("Global.Save").subscribe(resp=>saveTxt=resp);
+    let inputTxt='';
+    this.translate.get("ProfilePage.NewNickname").subscribe(resp=>inputTxt=resp);
+
+    const alert = await this.alertController.create({
+      cssClass: 'alertDescription',
+      message: titleTxt,
+      buttons: [
+        {
+          text: cancelTxt,
+          role: 'cancel',
+          cssClass: 'secondary',
+          handler: () => {
+
+          }
+        }, {
+          text: saveTxt,
+          handler: () => {
+            const newApodo=document.querySelector("#apodoTxt") as HTMLInputElement;
+            if(this.user.data.descripcion!==newApodo.value && newApodo.value.trim()!==""){
+              this.user.data.userName=newApodo.value;
+              this.firestore.collection("users").doc(this.user.id).update({
+                userName: newApodo.value
+              }).then(()=>{
+                this.dbUsers.getItem(this.user.id)
+                .then((userData:IUserData)=>{
+                  this.dbUsers.setItem(this.user.id,{
+                    ...userData,
+                    userName: newApodo.value
+                  });
+                  this.user.data.userName=newApodo.value
+                })
+              },()=>{
+                this.translate.get("Error.UpdateNickname").subscribe(resp=>{
+                  window.alert(resp)
+                });
+              });
+            }
+          }
+        }
+      ],
+      inputs: [
+        {
+          name: 'apodoTxt',
+          id:'apodoTxt',
+          type: 'text',
+          max:80,
+          placeholder: inputTxt,
           value:this.user.data.descripcion,
           handler:()=>{
 
@@ -176,9 +253,12 @@ export class ProfilePage implements OnInit {
   }
 
   async presentAlertConfirm() {
+    let confirmTxt='';
+    this.translate.get("Global.Camera").subscribe(resp=>confirmTxt=resp);
+
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
-      message: "¿Seguro de que quieres quitar tu foto de perfil?",
+      message: confirmTxt,
       buttons: [
         {
           text: 'Cancelar',
@@ -215,6 +295,16 @@ export class ProfilePage implements OnInit {
       componentProps:{
         path:this.imgPath,
         type:'image'
+      }
+    }).then(modal=>modal.present());
+  }
+
+  openTopicModal(pos:number){
+    this.modal.create({
+      component: TopicsModalComponent,
+      componentProps:{
+        user: this.user,
+        pos: pos
       }
     }).then(modal=>modal.present());
   }

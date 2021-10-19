@@ -20,6 +20,9 @@ export interface IMessage{
   preview?:string;
   toUserId?:string;
   color?:string;
+  messageData?:{
+    data?:string;
+  }
 }
 
 export interface IMessageSearch{

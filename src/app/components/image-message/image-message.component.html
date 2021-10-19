@@ -29,8 +29,8 @@
 
   <img
     *ngIf="image.download===false && downloaded===false"
-    src="../../../../assets/translucido.jpg"
-    class="translucido"
+    [src]="image.messageData.data"
+    class="loc__translucido"
   />
 
   <span *ngIf="image.download===false && downloaded==true" class="loc__cont-control">

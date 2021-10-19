@@ -8,6 +8,7 @@ import { Injectable } from '@angular/core';
 import * as firebase from 'firebase';
 import { IUser } from '../interfaces/user.interface';
 import { StoreNames } from '../enums/store-names.enum';
+import * as imageConversion from 'image-conversion';
 
 @Injectable({
   providedIn: 'root'
@@ -113,6 +114,21 @@ export class FirebaseStorageService {
     let base64Length = data.length - (data.indexOf(',') + 1);
     let padding = (data.charAt(data.length - 2) === '=') ? 2 : ((data.charAt(data.length - 1) === '=') ? 1 : 0);
     let fileSize = base64Length * 0.75 - padding;
+
+    if(type==="image"){
+      const fetchData= await fetch(data);
+      const blob=await fetchData.blob();
+
+      const file = new File([blob], "FileName",{ type: "image/png" });
+
+      const compressImgBlob=await imageConversion.compressAccurately(file,1);
+
+      const compressBase64=await this.appService.convertBlobToBase64(compressImgBlob) as string;
+
+      extraData["messageData"]={
+        data:compressBase64
+      }
+    }
 
     if(this.networkState){
       const ref = this.storage.ref(refUrl);

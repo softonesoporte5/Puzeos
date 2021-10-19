@@ -3,5 +3,6 @@ export enum StoreNames {
   NotSendMessage='notSendMessage',
   Chats='chats',
   SavedMessages='savedMessages',
-  BlockedUsers='blockedUsers'
+  BlockedUsers='blockedUsers',
+  Topics='topics'
 }

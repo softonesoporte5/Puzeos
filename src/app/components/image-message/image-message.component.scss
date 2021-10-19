@@ -16,6 +16,10 @@ img{
   content: "⚠ Imagen no disponible";
 }
 
+.loc__translucido{
+  filter: blur(5px);
+}
+
 svg{
   position: relative;
   width: 50px;

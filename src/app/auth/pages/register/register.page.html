@@ -75,6 +75,23 @@
       maxlength="80"
       formControlName="descripcion"
     >
+  </form>
+
+    <h1 class="loc__title-register">{{'RegisterPage.AgeMessage' | translate}}</h1>
+
+    <ion-item style="margin-bottom: 2rem;">
+      <ion-label>{{'RegisterPage.Age' | translate}}</ion-label>
+      <ion-select
+        [(ngModel)]="age"
+        placeholder="Selecciona tu edad"
+      >
+        <ion-select-option
+          *ngFor="let age of ageArr"
+          [value]="age"
+        >{{age}} {{'Global.Years' | translate}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
     <ion-button
       shape="round"
       expand="full"
@@ -83,5 +100,4 @@
     >
       {{'RegisterPage.Continue' | translate}}
     </ion-button>
-  </form>
 </ion-content>

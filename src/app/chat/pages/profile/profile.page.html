@@ -1,55 +1,76 @@
-<ion-content fullscreen color="light">
-  <ion-item class="close-fake" lines="none" text-center>
+<ion-header>
+  <ion-toolbar>
     <ion-back-button
       slot="start"
       defaultHref="/chat"
       text=""
       mode="md"
     ></ion-back-button>
-  </ion-item>
+  </ion-toolbar>
 
-  <div class="loc__cont-info">
-    <div class="loc__header">
-      <img
-        [src]="imgPath"
-        alt="Imágen de perfil"
-        (click)="openModal()"
-        class="no-disponible"
-      >
-      <div class="cont-primary-info">
-        <p>{{user?.data.userName}}</p>
-        <small>19 años</small>
-      </div>
-    </div>
-    <ion-button
-      class="loc__btn-img"
-      color="secondary"
-      (click)="changePhoto()"
+  <div class="loc__header">
+    <img
+      [src]="imgPath"
+      alt="Imágen de perfil"
+      (click)="openModal()"
+      class="no-disponible"
     >
-      <ion-icon name="camera-sharp" slot="icon-only"></ion-icon>
-    </ion-button>
+    <div class="cont-primary-info">
+      <h2>{{user?.data.userName}}</h2>
+      <small>{{user?.data.age}} {{'Global.Years' | translate}}</small>
+      <h5>#446qwet</h5>
+    </div>
+  </div>
+  <ion-button
+    class="loc__btn-img"
+    color="secondary"
+    (click)="changePhoto()"
+  >
+    <ion-icon name="camera-sharp" slot="icon-only"></ion-icon>
+  </ion-button>
+</ion-header>
+
+<ion-content fullscreen>
+  <div class="loc__cont-info">
     <ion-list class="loc__cont-des">
-      <h6>{{'Global.UserName' | translate}}</h6>
-      <ion-item>
-        <p>{{user?.data.userName}}</p>
+      <h6>{{'ProfilePage.AboutMe' | translate}}</h6>
+      <ion-item detail="true" lines="none" (click)="changeDescription()">
+        <p>{{user?.data.descripcion?user?.data.descripcion: 'ProfilePage.EnterDescription' | translate}}</p>
       </ion-item>
-      <ion-item>
-        {{'ProfilePage.Join' | translate}} {{user?.data.createDate | date}}
+      <ion-item lines="none">
+        <p>{{user?.data.location.country}}</p>
       </ion-item>
     </ion-list>
 
     <ion-list class="loc__cont-des">
-      <h6>{{'ProfilePage.Description' | translate}}</h6>
-      <ion-item (click)="changeDescription()" detail="true">
-        <p>{{user?.data.descripcion}}</p>
+      <h6>{{'ProfilePage.ConversationTopics' | translate}}</h6>
+      <ion-item
+        detail="true"
+        lines="none"
+        *ngFor="let topic of user?.data.favoriteTopics; let i=index"
+        (click)="openTopicModal(i)"
+      >
+        <p>{{topic?.data.title || 'ProfilePage.EnterTopic' | translate}}</p>
       </ion-item>
     </ion-list>
+
     <ion-list class="loc__cont-des">
-      <h6>{{'ProfilePage.Info' | translate}}</h6>
-      <ion-item>
+      <h6>Acciones</h6>
+      <ion-item  detail="true" lines="none" (click)="changeApodo()">
+        <ion-icon
+          slot="start"
+          name="create"
+          color="primary"
+        ></ion-icon>
+        <p>{{'ProfilePage.ChangeNickname' | translate}}</p>
+      </ion-item>
+    </ion-list>
+
+    <ion-list class="loc__cont-des">
+      <ion-item lines="none">
         <p>{{numBlockedUsers}} {{'ProfilePage.BlockedUsers' | translate}}</p>
       </ion-item>
-      <ion-item>
+      <ion-item lines="none" style="margin-bottom: 10px;">
         <p>{{user?.data.chats.length}} {{'Global.ActiveChats' | translate}}</p>
       </ion-item>
     </ion-list>

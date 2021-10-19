@@ -18,6 +18,7 @@ export class AppComponent {
     private fireDb: AngularFireDatabase,
     private firestore: AngularFirestore
   ) {
+
     this.notificationService.inicializar();
 
     const settings = JSON.parse(localStorage.getItem("settings")) as ISettings;

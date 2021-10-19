@@ -3,7 +3,9 @@
     "ApodoMessage": "Ingresa un apodo y escoge un avatar",
     "YourNickname": "Tu apodo",
     "DescriptionMessage": "Ingresa una descripción corta, este paso es opcional",
-    "Continue": "Continuar"
+    "Continue": "Continuar",
+    "AgeMessage": "Ingresa tu edad",
+    "Age": "Edad"
   },
   "LoginPage":{
     "PrivacyPolicy":"Al continuar aceptas nuestra",
@@ -27,7 +29,8 @@
     "SavedMessages":"Mensajes guardados",
     "BlockedUsers":"Usuarios bloqueados",
     "ToAccept":"Aceptar",
-    "ChangeLanguage": "El idioma va a cambiar cuando vuelva a entrar a la app."
+    "ChangeLanguage": "El idioma va a cambiar cuando vuelva a entrar a la app.",
+    "Years": "Años"
   },
   "Error":{
     "NicknameRequired": "El apodo es requerido",
@@ -39,7 +42,10 @@
     "ContinueError": "Ha ocurrido un error al tratar de continuar",
     "NotOTP": "No se pudo enviar el código de verificación",
     "PhoneRequired": "El número de teléfono es requerido",
-    "IncorrectCode": "Código de verificación incorrecto"
+    "IncorrectCode": "Código de verificación incorrecto",
+    "AgeRequired": "La edad es requerida",
+    "UpdateDescription": "Ocurrió un error al tratar de actualizar la descripción",
+    "UpdateNickname": "Ocurrió un error al tratar de actualizar el apodo"
   },
   "MenuComponent":{
     "CreateGroup":"Crear grupo",
@@ -47,12 +53,18 @@
     "Setting":"Configuración"
   },
   "ProfilePage":{
-    "Join":"Se unió a Puzeos el",
-    "Description":"Descripción",
-    "Info":"Otra información",
-    "BlockedUsers":"usuarios bloqueados",
-    "ChangeDescription":"Cambiar descripción",
-    "ShortDescription":"Descripción corta"
+    "AboutMe": "Acerca de mí",
+    "EnterDescription": "Ingresa una descripción",
+    "EnterTopic": "Ingresa un tema de conversación",
+    "ConversationTopics": "Temas de conversación",
+    "ChangeNickname": "Cambiar apodo",
+    "NewNickname": "Nuevo apodo",
+    "ConfirmDelete": "¿Seguro de que quieres quitar tu foto de perfil?"
+  },
+  "ReportPage": {
+    "DescriptionLabel": "Describe el problema o la sugerencia",
+    "AttachImage": "Adjuntar imágen (Opcional)",
+    "Title": "Reportar fallo o hacer una sugerencia"
   },
   "BlockedUsersPage":{
     "ToUnlock":"Desbloquear",

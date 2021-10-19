@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-button (click)="close()" slot="start">
+      <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+    </ion-button>
+    <ion-title slot="start" class="ion-no-padding">Edit preferences</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-no-padding">
+  <span>
+    <div>
+      <form
+        [formGroup]="miFormulario"
+        autocomplete="off"
+        class="loc__form"
+      >
+        <ion-icon name="search-sharp"></ion-icon>
+        <ion-input
+          [placeholder]="'AgregarPage.SearchPlaceholder' | translate"
+          maxlength="50"
+          class="ion-padding-vertical"
+          formControlName="searchTxt"
+        ></ion-input>
+      </form>
+
+      <div class="css-grid">
+        <ion-chip
+          color="tertiary"
+          class="loc__item-popular ion-no-padding ion-no-margin"
+          *ngFor="let item of items; trackBy:trackItems"
+          (click)="changeFavoriteTopic(item)"
+        >
+          <ion-label>{{item.data.title}}</ion-label>
+        </ion-chip>
+      </div>
+
+      <p *ngIf="items.length===0">{{'AgregarPage.NotFound' | translate}}</p>
+    </div>
+  </span>
+</ion-content>

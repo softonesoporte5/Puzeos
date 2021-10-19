@@ -1,17 +1,13 @@
+import { ImageModalComponent } from './../image-modal/image-modal.component';
 import { Subscription } from 'rxjs';
-import { IMessage } from './../../interfaces/message.interface';
-import { FileSystemService } from './../../services/file-system.service';
 import { IChat } from './../../interfaces/chat.interface';
-import { ActionsUserService } from './../../services/actions-user.service';
 import { AppService } from './../../app.service';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { FirebaseStorageService } from './../../services/firebase-storage.service';
-import { DbService } from 'src/app/services/db.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { IUserData } from './../../interfaces/user.interface';
 import { ModalController, NavParams } from '@ionic/angular';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-perfil-group-modal',
@@ -43,6 +39,7 @@ export class PerfilGroupModalComponent implements OnInit, OnDestroy {
     .doc(this.userId)
     .get()
     .subscribe(resp=>{
+      console.log(resp)
       this.user=resp.data() as IUserData;
       this.user.createDate=this.user.createDate.toDate();
       if(!this.user.imageUrl){
@@ -80,5 +77,15 @@ export class PerfilGroupModalComponent implements OnInit, OnDestroy {
 
   close(){
     this.modalController.dismiss();
+  }
+
+  openModal(){
+    this.modalController.create({
+      component:ImageModalComponent,
+      componentProps:{
+        path:this.imgPath,
+        type:'image'
+      }
+    }).then(modal=>modal.present());
   }
 }
