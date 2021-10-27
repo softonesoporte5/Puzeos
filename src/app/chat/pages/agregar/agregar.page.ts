@@ -42,7 +42,7 @@ export class AgregarPage implements OnInit, OnDestroy {
   selectValue:string;
   chatType=false;
   chatsUserId: string[]=[];
-  iconNames=["game-controller", "musical-notes", "terminal", "tv", "color-palette", "football", "people", "hardware-chip", "flask", "","apps"];
+  iconNames=["game-controller", "musical-notes", "terminal", "tv", "color-palette", "football", "people", "hardware-chip", "flask", "","apps", "book"];
   fontIcons=[faPaw, faGrinStars];
 
   constructor(
@@ -128,7 +128,6 @@ export class AgregarPage implements OnInit, OnDestroy {
     let search='';
 
     this.searchTxt.statusChanges.subscribe(()=>{
-      this.allItems=JSON.parse(sessionStorage.getItem("tags"));
       search=this.searchTxt.value.normalize('NFD').replace(/[\u0300-\u036f]/g,"");
       search=search.toLocaleLowerCase();
       this.search=search;
@@ -142,7 +141,6 @@ export class AgregarPage implements OnInit, OnDestroy {
         }
       });
       this.allItems=items;
-      console.log(items)
       this.items=this.allItems.slice(0,20);
     })
 
@@ -241,7 +239,7 @@ export class AgregarPage implements OnInit, OnDestroy {
                 !this.user.data.blockedUsers[key] &&
                 !this.user.data.notAddUsers[key] &&
                 data.users[key].language===this.searchLanguage &&
-                this.chatsUserId.includes(key)
+                !this.chatsUserId.includes(key)
               ){
                 values.unshift({
                   id:key,

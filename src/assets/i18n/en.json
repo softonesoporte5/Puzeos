@@ -59,7 +59,13 @@
     "ConversationTopics": "Conversation topics",
     "ChangeNickname": "Change nickname",
     "NewNickname": "New nickname",
-    "ConfirmDelete": "Are you sure you want to remove your profile picture?"
+    "ConfirmDelete": "Are you sure you want to remove your profile picture?",
+    "BlockedUsers":"blocked users",
+    "ChangeDescription":"Change description",
+    "ShortDescription":"Short description",
+    "Actions": "Acciones",
+    "InfoMessageTitle": "Share the app",
+    "InfoMessage": "Puzeos is a new application, invite your friends or talk about Puzeos to reach more people and grow the community: D"
   },
   "ReportPage": {
     "DescriptionLabel": "Describe the problem or suggestion",
@@ -109,13 +115,26 @@
     "ImageOrVideo":"Image or video",
     "Document":"Document",
     "Audio":"Audio",
-    "Members": "Members"
+    "Members": "Members",
+    "DeletingChat": "Deleting chat",
+    "BlockingUser": "Blocking user",
+    "ConfimMessage": "Are you sure you want to delete this chat?",
+    "Delete": "Delete",
+    "BlockConfirm": "Are you sure you want to block this user? Doing so will also delete the chat",
+    "Block": "Block"
   },
   "ProfileModal":{
     "Info":"Username and description",
     "Join":"He joined Puzeos on",
     "Theme":"Conversation topic",
-    "BlockUser":"Block user"
+    "BlockUser":"Block user",
+    "CreateChatConfirm": "Do you want to create a chat with this user?"
+  },
+  "PopoverChat":{
+    "Copy": "Copy",
+    "ViewProfile":"View profile",
+    "SaveMessage":"Save message",
+    "Reply":"Reply"
   },
   "SettingPage":{
     "DarkMode":"Activate dark mode",

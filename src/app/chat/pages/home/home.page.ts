@@ -24,6 +24,7 @@ export class HomePage implements OnInit{
   dbUsers:ILocalForage;
   chatsObj={};
   connectedAccount=false;
+  infoMessage:string;
 
   constructor(
     private menu: MenuController,
@@ -111,6 +112,11 @@ export class HomePage implements OnInit{
       this.connectedAccount=false;
     }
 
+    if(localStorage.getItem("infoMessage")){
+      this.infoMessage=localStorage.getItem("infoMessage");
+    }
+
+
     this.route.queryParams
     .subscribe(params => {
       if(params.deleteChat && this.chatsObj[params.deleteChat]){
@@ -167,6 +173,11 @@ export class HomePage implements OnInit{
 
   trackItems(index: number, chat: IChat) {
     return chat.id;
+  }
+
+  deleteInfoMessage(){
+    this.infoMessage=" ";
+    localStorage.setItem("infoMessage","true");
   }
 }
 

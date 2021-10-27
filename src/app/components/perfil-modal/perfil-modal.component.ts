@@ -1,3 +1,4 @@
+import { ImageModalComponent } from './../image-modal/image-modal.component';
 import { IMessage } from './../../interfaces/message.interface';
 import { FileSystemService } from './../../services/file-system.service';
 import { IChat } from './../../interfaces/chat.interface';
@@ -113,17 +114,13 @@ export class PerfilModalComponent implements OnInit {
     this.actionsUserService.presentAlertConfirm(2,this.chat.id,this.user.data.userName);
   }
 
-  orderMessages(mesagges:IMessage[]){
-    mesagges=mesagges.sort(function (a, b) {
-      if (a.timestamp.valueOf() < b.timestamp.valueOf()) {
-        return 1;
+  openModal(){
+    this.modalController.create({
+      component:ImageModalComponent,
+      componentProps:{
+        path:this.imgPath,
+        type:'image'
       }
-      if (a.timestamp.valueOf() > b.timestamp.valueOf()) {
-        return -1;
-      }
-      return 0;
-    });
-    return mesagges;
+    }).then(modal=>modal.present());
   }
-
 }

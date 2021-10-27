@@ -56,6 +56,14 @@
     </div>
   </ion-item>
 
+  <ion-item class="ion-no-padding no-bg-color" lines="none" *ngIf="!infoMessage">
+    <div class="loc__info-message">
+      <h5>{{'HomePage.InfoMessageTitle' | translate}}</h5>
+      <h6>{{'HomePage.InfoMessage' | translate}}</h6>
+      <span (click)="deleteInfoMessage()">Ok</span>
+    </div>
+  </ion-item>
+
   <span style="display: contents;" *ngFor="let chat of chats; trackBy:trackItems">
     <app-item-chat
       *ngIf="!chat.group"

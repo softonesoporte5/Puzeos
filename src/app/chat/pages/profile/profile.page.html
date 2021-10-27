@@ -38,7 +38,7 @@
         <p>{{user?.data.descripcion?user?.data.descripcion: 'ProfilePage.EnterDescription' | translate}}</p>
       </ion-item>
       <ion-item lines="none">
-        <p>{{user?.data.location.country}}</p>
+        <p>{{user?.data?.location?.country? user?.data?.location?.country:'Ubicación no disponible'}}</p>
       </ion-item>
     </ion-list>
 
@@ -55,7 +55,7 @@
     </ion-list>
 
     <ion-list class="loc__cont-des">
-      <h6>Acciones</h6>
+      <h6>{{'ProfilePage.Actions' | translate}}</h6>
       <ion-item  detail="true" lines="none" (click)="changeApodo()">
         <ion-icon
           slot="start"

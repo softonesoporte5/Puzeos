@@ -41,7 +41,10 @@ export class ProfilePage implements OnInit {
 
     this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
     .then((resp:IUserData)=>{
-      if(!resp.favoriteTopics) resp.favoriteTopics=[];
+      if(!resp.favoriteTopics) {
+        resp.favoriteTopics=[null, null, null];
+        console.log(resp.favoriteTopics)
+      };
       this.user={
         data:resp,
         id:firebase.default.auth().currentUser.uid
@@ -190,7 +193,7 @@ export class ProfilePage implements OnInit {
           type: 'text',
           max:80,
           placeholder: inputTxt,
-          value:this.user.data.descripcion,
+          value:this.user.data.userName,
           handler:()=>{
 
           }

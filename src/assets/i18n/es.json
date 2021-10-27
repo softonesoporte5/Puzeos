@@ -59,7 +59,11 @@
     "ConversationTopics": "Temas de conversación",
     "ChangeNickname": "Cambiar apodo",
     "NewNickname": "Nuevo apodo",
-    "ConfirmDelete": "¿Seguro de que quieres quitar tu foto de perfil?"
+    "ConfirmDelete": "¿Seguro de que quieres quitar tu foto de perfil?",
+    "BlockedUsers":"Usuarios bloqueados",
+    "ChangeDescription":"Cambiar descripción",
+    "ShortDescription":"Descripción corta",
+    "Actions": "Acciones"
   },
   "ReportPage": {
     "DescriptionLabel": "Describe el problema o la sugerencia",
@@ -78,7 +82,9 @@
     "StartLooking": "Empezar a buscar",
     "AlertTitle": "Tu cuenta no está conectada a un número de teléfono",
     "AlertMessage": "Puedes perderla si desinstalas la aplicación o borras los datos",
-    "Connect": "Conectar"
+    "Connect": "Conectar",
+    "InfoMessageTitle": "Comparte la app",
+    "InfoMessage": "Puzeos es una aplicación nueva, invíta a tus amigos o habla sobre Puzeos para llegar a más personas y hacer crecer la comunidad :D"
   },
   "AgregarPage":{
     "Title":"Agrega un chat",
@@ -109,13 +115,26 @@
     "ImageOrVideo":"Imágen o video",
     "Document":"Documento",
     "Audio":"Audio",
-    "Members": "Miembros"
+    "Members": "Miembros",
+    "DeletedChat": "Eliminando chat",
+    "BlockingUser": "Bloqueando usuario",
+    "ConfimMessage": "¿Seguro de que desea eliminar este chat?",
+    "Delete": "Eliminar",
+    "BlockConfirm": "¿Seguro de que desea bloquear este usuario? Al hacerlo también se eliminará el chat",
+    "Block": "Bloquear"
   },
   "ProfileModal":{
     "Info":"Nombre de usuario y descripción",
     "Join":"Se unió a Puzeos el",
     "Theme":"Tema de conversación",
-    "BlockUser":"Bloquear usuario"
+    "BlockUser":"Bloquear usuario",
+    "CreateChatConfirm": "¿Quieres crear un chat con este usuario?"
+  },
+  "PopoverChat":{
+    "Copy": "Copiar",
+    "ViewProfile":"Ver perfil",
+    "SaveMessage":"Guardar mensaje",
+    "Reply":"Responder"
   },
   "SettingPage":{
     "DarkMode":"Activar modo oscuro",

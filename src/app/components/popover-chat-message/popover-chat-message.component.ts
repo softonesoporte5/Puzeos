@@ -22,7 +22,7 @@ export class PopoverChatMessageComponent implements OnInit {
 
   constructor(
     private navParams: NavParams,
-    public toastController: ToastController,
+    private toastController: ToastController,
     private popoverController: PopoverController,
     private db:DbService,
     private chatService:ChatService,

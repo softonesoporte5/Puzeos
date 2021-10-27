@@ -1,54 +1,81 @@
-<ion-content fullscreen color="light">
+<span *ngIf="user">
+  <ion-header>
+    <ion-item class="close-fake" lines="none" text-center>
+      <ion-button (click)="close()">
+        <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+
+    <div class="loc__header">
+      <img
+        [src]="imgPath"
+        alt="Imágen de perfil"
+        (click)="openModal()"
+        class="no-disponible"
+      >
+      <div class="cont-primary-info">
+        <h2>{{user?.data.userName}}</h2>
+        <small>{{user?.data.age}} {{'Global.Years' | translate}}</small>
+        <h5>#446qwet</h5>
+      </div>
+    </div>
+  </ion-header>
+
+  <ion-content fullscreen>
+    <div class="loc__cont-info">
+      <ion-list class="loc__cont-des">
+        <h6>Acerca de</h6>
+        <ion-item lines="none">
+          <p>{{user?.data.descripcion? user?.data.descripcion:"Sin descripción"}}</p>
+        </ion-item>
+        <ion-item lines="none">
+          <p>{{user?.data.location?.country? user?.data.location?.country:'Ubicación no disponible'}}</p>
+        </ion-item>
+      </ion-list>
+
+      <ion-list class="loc__cont-des">
+        <h6>{{'ProfilePage.ConversationTopics' | translate}}</h6>
+        <ion-item
+          lines="none"
+          *ngFor="let topic of user?.data.favoriteTopics; let i=index"
+        >
+          <p>{{topic?.data.title}}</p>
+        </ion-item>
+      </ion-list>
+
+      <ion-list class="loc__cont-des">
+        <h6>Acciones</h6>
+        <ion-item  detail="true" lines="none">
+          <ion-icon
+            slot="start"
+            name="create"
+            color="primary"
+          ></ion-icon>
+          <p>{{'ChatPage.BlockUser' | translate}}</p>
+        </ion-item>
+      </ion-list>
+
+      <ion-list class="loc__cont-des">
+        <ion-item lines="none">
+          <p>{{''}} {{'ProfilePage.BlockedUsers' | translate}}</p>
+        </ion-item>
+        <ion-item lines="none" style="margin-bottom: 10px;">
+          <p>{{user?.data.chats.length}} {{'Global.ActiveChats' | translate}}</p>
+        </ion-item>
+      </ion-list>
+
+    </div>
+  </ion-content>
+
+</span>
+
+<ion-content fullscreen color="light" *ngIf="!user">
   <ion-item class="close-fake" lines="none" text-center>
     <ion-button (click)="close()">
       <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
     </ion-button>
   </ion-item>
-
-  <div class="loc__cont-info">
-    <img [src]="imgPath" alt="">
-    <ion-list class="loc__cont-des">
-      <h6>{{'ProfileModal.Info' | translate}}</h6>
-      <ion-item>
-        <p>{{user.data.userName}}</p>
-      </ion-item>
-      <ion-item>
-        <p>{{user.data.descripcion}}</p>
-      </ion-item>
-      <ion-item>
-        {{'ProfileModal.Join' | translate}} {{user.data.createDate | date}}
-      </ion-item>
-    </ion-list>
-
-    <ion-list class="loc__cont-des">
-      <h6>{{'ProfileModal.Theme' | translate}}</h6>
-      <ion-item>
-        <p>{{chat.tema}}</p>
-      </ion-item>
-    </ion-list>
-
-    <ion-item class="loc__btn-block" (click)="blockUser()">
-      <ion-icon name="remove-circle-outline" color="danger"></ion-icon>
-      <p>{{'ProfileModal.BlockUser' | translate}}</p>
-    </ion-item>
+  <div class="loc__cont-loading">
+    <ion-spinner color="primary"></ion-spinner>
   </div>
-
-
-  <!-- <ion-item class="loc__btn-block">
-    <ion-segment value="images">
-      <ion-segment-button value="images">
-        <ion-label>Imágenes</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="videos">
-        <ion-label>Videos</ion-label>
-      </ion-segment-button>
-      <ion-segment-button value="documents">
-        <ion-label>Documentos</ion-label>
-      </ion-segment-button>
-    </ion-segment>
-  </ion-item>
-
-  <div class="loc__cont-items">
-
-  </div> -->
 </ion-content>

@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core';
 import { IUserData } from './../interfaces/user.interface';
 import { ILocalForage } from './../interfaces/localForage.interface';
 import { LoadingService } from './loading.service';
@@ -25,17 +26,20 @@ export class ActionsUserService {
   contactID:string;
 
   constructor(
-    public toastController: ToastController,
+    private toastController: ToastController,
     private db:DbService,
-    public alertController: AlertController,
+    private alertController: AlertController,
     private fireStore:AngularFirestore,
     private router:Router,
     private loadingService:LoadingService,
-    private popoverController: PopoverController
+    private popoverController: PopoverController,
+    private translate: TranslateService
   ) { }
 
   deleteChatInDevice(blocked?:boolean){
-    this.loadingService.present("Eliminando chat");
+    this.translate.get("ChatPage.DeletingChat").subscribe(resp=>{
+      this.loadingService.present(resp);
+    });
     this.dbChats=this.db.loadStore(StoreNames.Chats);
     this.dbUser=this.db.loadStore(StoreNames.Users);
 
@@ -86,7 +90,9 @@ export class ActionsUserService {
   }
 
   blockedUserInDevice(){
-    this.loadingService.present("Bloqueando usuario");
+    this.translate.get("ChatPage.BlockingUser").subscribe(resp=>{
+      this.loadingService.present(resp);
+    });
     this.dbChats=this.db.loadStore(StoreNames.Chats);
     this.dbUser=this.db.loadStore(StoreNames.Users);
 
@@ -120,12 +126,12 @@ export class ActionsUserService {
     if(contactID)this.contactID=contactID;
 
     if(action===1){
-      message='¿Seguro de que desea eliminar este chat?';
-      actionText='Eliminar'
+      this.translate.get("ChatPage.ConfimMessage").subscribe(resp=>message=resp);
+      this.translate.get("ChatPage.Delete").subscribe(resp=>actionText=resp);
     }
     else{
-      message='¿Seguro de que desea bloquear este usuario? Al hacerlo también se eliminará el chat';
-      actionText='Bloquear'
+      this.translate.get("ChatPage.BlockConfirm").subscribe(resp=>message=resp);
+      this.translate.get("ChatPage.Block").subscribe(resp=>actionText=resp);
     }
 
     const alert = await this.alertController.create({
@@ -133,7 +139,7 @@ export class ActionsUserService {
       message: message,
       buttons: [
         {
-          text: 'Cancelar',
+          text: 'Cancel',
           role: 'cancel'
         }, {
           text: actionText,
