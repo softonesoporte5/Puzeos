@@ -127,6 +127,7 @@ export class AgregarPage implements OnInit, OnDestroy {
 
     let search='';
 
+    //Buscador
     this.searchTxt.statusChanges.subscribe(()=>{
       search=this.searchTxt.value.normalize('NFD').replace(/[\u0300-\u036f]/g,"");
       search=search.toLocaleLowerCase();
@@ -140,8 +141,7 @@ export class AgregarPage implements OnInit, OnDestroy {
           items.push(item);
         }
       });
-      this.allItems=items;
-      this.items=this.allItems.slice(0,20);
+      this.items=items.slice(0,20);
     })
 
     //Comprobamos si el usuario está buscando
@@ -393,6 +393,10 @@ export class AgregarPage implements OnInit, OnDestroy {
     this.translate.get("Global.Cancel").subscribe(resp=>cancelTxt=resp);
     let sendTxt='';
     this.translate.get("AgregarPage.Send").subscribe(resp=>sendTxt=resp);
+    let sendMessage='';
+    this.translate.get("AgregarPage.SendTopic").subscribe(resp=>sendMessage=resp);
+    let errorTxt='';
+    this.translate.get("Error.Error").subscribe(resp=>errorTxt=resp);
 
     const alert = await this.alertController.create({
       cssClass: 'my-custom-class',
@@ -415,14 +419,20 @@ export class AgregarPage implements OnInit, OnDestroy {
           cssClass: 'secondary'
         }, {
           text: sendTxt,
-          handler: () => {
-            const themeTxt=document.querySelector("#newThemeTxt") as HTMLInputElement;
-            this.fireStore.collection("newTags").add({
-              title:themeTxt.value,
-              notificationToken:this.user.data.token
-            }).catch(error=>{
-              console.log("Hubo un error",error);
-            });
+          handler: (value) => {
+            console.log(value[0].trim())
+            if(value[0].trim() !== ''){
+              const themeTxt=document.querySelector("#newThemeTxt") as HTMLInputElement;
+              this.fireStore.collection("newTags").add({
+                title:themeTxt.value,
+                notificationToken:this.user.data.token
+              }).then(()=>{
+                this.presentToast(sendMessage);
+              })
+              .catch(error=>{
+                this.presentToast(errorTxt);
+              });
+            }
           }
         }
       ]

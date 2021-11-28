@@ -11,8 +11,8 @@
     "PrivacyPolicy":"By continuing you accept our",
     "PrivacyPolicy2":"Privacy Policy",
     "Title1": "Pick a topic of conversation and start chatting!",
-    "Title2": "Find a duo in video games",
-    "Title3": "Talk about the music you like",
+    "Title2": "Talk about your favorite anime",
+    "Title3": "Find a duo in video games",
     "Title4": "Make friends",
     "ContinueWithout": "Continue without registering",
     "ContinueWithPhone":"Continue with phone number"
@@ -63,9 +63,7 @@
     "BlockedUsers":"blocked users",
     "ChangeDescription":"Change description",
     "ShortDescription":"Short description",
-    "Actions": "Acciones",
-    "InfoMessageTitle": "Share the app",
-    "InfoMessage": "Puzeos is a new application, invite your friends or talk about Puzeos to reach more people and grow the community: D"
+    "Actions": "Acciones"
   },
   "ReportPage": {
     "DescriptionLabel": "Describe the problem or suggestion",
@@ -84,7 +82,9 @@
     "StartLooking": "Start looking",
     "AlertTitle": "Your account is not connected to a phone number",
     "AlertMessage": "You can lose it if you uninstall the application or delete the data",
-    "Connect": "Connect"
+    "Connect": "Connect",
+    "InfoMessageTitle": "Share the app",
+    "InfoMessage": "Puzeos is a new application, invite your friends or talk about Puzeos to reach more people and grow the community: D"
   },
   "AgregarPage":{
     "Title":"Add a chat",
@@ -103,7 +103,8 @@
     "Search":"Search",
     "ToastMessage":"Select a language to continue",
     "GroupChat": "Group chat",
-    "IndividualChat": "Individual Chat"
+    "IndividualChat": "Individual Chat",
+    "SendTopic": "The request has been sent"
   },
   "ChatPage":{
     "Message":"Message",

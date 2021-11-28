@@ -11,8 +11,8 @@
     "PrivacyPolicy":"Al continuar aceptas nuestra",
     "PrivacyPolicy2":"Política de privacidad",
     "Title1": "Escoge un tema de conversación y empieza a chatear!",
-    "Title2": "Encuentra un dúo en videojuegos",
-    "Title3": "Habla sobre la música que te gusta",
+    "Title2": "Habla sobre tu anime favorito",
+    "Title3": "Encuentra un dúo en videojuegos",
     "Title4": "Haz amigos",
     "ContinueWithout": "Continuar sin registrarse",
     "ContinueWithPhone":"Continuar con número de teléfono"
@@ -103,7 +103,8 @@
     "Search":"Buscar",
     "ToastMessage":"Selecciona un idioma para continuar",
     "GroupChat": "Chat Grupal",
-    "IndividualChat": "Chat Individual"
+    "IndividualChat": "Chat Individual",
+    "SendTopic": "Se ha enviado la solicitud"
   },
   "ChatPage":{
     "Message":"Mensaje",
