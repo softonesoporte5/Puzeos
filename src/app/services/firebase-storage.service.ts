@@ -8,7 +8,7 @@ import { Injectable } from '@angular/core';
 import * as firebase from 'firebase';
 import { IUser } from '../interfaces/user.interface';
 import { StoreNames } from '../enums/store-names.enum';
-import * as imageConversion from 'image-conversion';
+import {compressUriImage} from '../utils/utils';
 
 @Injectable({
   providedIn: 'root'
@@ -116,17 +116,8 @@ export class FirebaseStorageService {
     let fileSize = base64Length * 0.75 - padding;
 
     if(type==="image"){
-      const fetchData= await fetch(data);
-      const blob=await fetchData.blob();
-
-      const file = new File([blob], "FileName",{ type: "image/png" });
-
-      const compressImgBlob=await imageConversion.compressAccurately(file,1);
-
-      const compressBase64=await this.appService.convertBlobToBase64(compressImgBlob) as string;
-
       extraData["messageData"]={
-        data:compressBase64
+        data: await compressUriImage(data)
       }
     }
 

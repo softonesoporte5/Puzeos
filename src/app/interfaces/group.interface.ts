@@ -6,7 +6,8 @@ export interface IGroup{
   group: boolean;
   usersData:{
     id:string,
-    userName:string
+    userName:string,
+    compressImage?:string
   }[];
   newMessages?:number;
   tokens:string[];

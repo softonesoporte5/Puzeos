@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 import * as firebase from 'firebase';
 import { CameraSource } from '@capacitor/core';
 import { TranslateService } from '@ngx-translate/core';
+import {compressUriImage} from '../../../utils/utils';
 
 @Component({
   selector: 'app-register',
@@ -24,6 +25,7 @@ export class RegisterPage implements OnInit {
 
   dbUsers:ILocalForage;
   imgPath='../../../../assets/person.jpg';
+  compressImg:string;
   activeSlide=0;
   languageSelect:string;
   continue=false;
@@ -156,7 +158,6 @@ export class RegisterPage implements OnInit {
       if(localImg){
         this.firebaseStorage.uploadPhoto(this.imgPath, user as IUser,localImg,true)
         .then(urlImage=>{
-          console.log(urlImage)
           // Guardamos la imagen de manera local
           this.fireStore.collection("users").doc(firebase.default.auth().currentUser.uid).set({//Agregamos el usuario a FireStorage
             userName:this.apodo.value,
@@ -173,6 +174,7 @@ export class RegisterPage implements OnInit {
             imageUrl:urlImage,
             imageUrlLoc:localImg,
             avatarId: this.avatar.value,
+            compressImage: this.compressImg,
             age:this.age,
             location:{
               country: country.country,
@@ -193,6 +195,7 @@ export class RegisterPage implements OnInit {
               imageUrl:urlImage,
               imageUrlLoc:localImg,
               avatarId: this.avatar.value,
+              compressImage: this.compressImg,
               age:this.age,
               location:{
                 country: country.country,
@@ -292,7 +295,8 @@ export class RegisterPage implements OnInit {
           icon: 'camera-sharp',
           handler: () => {
             this.authService.selectImage(CameraSource.Camera)
-            .then(resp=>{
+            .then(async resp=>{
+              this.compressImg=await compressUriImage(resp);
               this.imgPath=resp;
               this.avatar.setValue(0);
               document.querySelectorAll(".loc__grid>div")

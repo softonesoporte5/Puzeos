@@ -33,6 +33,7 @@ export class CreateChatService {
       usersData:firebase.default.firestore.FieldValue.arrayUnion({
         id: user.id,
         userName:user.data.userName,
+        compressImage: user.data.compressImage
       }),
       tokens:firebase.default.firestore.FieldValue.arrayUnion(user.data.token),
       lastMessage: user.data.userName+' has joined the chat'
@@ -51,7 +52,8 @@ export class CreateChatService {
         title: title,
         usersData:[{
           id: user.id,
-          userName:user.data.userName
+          userName:user.data.userName,
+          compressImage: user.data.compressImage
         }],
         timestamp: firebase.default.firestore.FieldValue.serverTimestamp(),
         tokens:[user.data.token],

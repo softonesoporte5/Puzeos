@@ -27,6 +27,7 @@ export class ItemMessageGroupComponent implements AfterViewInit, OnInit {
   showDate=false;
   stringDate:string;
   beforeMessage=false;
+  imgRef: string;
 
   constructor(
     private popoverController: PopoverController,
@@ -113,5 +114,18 @@ export class ItemMessageGroupComponent implements AfterViewInit, OnInit {
     this.chatService.replyMessage$.next(this.message);
   }
 
+  cardClass(){
+    let classNames = "";
+
+    if(this.userId===this.message.toUserId){
+      classNames+="enviado ";
+    }
+
+    if(this.beforeMessage){
+      classNames+="loc__sequence-message";
+    }
+
+    return classNames;
+  }
 
 }
