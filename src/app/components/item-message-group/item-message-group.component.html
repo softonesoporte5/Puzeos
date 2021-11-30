@@ -5,7 +5,7 @@
 </div>
 
 <img
-  src="../../../assets/person.jpg"
+  [src]="imgRef"
   *ngIf="!beforeMessage && userId!==message.toUserId"
 />
 

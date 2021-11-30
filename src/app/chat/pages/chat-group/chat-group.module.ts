@@ -19,6 +19,7 @@ import { ChatGroupPageRoutingModule } from './chat-group-routing.module';
 import { ChatGroupPage } from './chat-group.page';
 import { ItemMessageGroupComponent } from 'src/app/components/item-message-group/item-message-group.component';
 import { ChatsModule } from 'src/app/shared/chats.module';
+import { GroupInfoModalComponent } from 'src/app/components/group-info-modal/group-info-modal.component';
 
 @NgModule({
   imports: [
@@ -40,6 +41,7 @@ import { ChatsModule } from 'src/app/shared/chats.module';
     PopoverGroupComponent,
     ItemMessageGroupComponent,
     PerfilGroupModalComponent,
+    GroupInfoModalComponent
   ]
 })
 export class ChatGroupPageModule {}

@@ -4,6 +4,7 @@ import { IonContent, PopoverController } from '@ionic/angular';
 import { IMessage } from './../../interfaces/message.interface';
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { PopoverChatMessageComponent } from '../popover-chat-message/popover-chat-message.component';
+import { IGroup } from 'src/app/interfaces/group.interface';
 
 @Component({
   selector: 'app-item-message-group',
@@ -17,7 +18,7 @@ export class ItemMessageGroupComponent implements AfterViewInit, OnInit {
   @Input("last") last?:boolean;
   @Input("content") content:IonContent;
   @Input("userId") userId:string;
-  @Input("dbMessage") dbMessage?:ILocalForage;
+  @Input("dbChat") dbChat?:ILocalForage;
   @Input("searchMessage") searchMessage?:string;
   @Input("idSearch") idSearch?:string;
   @ViewChild("messageItem") messageItem:ElementRef;
@@ -27,7 +28,7 @@ export class ItemMessageGroupComponent implements AfterViewInit, OnInit {
   showDate=false;
   stringDate:string;
   beforeMessage=false;
-  imgRef: string;
+  imgRef='../../../assets/person.jpg';
 
   constructor(
     private popoverController: PopoverController,
@@ -49,6 +50,22 @@ export class ItemMessageGroupComponent implements AfterViewInit, OnInit {
     if(this.chatService.beforeMessage===this.message.toUserId){
       this.beforeMessage=true;
     }else{
+      this.dbChat.getItem(this.idChat).then((resp:IGroup)=>{
+        for(let i=0;i<resp.usersData.length;i++){
+          if(resp.usersData[i].id===this.message.toUserId){
+            if(resp.usersData[i].avatarId){
+              if(resp.usersData[i].avatarId!==0){
+                this.imgRef=resp.usersData[i].compressImage;
+              }else{
+                this.imgRef='../../../assets/avatar/avatar_'+resp.usersData[i].avatarId+'.jpg';
+              }
+            }else{
+              this.imgRef='../../../assets/person.jpg';
+            }
+            break;
+          }
+        }
+      });
       this.chatService.beforeMessage=this.message.toUserId;
     }
   }

@@ -29,11 +29,13 @@ export class CreateChatService {
   createGroup(tagId:string, user:IUser, title:string){
     this.loadingService.present();
     const ref=this.firestore.collection("chats").doc(tagId);
+
     ref.update({
       usersData:firebase.default.firestore.FieldValue.arrayUnion({
         id: user.id,
         userName:user.data.userName,
-        compressImage: user.data.compressImage
+        compressImage: user.data.compressImage?user.data.compressImage:'',
+        avatarId: user.data.avatarId?user.data.avatarId: 0
       }),
       tokens:firebase.default.firestore.FieldValue.arrayUnion(user.data.token),
       lastMessage: user.data.userName+' has joined the chat'

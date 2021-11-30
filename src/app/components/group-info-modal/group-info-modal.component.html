@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-back-button
+      slot="start"
+      defaultHref="/chat"
+      text=""
+      mode="md"
+    ></ion-back-button>
+  </ion-toolbar>
+
+  <div class="loc__header">
+    <img
+      [src]="imgPath"
+      alt="Imágen de perfil"
+      (click)="openModal()"
+      class="no-disponible"
+    >
+    <div class="cont-primary-info">
+      <h2>{{group?.title}}</h2>
+      <small> {{'Global.Years' | translate}}</small>
+      <h5>#446qwet</h5>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content fullscreen>
+  <div class="loc__cont-info">
+    <ion-list class="loc__cont-des">
+      <h6>Miembros</h6>
+      <ion-item detail="true" lines="none" (click)="changeDescription()">
+        <p>aaa</p>
+      </ion-item>
+    </ion-list>
+  </div>
+</ion-content>

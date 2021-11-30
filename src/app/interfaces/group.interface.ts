@@ -7,7 +7,8 @@ export interface IGroup{
   usersData:{
     id:string,
     userName:string,
-    compressImage?:string
+    compressImage?:string,
+    avatarId: number
   }[];
   newMessages?:number;
   tokens:string[];
