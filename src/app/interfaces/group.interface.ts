@@ -4,12 +4,14 @@ export interface IGroup{
   lastMessage:string;
   timestamp:any;
   group: boolean;
-  usersData:{
-    id:string,
-    userName:string,
-    compressImage?:string,
-    avatarId: number
-  }[];
+  usersData:IUserDataGroup[];
   newMessages?:number;
   tokens:string[];
+}
+
+export interface IUserDataGroup{
+  id:string,
+  userName:string,
+  compressImage?:string,
+  avatarId: number
 }

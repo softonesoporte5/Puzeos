@@ -5,6 +5,11 @@ ion-button{
 
 ion-header{
   background-color: #fff;
+
+  ion-icon{
+    font-size: 2rem;
+    color: #000;
+  }
 }
 
 .loc__cont-info{
@@ -33,18 +38,11 @@ ion-header{
 
 .loc__header{
   position: relative;
-  padding: 2rem 0.5rem 1rem 2rem;
+  padding: 1rem 0.5rem 1rem 0.5rem;
   display: flex;
 
-  img{
-    min-height: 5rem;
-    width: 6rem;
-    height: 6rem;
-    border-radius: 50%;
-  }
-
   .cont-primary-info{
-    padding: 5px 16px;
+    padding: 5px;
     flex: 1;
 
     h2{
@@ -63,26 +61,27 @@ ion-header{
       width: min-content;
     }
   }
+
+  ion-avatar{
+    margin:0;
+    width: 5rem;
+    height: 5rem;
+    margin-right: 5px;
+    position: relative;
+  }
 }
 
 .loc__cont-des{
   margin-top: 6px;
-  padding: 1.3rem;
   padding-bottom: 0;
 
   h6{
-    margin:0;
-    margin-bottom: 6px;
+    margin:0 0 6px 6px;
     color:var(--ion-color-primary);
     font-size: 14px;
   }
 
   ion-item{
-    font-size: 16px;
-    --background: #fafafa;
-    --padding-top: 10px;
-    --padding-bottom: 10px;
-
     p{
       margin:0;
     }
@@ -113,3 +112,6 @@ ion-list ion-item:last-child{
   content:'Imágen no disponible';
   height: 5rem;
 }
+
+
+

@@ -1,24 +1,22 @@
 <ion-header>
   <ion-toolbar>
-    <ion-back-button
-      slot="start"
-      defaultHref="/chat"
-      text=""
-      mode="md"
-    ></ion-back-button>
+    <ion-button (click)="close()">
+      <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+    </ion-button>
   </ion-toolbar>
 
   <div class="loc__header">
-    <img
-      [src]="imgPath"
-      alt="Imágen de perfil"
-      (click)="openModal()"
-      class="no-disponible"
-    >
+    <ion-avatar slot="start">
+      <img
+        [src]="imgPath"
+        alt="Imágen de perfil"
+        (click)="openModal()"
+        class="no-disponible"
+      >
+    </ion-avatar>
     <div class="cont-primary-info">
       <h2>{{group?.title}}</h2>
-      <small> {{'Global.Years' | translate}}</small>
-      <h5>#446qwet</h5>
+      <small>{{group?.usersData.length}} {{'ChatPage.Members' | translate}}</small>
     </div>
   </div>
 </ion-header>
@@ -27,9 +25,23 @@
   <div class="loc__cont-info">
     <ion-list class="loc__cont-des">
       <h6>Miembros</h6>
-      <ion-item detail="true" lines="none" (click)="changeDescription()">
-        <p>aaa</p>
+      <ion-item
+        detail="false"
+        *ngFor="let member of group?.usersData"
+        (click)="viewProfile(member.id)"
+      >
+        <ion-avatar slot="start">
+          <img [src]="memberImgRef(member)" class="no-disponible">
+        </ion-avatar>
+        <ion-label>
+          <span class="agrupar">
+            <span class="break">
+              {{member.userName}}
+            </span>
+          </span>
+        </ion-label>
       </ion-item>
+
     </ion-list>
   </div>
 </ion-content>
