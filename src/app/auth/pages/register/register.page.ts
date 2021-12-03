@@ -297,6 +297,7 @@ export class RegisterPage implements OnInit {
             this.authService.selectImage(CameraSource.Camera)
             .then(async resp=>{
               this.compressImg=await compressUriImage(resp);
+              console.log(this.compressImg);
               this.imgPath=resp;
               this.avatar.setValue(0);
               document.querySelectorAll(".loc__grid>div")
@@ -311,7 +312,9 @@ export class RegisterPage implements OnInit {
           icon: 'image-sharp',
           handler: () => {
             this.authService.selectImage(CameraSource.Photos)
-            .then(resp=>{
+            .then(async resp=>{
+              this.compressImg=await compressUriImage(resp);
+              console.log(this.compressImg);
               this.imgPath=resp;
               this.avatar.setValue(0);
               document.querySelectorAll(".loc__grid>div")

@@ -4,7 +4,6 @@ import { IUserData } from './../../interfaces/user.interface';
 import { StoreNames } from './../../enums/store-names.enum';
 import { DbService } from './../../services/db.service';
 import { LoadingService } from './../../services/loading.service';
-import { ActionsUserService } from './../../services/actions-user.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { Component, OnInit } from '@angular/core';
 import { NavParams, AlertController, PopoverController } from '@ionic/angular';
@@ -77,9 +76,9 @@ export class PopoverGroupComponent implements OnInit {
                 };
 
                 if(this.token){
-                  updateObj["token"]=firebase.default.firestore.FieldValue.arrayRemove(this.token)
+                  updateObj["tokens"]=firebase.default.firestore.FieldValue.arrayRemove(this.token)
                 }
-
+                console.log(this.token);
                 this.firestore.collection("chats").doc(this.idChat)
                 .update(updateObj)
                 .then(()=>{

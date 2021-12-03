@@ -132,9 +132,9 @@ export class ChatGroupPage implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this.firestore.collection("chats").doc(this.idChat)
-    .get()
+    .valueChanges()
     .subscribe((resp)=>{
-      const chat=resp.data() as IGroup;
+      const chat=resp as IGroup;
 
       this.dbChat.getItem(this.idChat)
       .then((resp:IGroup)=>{

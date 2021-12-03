@@ -11,7 +11,16 @@ exports.newMessage=functions.firestore
     .document("/messages/{idChat}/messages/{idMessage}")
     .onCreate(async (change, context) => {
       const data=change.data() as IMessage;
-      const registrationTokens=[data.sendToToken];
+      let registrationTokens:string[]=[];
+
+      if (typeof data.sendToToken === "object") {
+        registrationTokens=data.sendToToken as [];
+        registrationTokens=registrationTokens.filter((token:string)=>{
+          return token?true:false;
+        });
+      } else {
+        registrationTokens=[data.sendToToken];
+      }
 
       const messagee ={
         app_id: "e8539368-3a10-4b86-b79d-96b1d68118cd",
@@ -30,15 +39,13 @@ exports.AddChat=functions.firestore
       const data=change.data() as IChat;
       const registrationTokens=data.tokens;
 
-      const body="Se ha agregado un compañero que";
-
       const messagee ={
         app_id: "e8539368-3a10-4b86-b79d-96b1d68118cd",
         contents: {
-          "en": body +` quiere hablar contigo sobre ${data.tema}`,
-          "es": body +` quiere hablar contigo sobre ${data.tema}`},
+          "en": `A chat has been added about ${data.tema}`,
+          "es": `Se ha agregado un chat sobre ${data.tema}`},
         headings: {
-          "en": "Has agregado un compañero!!",
+          "en": "You have added a partner!!",
           "es": "Has agregado un compañero!!"},
         include_player_ids: registrationTokens,
         android_group: "puzeos.group",
@@ -52,8 +59,8 @@ exports.onUserStatusChanged = functions.database
     .onUpdate((event, context)=> {
       const usersRef = firestore.collection("/users");
       return event.after.ref.once("value")
-          .then((statusSnapshot)=> statusSnapshot.val())
-          .then((status) => {
+          .then((statusSnapshot :any)=> statusSnapshot.val())
+          .then((status :any) => {
           // check if the value is 'offline'
             if (status === "offline") {
             // Set the Firestore's document's online value to false

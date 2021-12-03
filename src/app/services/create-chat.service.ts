@@ -29,7 +29,6 @@ export class CreateChatService {
   createGroup(tagId:string, user:IUser, title:string){
     this.loadingService.present();
     const ref=this.firestore.collection("chats").doc(tagId);
-
     ref.update({
       usersData:firebase.default.firestore.FieldValue.arrayUnion({
         id: user.id,
@@ -55,7 +54,8 @@ export class CreateChatService {
         usersData:[{
           id: user.id,
           userName:user.data.userName,
-          compressImage: user.data.compressImage
+          compressImage: user.data.compressImage?user.data.compressImage:'',
+          avatarId: user.data.avatarId?user.data.avatarId: 0
         }],
         timestamp: firebase.default.firestore.FieldValue.serverTimestamp(),
         tokens:[user.data.token],

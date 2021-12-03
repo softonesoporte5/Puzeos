@@ -53,8 +53,8 @@ export class ItemMessageGroupComponent implements AfterViewInit, OnInit {
       this.dbChat.getItem(this.idChat).then((resp:IGroup)=>{
         for(let i=0;i<resp.usersData.length;i++){
           if(resp.usersData[i].id===this.message.toUserId){
-            if(resp.usersData[i].avatarId){
-              if(resp.usersData[i].avatarId!==0){
+            if(resp.usersData[i].avatarId !== undefined){
+              if(resp.usersData[i].avatarId===0){
                 this.imgRef=resp.usersData[i].compressImage;
               }else{
                 this.imgRef='../../../assets/avatar/avatar_'+resp.usersData[i].avatarId+'.jpg';
