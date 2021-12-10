@@ -4,9 +4,14 @@
   </ion-chip>
 </div>
 
+<img
+  [src]="imgRef"
+  *ngIf="!beforeMessage && userId!==message.toUserId"
+/>
+
 <ion-card
   [id]="'e'+message.id"
-  [class]="userId===message.toUserId?'enviado':''"
+  [class]="cardClass()"
 >
   <div *ngIf="message.reply" class="loc__reply" (click)="scrollToReply()">
     <span class="userName truncar">
@@ -16,7 +21,6 @@
       {{message.reply.message}}
     </span>
   </div>
-
 
   <ion-card-content
     *ngIf="message.type==='text'"

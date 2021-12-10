@@ -78,6 +78,7 @@ export class AgregarPage implements OnInit, OnDestroy {
           }
           return 0;
         });
+        console.log(this.allItems.slice(0,20))
         this.items=this.allItems.slice(0,20);
       }
 

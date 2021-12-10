@@ -1,0 +1,117 @@
+ion-button{
+  --background: transparent;
+  --box-shadow:none;
+}
+
+ion-header{
+  background-color: #fff;
+
+  ion-icon{
+    font-size: 2rem;
+    color: #000;
+  }
+}
+
+.loc__cont-info{
+  width: 100%;
+  justify-content: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  >*{
+    width: 100%;
+  }
+}
+
+  .loc__btn-img{
+    border-radius: 50%;
+    overflow: hidden;
+    width: 50px;
+    height: 50px;
+    margin-top: -25px;
+    margin-bottom: -25px;
+    margin-right: 0px;
+    z-index: 9;
+    position: absolute;
+    right: 1.5rem;
+  }
+
+.loc__header{
+  position: relative;
+  padding: 1rem 0.5rem 1rem 0.5rem;
+  display: flex;
+
+  .cont-primary-info{
+    padding: 5px;
+    flex: 1;
+
+    h2{
+      margin: 0;
+      font-size: 28px;
+      font-weight: 400;
+    }
+
+    h5{
+      margin: 0;
+      font-size: 16px;
+      font-weight: bold;
+      background: #fafafa;
+      padding: 4px 10px;
+      border-radius: 14px;
+      width: min-content;
+    }
+  }
+
+  ion-avatar{
+    margin:0;
+    width: 5rem;
+    height: 5rem;
+    margin-right: 5px;
+    position: relative;
+  }
+}
+
+.loc__cont-des{
+  margin-top: 6px;
+  padding-bottom: 0;
+
+  h6{
+    margin:0 0 6px 6px;
+    color:var(--ion-color-primary);
+    font-size: 14px;
+  }
+
+  ion-item{
+    p{
+      margin:0;
+    }
+  }
+}
+
+ion-list ion-item:first-child{
+  border-radius: 8px 8px 0 0;
+}
+
+ion-list ion-item:last-child{
+  border-radius: 0 0 8px 8px;
+}
+
+.loc__btn-block{
+  margin-top:6px;
+  ion-icon{
+    margin-right: 6px;
+  }
+}
+
+.alertDescription{
+  --min-width:90vw;
+  --max-width:95vw;
+}
+
+.no-disponible::before{
+  content:'Imágen no disponible';
+  height: 5rem;
+}
+
+
+

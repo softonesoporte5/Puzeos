@@ -11,7 +11,7 @@
       mode="md"
     ></ion-back-button>
 
-    <span class="loc_contac-info">
+    <span class="loc_contac-info" (click)="openGroupInfo()">
       <img
         [src]="imgPath"
         class="chat__img no-disponible"
@@ -32,7 +32,6 @@
 <div class="loc__espacio"></div>
 
 <ion-content class="loc__content" #content (scroll)="scrollEvent($event)">
-
   <ion-fab
     vertical="bottom"
     horizontal="end"
@@ -56,6 +55,7 @@
       [searchMessage]="routeQuery.search"
       [idSearch]="routeQuery.id"
       [idChat]="idChat"
+      [dbChat]="dbChat"
     ></app-item-message-group>
   </span>
 </ion-content>

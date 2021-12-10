@@ -13,6 +13,7 @@ export class IUserData{
   };
   imageUrl?:string;
   imageUrlLoc?:string;
+  compressImage?:string;
   blockedUsers:{};
   token:string;
   createDate:any;

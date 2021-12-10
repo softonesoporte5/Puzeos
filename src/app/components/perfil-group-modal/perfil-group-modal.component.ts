@@ -32,6 +32,7 @@ export class PerfilGroupModalComponent implements OnInit, OnDestroy {
   storageSubscribe:Subscription;
   httpSubscribe:Subscription;
   dbUsers:ILocalForage;
+  loading: boolean = false;
 
   constructor(
     private navParams:NavParams,
@@ -61,6 +62,7 @@ export class PerfilGroupModalComponent implements OnInit, OnDestroy {
       if(!this.user.imageUrl){
         this.imgPath='assets/avatar/avatar_'+this.user.avatarId+'.jpg'
       }else{
+        this.loading = true;
         this.storageSubscribe=this.firebaseStorageService.getUrlFile(this.user.imageUrl)
         .subscribe(downloadUrl=>{
           this.httpSubscribe=this.http.get(downloadUrl,{
@@ -72,6 +74,7 @@ export class PerfilGroupModalComponent implements OnInit, OnDestroy {
 
               this.appService.convertBlobToBase64(event.body)
               .then((result:string | ArrayBuffer)=>{
+                this.loading = false;
                 this.imgPath=result as string;
               }).catch(err=>console.log(err));
             }

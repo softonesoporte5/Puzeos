@@ -18,6 +18,7 @@ import { IGroup } from 'src/app/interfaces/group.interface';
 
 import { Platform } from '@ionic/angular';
 import { FormGroup, Validators, FormBuilder, AbstractControl } from '@angular/forms';
+import { GroupInfoModalComponent } from 'src/app/components/group-info-modal/group-info-modal.component';
 const { Keyboard } = Plugins;
 
 @Component({
@@ -131,9 +132,9 @@ export class ChatGroupPage implements OnInit, OnDestroy, AfterViewInit {
     });
 
     this.firestore.collection("chats").doc(this.idChat)
-    .get()
+    .valueChanges()
     .subscribe((resp)=>{
-      const chat=resp.data() as IGroup;
+      const chat=resp as IGroup;
 
       this.dbChat.getItem(this.idChat)
       .then((resp:IGroup)=>{
@@ -274,5 +275,14 @@ export class ChatGroupPage implements OnInit, OnDestroy, AfterViewInit {
 
   scrollToBottom(){
     this.content.scrollToBottom();
+  }
+
+  openGroupInfo(){
+    this.modal.create({
+      component:GroupInfoModalComponent,
+      componentProps:{
+        idChat:this.idChat
+      }
+    }).then(modal=>modal.present());
   }
 }
