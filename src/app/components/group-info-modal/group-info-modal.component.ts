@@ -59,7 +59,6 @@ export class GroupInfoModalComponent implements OnInit {
   memberImgRef(member: IUserDataGroup){
     if(member.avatarId !== undefined){
       if(member.avatarId==0){
-        console.log(member)
         return member.compressImage;
       }else{
         return '../../../../assets/avatar/avatar_'+member.avatarId+'.jpg';
