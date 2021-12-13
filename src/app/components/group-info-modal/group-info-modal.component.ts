@@ -58,13 +58,17 @@ export class GroupInfoModalComponent implements OnInit {
 
   memberImgRef(member: IUserDataGroup){
     if(member.avatarId !== undefined){
-      if(member.avatarId==0){
+      if(member.avatarId===0){
         return member.compressImage;
       }else{
-        return '../../../../assets/avatar/avatar_'+member.avatarId+'.jpg';
+        return '../../../assets/avatar/avatar_'+member.avatarId+'.jpg';
       }
     }else{
-      return '../../../../assets/person.jpg';
+      if(member.compressImage !== undefined){
+        return member.compressImage;
+      }else{
+        return '../../../assets/person.jpg';
+      }
     }
   }
 
