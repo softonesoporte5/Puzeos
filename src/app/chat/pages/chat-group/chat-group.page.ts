@@ -96,7 +96,6 @@ export class ChatGroupPage implements OnInit, OnDestroy, AfterViewInit {
         }catch(e){
           let mInterval=setInterval(()=>{
             let messagesCon;
-            console.log(messagesCon)
             if(messagesCon){
               clearInterval(mInterval);
             }else{

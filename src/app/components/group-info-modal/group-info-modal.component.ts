@@ -72,7 +72,8 @@ export class GroupInfoModalComponent implements OnInit {
     this.modal2.create({
       component:PerfilGroupModalComponent,
       componentProps:{
-        userId:id
+        userId:id,
+        parentModal: this.modal
       }
     }).then(modal2=>modal2.present());
   }

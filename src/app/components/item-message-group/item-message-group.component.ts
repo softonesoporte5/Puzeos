@@ -1,10 +1,11 @@
 import { ChatService } from '../../services/chat.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
-import { IonContent, PopoverController } from '@ionic/angular';
+import { IonContent, ModalController, PopoverController } from '@ionic/angular';
 import { IMessage } from './../../interfaces/message.interface';
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { PopoverChatMessageComponent } from '../popover-chat-message/popover-chat-message.component';
 import { IGroup } from 'src/app/interfaces/group.interface';
+import { PerfilGroupModalComponent } from '../perfil-group-modal/perfil-group-modal.component';
 
 @Component({
   selector: 'app-item-message-group',
@@ -32,7 +33,8 @@ export class ItemMessageGroupComponent implements AfterViewInit, OnInit {
 
   constructor(
     private popoverController: PopoverController,
-    private chatService:ChatService
+    private chatService:ChatService,
+    private modal: ModalController
   ) {}
 
   ngOnInit() {
@@ -60,7 +62,11 @@ export class ItemMessageGroupComponent implements AfterViewInit, OnInit {
                 this.imgRef='../../../assets/avatar/avatar_'+resp.usersData[i].avatarId+'.jpg';
               }
             }else{
-              this.imgRef='../../../assets/person.jpg';
+              if(resp.usersData[i].compressImage !== undefined){
+                this.imgRef=resp.usersData[i].compressImage;
+              }else{
+                this.imgRef='../../../assets/person.jpg';
+              }
             }
             break;
           }
@@ -143,6 +149,15 @@ export class ItemMessageGroupComponent implements AfterViewInit, OnInit {
     }
 
     return classNames;
+  }
+
+  viewProfile(){
+    this.modal.create({
+      component:PerfilGroupModalComponent,
+      componentProps:{
+        userId:this.message.toUserId
+      }
+    }).then(modal=>modal.present());
   }
 
 }
