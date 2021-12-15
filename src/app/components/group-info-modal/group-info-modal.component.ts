@@ -58,13 +58,17 @@ export class GroupInfoModalComponent implements OnInit {
 
   memberImgRef(member: IUserDataGroup){
     if(member.avatarId !== undefined){
-      if(member.avatarId==0){
+      if(member.avatarId===0){
         return member.compressImage;
       }else{
-        return '../../../../assets/avatar/avatar_'+member.avatarId+'.jpg';
+        return '../../../assets/avatar/avatar_'+member.avatarId+'.jpg';
       }
     }else{
-      return '../../../../assets/person.jpg';
+      if(member.compressImage !== undefined){
+        return member.compressImage;
+      }else{
+        return '../../../assets/person.jpg';
+      }
     }
   }
 
@@ -72,7 +76,8 @@ export class GroupInfoModalComponent implements OnInit {
     this.modal2.create({
       component:PerfilGroupModalComponent,
       componentProps:{
-        userId:id
+        userId:id,
+        parentModal: this.modal
       }
     }).then(modal2=>modal2.present());
   }

@@ -333,7 +333,7 @@ export class DbService{
         this.setItemChat(idChat,{
           ...resp,
           newMessages:this.newMessages[idChat] || 0,
-          lastMessage:message.message,
+          lastMessage:message.user+': '+message.message,
           timestamp:message.timestamp,
         });
       }

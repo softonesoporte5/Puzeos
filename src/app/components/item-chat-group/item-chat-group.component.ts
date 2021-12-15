@@ -1,14 +1,8 @@
-import { AppService } from './../../app.service';
-import { HttpClient, HttpEventType } from '@angular/common/http';
-import { AngularFirestore } from '@angular/fire/firestore';
 import { DbService } from './../../services/db.service';
 import { ILocalForage } from './../../interfaces/localForage.interface';
 import { Component, Input, OnInit } from '@angular/core';
-import { Plugins, Capacitor, FilesystemDirectory } from '@capacitor/core';
-import { FirebaseStorageService } from 'src/app/services/firebase-storage.service';
 import { StoreNames } from 'src/app/enums/store-names.enum';
 import { IGroup } from 'src/app/interfaces/group.interface';
-const {Filesystem} = Plugins;
 
 @Component({
   selector: 'app-item-chat-group',
@@ -24,11 +18,7 @@ export class ItemChatGroupComponent implements OnInit {
   dateString:string;
 
   constructor(
-    private db:DbService,
-    private firestore:AngularFirestore,
-    private firebaseStorage:FirebaseStorageService,
-    private http:HttpClient,
-    private appService:AppService
+    private db:DbService
   ) {}
 
   ngOnInit() {

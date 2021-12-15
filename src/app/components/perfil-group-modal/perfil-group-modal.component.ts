@@ -15,6 +15,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { IUserData } from './../../interfaces/user.interface';
 import { ModalController, NavParams, AlertController } from '@ionic/angular';
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import {compressUriImage} from '../../utils/utils';
 import * as firebase from 'firebase';
 
 @Component({
@@ -59,6 +60,12 @@ export class PerfilGroupModalComponent implements OnInit, OnDestroy {
     .subscribe(resp=>{
       this.user=resp.data() as IUserData;
       this.user.createDate=this.user.createDate.toDate();
+
+      this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
+      .then(resp=>{
+        this.localUser=resp;
+      })
+
       if(!this.user.imageUrl){
         this.imgPath='assets/avatar/avatar_'+this.user.avatarId+'.jpg'
       }else{
@@ -81,11 +88,6 @@ export class PerfilGroupModalComponent implements OnInit, OnDestroy {
           });
         });
       }
-
-      this.dbUsers.getItem(firebase.default.auth().currentUser.uid)
-      .then(resp=>{
-        this.localUser=resp;
-      })
     });
   }
 
@@ -171,6 +173,7 @@ export class PerfilGroupModalComponent implements OnInit, OnDestroy {
           }).then(()=>{//Redireccionamos al home
             this.loadingService.dismiss();
             this.close();
+            this.navParams.get("parentModal").dismiss();
             this.router.navigate(['chat']);
           }).catch(()=>{
             this.chatError();
