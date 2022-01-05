@@ -27,6 +27,10 @@ exports.newMessage=functions.firestore
         contents: {"en": data.message, "es": data.message},
         headings: {"en": data.user, "es": data.user},
         android_group: context.params.idChat,
+        android_group_message: {
+          "en": "You have $[notif_count] new messages",
+          "es": "Tienes $[notif_count] nuevos mensajes"
+        },
         include_player_ids: registrationTokens,
       };
 
