@@ -44,6 +44,8 @@ ion-header{
   position: relative;
   padding: 2rem 0.5rem 1rem 2rem;
   display: flex;
+  background-color: var(--ion-toolbar-background);
+  color:  var(--black);
 
   img{
     min-height: 5rem;
@@ -92,6 +94,7 @@ ion-header{
     --background: #fafafa;
     --padding-top: 10px;
     --padding-bottom: 10px;
+    --background: var(--crema);
 
     p{
       margin:0;

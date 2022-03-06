@@ -40,6 +40,8 @@ ion-header{
   position: relative;
   padding: 1rem 0.5rem 1rem 0.5rem;
   display: flex;
+  background-color: var(--ion-toolbar-background);
+  color:  var(--black);
 
   .cont-primary-info{
     padding: 5px;

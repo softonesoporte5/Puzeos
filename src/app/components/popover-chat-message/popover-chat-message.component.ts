@@ -1,3 +1,5 @@
+import { ToastService } from './../../services/toast.service';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { PerfilGroupModalComponent } from './../perfil-group-modal/perfil-group-modal.component';
 import { ChatService } from '../../services/chat.service';
 import { IMessage } from './../../interfaces/message.interface';
@@ -26,7 +28,9 @@ export class PopoverChatMessageComponent implements OnInit {
     private popoverController: PopoverController,
     private db:DbService,
     private chatService:ChatService,
-    private modal:ModalController
+    private modal:ModalController,
+    private firestore: AngularFirestore,
+    private toast: ToastService
   ) { }
 
   ngOnInit() {
@@ -79,5 +83,17 @@ export class PopoverChatMessageComponent implements OnInit {
         userId:this.message.toUserId
       }
     }).then(modal=>modal.present());
+  }
+
+  report(){
+    this.firestore.collection("reportAccount").add({
+      id: this.message.toUserId,
+      message : this.message.message
+    }).then(()=>{
+      alert("Se ha reportado el mensaje");
+    },()=>{
+      this.toast.presentToast("Ha ocurrido un error");
+    });
+    this.popoverController.dismiss();
   }
 }

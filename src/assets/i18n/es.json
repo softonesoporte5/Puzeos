@@ -10,9 +10,10 @@
   "LoginPage":{
     "PrivacyPolicy":"Al continuar aceptas nuestra",
     "PrivacyPolicy2":"Política de privacidad",
-    "Title1": "Escoge un tema de conversación y empieza a chatear!",
+    "PrivacyPolicy3":"Condiciones de uso",
+    "Title1": "Registrate y empieza a chatear!",
     "Title2": "Habla sobre tu anime favorito",
-    "Title3": "Encuentra un dúo en videojuegos",
+    "Title3": "Conoce a otros fans del anime",
     "Title4": "Haz amigos",
     "ContinueWithout": "Continuar sin registrarse",
     "ContinueWithPhone":"Continuar con número de teléfono"
@@ -55,8 +56,8 @@
   "ProfilePage":{
     "AboutMe": "Acerca de mí",
     "EnterDescription": "Ingresa una descripción",
-    "EnterTopic": "Ingresa un tema de conversación",
-    "ConversationTopics": "Temas de conversación",
+    "EnterTopic": "Ingresa un Anime",
+    "ConversationTopics": "Anime favorito",
     "ChangeNickname": "Cambiar apodo",
     "NewNickname": "Nuevo apodo",
     "ConfirmDelete": "¿Seguro de que quieres quitar tu foto de perfil?",
@@ -84,7 +85,7 @@
     "AlertMessage": "Puedes perderla si desinstalas la aplicación o borras los datos",
     "Connect": "Conectar",
     "InfoMessageTitle": "Comparte la app",
-    "InfoMessage": "Puzeos es una aplicación nueva, invíta a tus amigos o habla sobre Puzeos para llegar a más personas y hacer crecer la comunidad :D"
+    "InfoMessage": "Chanime es una aplicación nueva, invíta a tus amigos o habla sobre Chanime para llegar a más personas y hacer crecer la comunidad :D"
   },
   "AgregarPage":{
     "Title":"Agrega un chat",
@@ -104,7 +105,8 @@
     "ToastMessage":"Selecciona un idioma para continuar",
     "GroupChat": "Chat Grupal",
     "IndividualChat": "Chat Individual",
-    "SendTopic": "Se ha enviado la solicitud"
+    "SendTopic": "Se ha enviado la solicitud",
+    "ChatsCreated": "Chats creados"
   },
   "ChatPage":{
     "Message":"Mensaje",
@@ -126,7 +128,7 @@
   },
   "ProfileModal":{
     "Info":"Nombre de usuario y descripción",
-    "Join":"Se unió a Puzeos el",
+    "Join":"Se unió a Chanime el",
     "Theme":"Tema de conversación",
     "BlockUser":"Bloquear usuario",
     "CreateChatConfirm": "¿Quieres crear un chat con este usuario?"

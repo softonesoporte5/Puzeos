@@ -28,4 +28,5 @@ export class IUserData{
   };
   age: number;
   favoriteTopics: ITopic[];
+  blockedAccount?: boolean;
 }

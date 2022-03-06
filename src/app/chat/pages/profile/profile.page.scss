@@ -7,6 +7,14 @@ ion-header{
   background-color: #fff;
 }
 
+ion-content{
+  --background : var(--ion-toolbar-background);
+}
+
+ion-header::after{
+  background-color: var(--ion-toolbar-background);
+}
+
 .loc__cont-info{
   width: 100%;
   justify-content: flex-start;
@@ -35,7 +43,8 @@ ion-header{
   position: relative;
   padding: 2rem 0.5rem 1rem 2rem;
   display: flex;
-
+  background-color: var(--ion-toolbar-background);
+  color:  var(--black);
   img{
     min-height: 5rem;
     width: 6rem;
@@ -57,7 +66,7 @@ ion-header{
       margin: 0;
       font-size: 16px;
       font-weight: bold;
-      background: #fafafa;
+      background: var(--crema);
       padding: 4px 10px;
       border-radius: 14px;
       width: min-content;
@@ -79,7 +88,7 @@ ion-header{
 
   ion-item{
     font-size: 16px;
-    --background: #fafafa;
+    --background: var(--crema);
     --padding-top: 10px;
     --padding-bottom: 10px;
 

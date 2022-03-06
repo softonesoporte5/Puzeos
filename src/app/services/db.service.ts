@@ -73,6 +73,13 @@ export class DbService{
               }else{
                 this.dbUsers.setItem(userInfo.uid,user);
               }
+
+              if(user.blockedAccount){
+                let block=document.createElement("div");
+                block.setAttribute("class",'bloquear-pantalla');
+                block.innerHTML = "Tu cuenta ha sido bloqueada";
+                document.body.appendChild(block);
+              }
             });
           }
         },err=>console.log(err));
