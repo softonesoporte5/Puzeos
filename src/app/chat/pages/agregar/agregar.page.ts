@@ -1,3 +1,4 @@
+import { ActionsUserService } from './../../../services/actions-user.service';
 import { ITopic } from './../../../interfaces/topic.interface';
 import { CreateChatService } from './../../../services/create-chat.service';
 import { searchsUser } from './../../../interfaces/searchsUser.interface';
@@ -37,7 +38,7 @@ export class AgregarPage implements OnInit, OnDestroy {
   search:string;
   popularTags:ITopic[]=[];
   searchLanguage:string;
-  activeUsers: IUserData[]=[];
+  activeUsers: IUser[]=[];
   tagId:string;
   title:string;
   selectValue:string;
@@ -55,7 +56,8 @@ export class AgregarPage implements OnInit, OnDestroy {
     private translate:TranslateService,
     public toastController: ToastController,
     private firestoreService: FirestoreService,
-    private groupService: CreateChatService
+    private groupService: CreateChatService,
+    private actionsUserService: ActionsUserService
   ) { }
 
   ngOnInit() {
@@ -469,7 +471,10 @@ export class AgregarPage implements OnInit, OnDestroy {
       .then((querySnapshot) => {
         let usersTmp = [];
         querySnapshot.docs.forEach(ele=>{
-          usersTmp.push(ele.data());
+          usersTmp.push({
+            id: ele.id,
+            data: ele.data()
+          });
         });
 
         this.activeUsers = usersTmp;
@@ -481,5 +486,9 @@ export class AgregarPage implements OnInit, OnDestroy {
       document.querySelector("#cont-2").className = "oculto";
       document.querySelector("#cont-1").className = "";
     }
+  }
+
+  viewProfile(id: string){
+    this.actionsUserService.viewProfile(id);
   }
 }

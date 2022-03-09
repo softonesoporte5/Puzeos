@@ -1,3 +1,4 @@
+import { PerfilGroupModalComponent } from './../components/perfil-group-modal/perfil-group-modal.component';
 import { TranslateService } from '@ngx-translate/core';
 import { IUserData } from './../interfaces/user.interface';
 import { ILocalForage } from './../interfaces/localForage.interface';
@@ -6,9 +7,10 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { DbService } from 'src/app/services/db.service';
-import {  ToastController, PopoverController, AlertController } from '@ionic/angular';
+import { ToastController, PopoverController, AlertController, ModalController } from '@ionic/angular';
 import * as firebase from 'firebase';
 import { StoreNames } from '../enums/store-names.enum';
+import { ComponentProps } from '@ionic/core';
 
 const localForage = require("localforage") as ILocalForage;
 
@@ -33,7 +35,8 @@ export class ActionsUserService {
     private router:Router,
     private loadingService:LoadingService,
     private popoverController: PopoverController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private modal:ModalController,
   ) { }
 
   deleteChatInDevice(blocked?:boolean){
@@ -161,5 +164,15 @@ export class ActionsUserService {
       color:"danger"
     });
     toast.present();
+  }
+
+  viewProfile(id:string, props: ComponentProps = {}){
+    this.modal.create({
+      component:PerfilGroupModalComponent,
+      componentProps:{
+        userId:id,
+        ...props
+      }
+    }).then(modal=>modal.present());
   }
 }

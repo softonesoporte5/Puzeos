@@ -82,13 +82,13 @@
       </div>
       <div id="cont-2" class="oculto">
         <div *ngFor="let user of activeUsers">
-          <div class="opacity">
+          <div class="loc__cont-user-info" (click)="viewProfile(user.id)">
             <ion-avatar>
-              <img [src]="user.compressImage">
+              <img [src]="user.data.compressImage">
             </ion-avatar>
             <span>
-              <ion-label>{{user.userName}} <span>#{{1}}</span></ion-label>
-              <small>{{'AgregarPage.ChatsCreated' | translate}}: {{user.location}}</small>
+              <ion-label>{{user.data.userName}}</ion-label>
+              <small> {{user?.data.location?.country}} - {{user?.data.age}} años</small>
             </span>
           </div>
         </div>

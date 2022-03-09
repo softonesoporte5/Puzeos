@@ -1,3 +1,4 @@
+import { ActionsUserService } from './../../services/actions-user.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { AlertController, ModalController, NavParams } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
@@ -20,15 +21,13 @@ export class GroupInfoModalComponent implements OnInit {
   group:IGroup;
   idChat:string;
   constructor(
-    //private firestore:AngularFirestore,
-    public alertController: AlertController,
+    public  alertController: AlertController,
     private db:DbService,
     private navParams:NavParams,
-    //private actionSheetController: ActionSheetController,
-    //private camara:CameraService,
     private modal:ModalController,
     private modal2:ModalController,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private actionsUserService: ActionsUserService
   ) { }
 
   ngOnInit() {
@@ -73,13 +72,7 @@ export class GroupInfoModalComponent implements OnInit {
   }
 
   viewProfile(id:string){
-    this.modal2.create({
-      component:PerfilGroupModalComponent,
-      componentProps:{
-        userId:id,
-        parentModal: this.modal
-      }
-    }).then(modal2=>modal2.present());
+    this.actionsUserService.viewProfile(id, {parentModal: this.modal});
   }
 
 }

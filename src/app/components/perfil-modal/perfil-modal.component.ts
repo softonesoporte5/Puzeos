@@ -1,3 +1,4 @@
+import { TranslateService } from '@ngx-translate/core';
 import { ImageModalComponent } from './../image-modal/image-modal.component';
 import { IMessage } from './../../interfaces/message.interface';
 import { FileSystemService } from './../../services/file-system.service';
@@ -38,7 +39,8 @@ export class PerfilModalComponent implements OnInit {
     private http:HttpClient,
     private appService:AppService,
     private actionsUserService:ActionsUserService,
-    private fileSystemService:FileSystemService
+    private fileSystemService:FileSystemService,
+    private translate:TranslateService,
   ) { }
 
   ngOnInit() {
