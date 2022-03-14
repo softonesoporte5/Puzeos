@@ -50,11 +50,13 @@ ion-header::after{
     width: 6rem;
     height: 6rem;
     border-radius: 50%;
+    z-index: 1;
   }
 
   .cont-primary-info{
     padding: 5px 16px;
     flex: 1;
+    z-index: 1;
 
     h2{
       margin: 0;
@@ -121,4 +123,22 @@ ion-list ion-item:last-child{
 .no-disponible::before{
   content:'Imágen no disponible';
   height: 5rem;
+}
+
+small{
+  display: block;
+}
+
+ion-chip{
+  margin: 0;
+  border-radius: 9px;
+  --color: #0b4a54;
+}
+
+#male{
+  background: #17a2b8;
+}
+
+#female{
+  background: pink;
 }
