@@ -7,6 +7,14 @@ ion-header{
   background-color: #fff;
 }
 
+ion-content{
+  --background : var(--ion-toolbar-background);
+}
+
+ion-header::after{
+  background-color: var(--ion-toolbar-background);
+}
+
 .loc__cont-info{
   width: 100%;
   justify-content: flex-start;
@@ -35,17 +43,20 @@ ion-header{
   position: relative;
   padding: 2rem 0.5rem 1rem 2rem;
   display: flex;
-
+  background-color: var(--ion-toolbar-background);
+  color:  var(--black);
   img{
     min-height: 5rem;
     width: 6rem;
     height: 6rem;
     border-radius: 50%;
+    z-index: 1;
   }
 
   .cont-primary-info{
     padding: 5px 16px;
     flex: 1;
+    z-index: 1;
 
     h2{
       margin: 0;
@@ -57,7 +68,7 @@ ion-header{
       margin: 0;
       font-size: 16px;
       font-weight: bold;
-      background: #fafafa;
+      background: var(--crema);
       padding: 4px 10px;
       border-radius: 14px;
       width: min-content;
@@ -79,7 +90,7 @@ ion-header{
 
   ion-item{
     font-size: 16px;
-    --background: #fafafa;
+    --background: var(--crema);
     --padding-top: 10px;
     --padding-bottom: 10px;
 
@@ -112,4 +123,22 @@ ion-list ion-item:last-child{
 .no-disponible::before{
   content:'Imágen no disponible';
   height: 5rem;
+}
+
+small{
+  display: block;
+}
+
+ion-chip{
+  margin: 0;
+  border-radius: 9px;
+  --color: #0b4a54;
+}
+
+#male{
+  background: #17a2b8;
+}
+
+#female{
+  background: pink;
 }

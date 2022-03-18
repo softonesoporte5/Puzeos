@@ -29,6 +29,14 @@
     padding
   >
     <ion-list>
+      <ion-item routerLink="/chat/profile">
+        <ion-icon
+          color="secondary"
+          name="person-sharp"
+          slot="start"
+        ></ion-icon>
+        <span color="dark">Mi perfil</span>
+      </ion-item>
       <ion-item disabled="true">
         <ion-icon
           color="secondary"
@@ -71,6 +79,10 @@
       <span class="d-center">
         <a class="ion-padding" href="https://docs.google.com/document/d/1XHJjxROjaA0F-ZO1wfhMDtM6noHxYip2F9bjKsXfFFc/edit?usp=sharing">
           <small>{{'LoginPage.PrivacyPolicy2' | translate}}</small>
+        </a>
+        <br>
+        <a class="ion-padding" href="https://docs.google.com/document/d/1viKxFqQvhvprZBB812ha-0FAmTL2KgRo3FbRPU_e8Dw/edit?usp=sharing">
+          <small>{{'LoginPage.PrivacyPolicy3' | translate}}</small>
         </a>
       </span>
     </ion-list>

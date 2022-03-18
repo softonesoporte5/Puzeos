@@ -66,6 +66,7 @@
   --white:#fff;
   --black: #4E4E4E;
   --fondo-color: #f0f0f0;
+  --crema: #fafafa;
   --gradiante: linear-gradient(135deg, white 0%, rgba(255, 255, 255, 0.78) 45%, rgba(91, 88, 88, 0.38) 71%, rgba(91, 88, 88, 0.35) 87%, rgba(1, 1, 1, 0) 100%);
 }
 
@@ -135,6 +136,7 @@ body.dark{
   --white:#121212;
   --fondo-color: #282828;
   --black: #f0f0f0;
+  --crema : #333333;
   --gradiante: linear-gradient(135deg, black 0%, rgb(0 0 0 / 78%) 45%, rgb(169 163 163 / 38%) 71%, rgb(163 159 159 / 35%) 87%, rgb(255 255 255 / 0%) 100%);
 
 }

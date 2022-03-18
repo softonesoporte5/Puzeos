@@ -1,3 +1,4 @@
+import { ActionsUserService } from './../../../services/actions-user.service';
 import { ITopic } from './../../../interfaces/topic.interface';
 import { CreateChatService } from './../../../services/create-chat.service';
 import { searchsUser } from './../../../interfaces/searchsUser.interface';
@@ -37,6 +38,7 @@ export class AgregarPage implements OnInit, OnDestroy {
   search:string;
   popularTags:ITopic[]=[];
   searchLanguage:string;
+  activeUsers: IUser[]=[];
   tagId:string;
   title:string;
   selectValue:string;
@@ -54,7 +56,8 @@ export class AgregarPage implements OnInit, OnDestroy {
     private translate:TranslateService,
     public toastController: ToastController,
     private firestoreService: FirestoreService,
-    private groupService: CreateChatService
+    private groupService: CreateChatService,
+    private actionsUserService: ActionsUserService
   ) { }
 
   ngOnInit() {
@@ -78,7 +81,6 @@ export class AgregarPage implements OnInit, OnDestroy {
           }
           return 0;
         });
-        console.log(this.allItems.slice(0,20))
         this.items=this.allItems.slice(0,20);
       }
 
@@ -458,5 +460,35 @@ export class AgregarPage implements OnInit, OnDestroy {
     if (this.items.length===this.allItems.length && !this.searchTxt.value) {
       event.target.disabled = true;
     }
+  }
+
+  segmentChanged(ev: any) {
+    if(ev.detail.value === "Activos"){
+      document.querySelector("#cont-2").className = "";
+      document.querySelector("#cont-1").className = "oculto";
+      this.fireStore.collection("users").ref.where("online", "==", true)
+      .get()
+      .then((querySnapshot) => {
+        let usersTmp = [];
+        querySnapshot.docs.forEach(ele=>{
+          usersTmp.push({
+            id: ele.id,
+            data: ele.data()
+          });
+        });
+
+        this.activeUsers = usersTmp;
+      })
+      .catch((error) => {
+        console.log("Error getting documents: ", error);
+      });
+    }else{
+      document.querySelector("#cont-2").className = "oculto";
+      document.querySelector("#cont-1").className = "";
+    }
+  }
+
+  viewProfile(id: string){
+    this.actionsUserService.viewProfile(id);
   }
 }

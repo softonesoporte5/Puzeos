@@ -156,3 +156,21 @@ ion-item{
   border-radius: 10px;
   flex-direction: column;
 }
+
+ion-segment-button{
+  text-transform: none;
+}
+
+.oculto{
+  display: none;
+}
+
+.loc__cont-user-info{
+  display: flex;
+  margin : 0.3rem;
+  span{
+    display: flex;
+    flex-direction: column;
+    margin-left: 0.8rem;
+  }
+}

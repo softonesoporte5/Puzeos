@@ -10,9 +10,10 @@
   "LoginPage":{
     "PrivacyPolicy":"By continuing you accept our",
     "PrivacyPolicy2":"Privacy Policy",
-    "Title1": "Pick a topic of conversation and start chatting!",
+    "PrivacyPolicy3":"Terms of Use",
+    "Title1": "Sign up and start chatting!",
     "Title2": "Talk about your favorite anime",
-    "Title3": "Find a duo in video games",
+    "Title3": "Meet other anime fans",
     "Title4": "Make friends",
     "ContinueWithout": "Continue without registering",
     "ContinueWithPhone":"Continue with phone number"
@@ -84,7 +85,7 @@
     "AlertMessage": "You can lose it if you uninstall the application or delete the data",
     "Connect": "Connect",
     "InfoMessageTitle": "Share the app",
-    "InfoMessage": "Puzeos is a new application, invite your friends or talk about Puzeos to reach more people and grow the community: D"
+    "InfoMessage": "Chanime is a new application, invite your friends or talk about Chanime to reach more people and grow the community: D"
   },
   "AgregarPage":{
     "Title":"Add a chat",
@@ -104,7 +105,8 @@
     "ToastMessage":"Select a language to continue",
     "GroupChat": "Group chat",
     "IndividualChat": "Individual Chat",
-    "SendTopic": "The request has been sent"
+    "SendTopic": "The request has been sent",
+    "ChatsCreated": "Chats Created"
   },
   "ChatPage":{
     "Message":"Message",
@@ -126,7 +128,7 @@
   },
   "ProfileModal":{
     "Info":"Username and description",
-    "Join":"He joined Puzeos on",
+    "Join":"He joined Chanime on",
     "Theme":"Conversation topic",
     "BlockUser":"Block user",
     "CreateChatConfirm": "Do you want to create a chat with this user?"

@@ -257,3 +257,14 @@ ngx-intl-tel-input input::placeholder {
 ngx-intl-tel-input input[disabled] {
 	background-color: #e5eaf1;
 }
+
+.bloquear-pantalla{
+  position: absolute;
+  z-index: 99999;
+  width: 100%;
+  height: 100%;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -40,4 +40,15 @@
       {{'PopoverChat.Reply' | translate}}
     </ion-label>
   </ion-item>
+  <ion-item
+    button
+    mode="md"
+    (click)="report()"
+    *ngIf="this.group"
+  >
+    <ion-icon name="ban-outline" slot="start"></ion-icon>
+    <ion-label>
+      Reportar Mensaje
+    </ion-label>
+  </ion-item>
 </ion-list>

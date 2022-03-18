@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="primary">
     <ion-back-button
       slot="start"
       defaultHref="/chat"
@@ -18,7 +18,11 @@
     <div class="cont-primary-info">
       <h2>{{user?.data.userName}}</h2>
       <small>{{user?.data.age}} {{'Global.Years' | translate}}</small>
-      <h5>#446qwet</h5>
+      <!--<h5>#446qwet</h5>-->
+      <ion-chip [id]="gender?.genderID" (click)="openActionSheetGender()">
+        <ion-label>{{gender?.genderLabel}}</ion-label>
+        <ion-icon [name]="gender?.genderIcon"></ion-icon>
+      </ion-chip>
     </div>
   </div>
   <ion-button

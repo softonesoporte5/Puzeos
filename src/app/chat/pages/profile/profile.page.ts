@@ -25,6 +25,11 @@ export class ProfilePage implements OnInit {
   dbUsers:ILocalForage;
   numBlockedUsers=0;
   pais:string;
+  gender : {
+    genderID:string;
+    genderLabel:string;
+    genderIcon: string;
+  }
 
   constructor(
     private firestore:AngularFirestore,
@@ -62,6 +67,21 @@ export class ProfilePage implements OnInit {
           this.user.data.favoriteTopics[i]=null;
         }
       }
+
+      if(this.user.data.gender){
+        this.gender = {
+          genderID: this.user.data.gender == 1? "male": "female",
+          genderLabel: this.user.data.gender == 1? "Hombre": "Mujer",
+          genderIcon : this.user.data.gender == 1? "male-sharp": "female-sharp"
+        }
+      }else{
+        this.gender = {
+          genderID: "oculto",
+          genderLabel: "Oculto",
+          genderIcon : "male-female-sharp"
+        }
+      }
+
     }).catch(err=>console.log(err));
 
     //Disparar el recortador
@@ -310,5 +330,68 @@ export class ProfilePage implements OnInit {
         pos: pos
       }
     }).then(modal=>modal.present());
+  }
+
+  async openActionSheetGender(){
+    const actionSheet = await this.actionSheetController.create({
+      cssClass: 'my-custom-class',
+      buttons: [
+        {
+          text: "Hombre",
+          icon: 'male-sharp',
+          handler: () => {
+            this.gender = {
+              genderID: "male",
+              genderLabel: "Hombre",
+              genderIcon : "male-sharp"
+            }
+            this.changeGender(1);
+          }
+        },
+        {
+          text: "Mujer",
+          icon: 'female-sharp',
+          handler: () => {
+            this.gender = {
+              genderID: "female",
+              genderLabel: "Mujer",
+              genderIcon : "female-sharp"
+            }
+            this.changeGender(2);
+          }
+        },
+        {
+          text: "Oculto",
+          icon: 'male-female-sharp',
+          handler: () => {
+            this.gender = {
+              genderID: "",
+              genderLabel: "Oculto",
+              genderIcon : "male-female-sharp"
+            }
+            this.changeGender(0);
+          }
+        }
+      ]
+    });
+    await actionSheet.present();
+  }
+
+  changeGender(id: number){
+    if(this.user.data?.gender!==id){
+      this.user.data.gender=id;
+      this.firestore.collection("users").doc(this.user.id).update({
+        gender:id
+      }).then(()=>{
+        this.dbUsers.getItem(this.user.id)
+        .then((userData:IUserData)=>{
+          this.dbUsers.setItem(this.user.id,{
+            ...userData,
+            gender:id
+          });
+        })
+      },()=>{
+        window.alert("Ha ocurrido un error al cambiar el género")});
+    }
   }
 }
